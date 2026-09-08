@@ -27,6 +27,8 @@ export class TmdbApiService {
     return { beginDate, endDate }
   });
 
+  readonly sortFilter = computed(() => this.#userPreferencesService.selectedSort());
+
   readonly movieCollection = httpResource<TitleCollection>(() => `${this.#MOVIE_API_URL}/list/1`);
 
   readonly #moviesGender = httpResource<GenreList>(() => ({
@@ -76,7 +78,7 @@ export class TmdbApiService {
         language: 'fr-FR',
         watch_region: 'FR',
         page: page(),
-        sort_by: 'popularity.desc',
+        sort_by: this.sortFilter(),
         with_watch_providers: this.providersIds()
       };
 

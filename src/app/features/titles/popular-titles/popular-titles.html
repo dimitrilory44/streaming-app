@@ -1,4 +1,4 @@
-<title-filter [items]="titles()" [countTitles]="totalResults()" [currentMediaType]="mediaType()" />
+<title-filter [items]="titles()" [countTitles]="totalResults()" [isLoading]="isInitialLoading()" [currentMediaType]="mediaType()" />
 
 <section class="container">
     @if (titles().length > 0) {

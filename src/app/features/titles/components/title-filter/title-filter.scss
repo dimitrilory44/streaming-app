@@ -164,7 +164,7 @@
   height: 36px;
 
   mat-icon {
-    color: #e5e7eb;
+    //color: #e5e7eb;
     font-size: 20px;
     width: 20px;
     height: 20px;
@@ -198,5 +198,11 @@
 }
 
 .is-active {
-  color: #f5c518;
+  --mat-icon-button-icon-color: #f5c518;
+  --mat-sys-on-surface-variant: #f5c518;
+  color: #f5c518!important;
+}
+
+.filter-items__count--loading {
+  display: none;
 }

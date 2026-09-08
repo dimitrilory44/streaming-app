@@ -1,9 +1,9 @@
 import { Component, input, viewChild, ElementRef, output, afterNextRender, effect, signal } from '@angular/core';
-import { getMediaTitle } from '@core/models/media-model';
 import { TmdbImagePipe } from '@shared/pipes/tmdb-image.pipe';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Media } from '@shared/types/collection.types';
+import { getMediaTitle } from '@shared/helpers/collection.helpers';
 
 @Component({
   selector: 'title-list',

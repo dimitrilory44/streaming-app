@@ -1,9 +1,10 @@
 import { Signal } from "@angular/core";
-import { Media } from "@shared/types/collection.types";
+import { AllSortOptions, CommonSortOptions, Media } from "@shared/types/collection.types";
 
 export interface UserPreferences {
   selectedProviders?: Provider[];
   selectedCriteria?: Criteria;
+  selectedSort: string;
 }
 
 interface CriteriaBase<K extends keyof Criteria> {
@@ -106,13 +107,9 @@ export interface SeriesMedia extends BaseMedia {
   first_air_date: string;
 }
 
-
-export function getMediaTitle(media: Media): string {
-  return media.media_type === 'movie' ? media.title : media.name;
-}
-
-export function getMediaDate(media: Media): string {
-  return media.media_type === 'movie' ? media.release_date : media.first_air_date;
+export interface SortOption<T extends AllSortOptions> {
+  value: T;
+  label: string;
 }
 
 export interface TitleCollection {

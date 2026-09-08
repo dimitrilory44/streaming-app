@@ -5,7 +5,8 @@ import { TmdbApiService } from '@core/services/tmdb-api';
 import { MovieMedia, SeriesMedia } from '@core/models/media-model';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { StateMessage } from "@shared/components/state-message/state-message";
-import { Media } from '@shared/types/collection.types';
+import { Media, MediaType } from '@shared/types/collection.types';
+import { pick } from '@shared/helpers/collection.helpers';
 
 @Component({
   selector: 'popular-page',
@@ -16,7 +17,7 @@ import { Media } from '@shared/types/collection.types';
 export class PopularTitlesComponent {
   readonly #tmdbApiService = inject(TmdbApiService);
 
-  readonly mediaType = input.required<'all' | 'movie' | 'tv'>();
+  readonly mediaType = input.required<MediaType>();
   readonly titles = signal<Media[]>([]);
   readonly currentPage = signal(1);
   readonly isLoadingMore = signal(false);
@@ -26,6 +27,8 @@ export class PopularTitlesComponent {
   readonly selectedGenresIds = this.#tmdbApiService.genresIds;
   readonly selectedBeginYear = computed(() => this.#tmdbApiService.filterYear().beginDate);
   readonly selectedEndYear = computed(() => this.#tmdbApiService.filterYear().endDate);
+
+  readonly sortMenu = this.#tmdbApiService.sortFilter;
 
   readonly moviesPopular = this.#tmdbApiService.getPopularMovies(this.currentPage);
   readonly seriesPopular = this.#tmdbApiService.getPopularSeries(this.currentPage);
@@ -52,20 +55,20 @@ export class PopularTitlesComponent {
   });
 
   readonly totalResults = computed(() => {
-    if (this.hasError()) return 0;
-    return this.pick(
+    if (this.hasError() || this.isInitialLoading()) return 0;
+    return pick(
       this.moviesPopular.value()?.total_results ?? 0,
       this.seriesPopular.value()?.total_results ?? 0,
-      (this.moviesPopular.value()?.total_results ?? 0) + (this.seriesPopular.value()?.total_results ?? 0)
+      (this.moviesPopular.value()?.total_results ?? 0) + (this.seriesPopular.value()?.total_results ?? 0), this.mediaType()
     );
   });
 
   readonly hasError = computed(() => {
-    return this.pick(!!this.moviesPopular.error(), !!this.seriesPopular.error(), !!(this.moviesPopular.error() || this.seriesPopular.error()))
+    return pick(!!this.moviesPopular.error(), !!this.seriesPopular.error(), !!(this.moviesPopular.error() || this.seriesPopular.error()), this.mediaType())
   });
 
   readonly isInitialLoading = computed(() => {
-    return this.pick(this.moviesPopular.isLoading(), this.seriesPopular.isLoading(), this.moviesPopular.isLoading() || this.seriesPopular.isLoading());;
+    return pick(this.moviesPopular.isLoading(), this.seriesPopular.isLoading(), this.moviesPopular.isLoading() || this.seriesPopular.isLoading(), this.mediaType());
   });
 
   constructor() {
@@ -74,6 +77,7 @@ export class PopularTitlesComponent {
       this.selectedProviderIds();
       this.selectedBeginYear();
       this.selectedEndYear();
+      this.sortMenu();
       this.titles.set([]);
       this.currentPage.set(1);
       this.loadMoreError.set(false);
@@ -113,9 +117,4 @@ export class PopularTitlesComponent {
     if (type === 'all' || type === 'tv') this.seriesPopular.reload();
   }
 
-  pick<T>(movieVal: T, tvVal: T, allVal: T): T {
-    const type = this.mediaType();
-    if (type === 'all') return allVal;
-    return type === 'movie' ? movieVal : tvVal;
-  }
 }

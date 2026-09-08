@@ -2,18 +2,19 @@
     <div class="filter-items__left">
         <mat-button-toggle-group 
             class="pill-toggle" 
-            [(value)]="selectedFilter" 
+            [(value)]="selectedFilter"
             (change)="onFilterChange($event.value)"
             hideSingleSelectionIndicator>
             <mat-button-toggle value="all">Tout</mat-button-toggle>
             <mat-button-toggle value="movie">Films</mat-button-toggle>
             <mat-button-toggle value="tv">Séries</mat-button-toggle>
         </mat-button-toggle-group>
-        <span class="filter-items__count">{{ countTitles() | number:'1.0-0' }} Titres</span>
+        <!-- TOFIX : au navigatateur compulsif, une erreur apparait TypeError: Cannot read properties of undefined (reading 'startTime') -->
+        <span class="filter-items__count" [class.filter-items__count--loading]="isLoading()">{{ countTitles() | number:'1.0-0' }} Titres</span>
     </div>
     <div class="filter-items__right">
         <button 
-            class="platforms" 
+            class="platforms"
             aria-label="Plateformes disponibles"
             (click)="isFilterProviderPanelExpanded.set(!isFilterProviderPanelExpanded())">
             <div class="platforms__stack">
@@ -30,7 +31,8 @@
 
         <button 
             mat-icon-button 
-            class="action-btn" 
+            class="action-btn"
+            [class.is-active]="activeSort()" 
             aria-label="Trier" 
             [matMenuTriggerFor]="menu">
             <mat-icon>sort</mat-icon>
@@ -57,10 +59,10 @@
 }
 
 <mat-menu #menu="matMenu" class="filter-menu" [overlapTrigger]="false">
-    @for (option of sortOptions; track option.value) {
+    @for (option of selectOptionsByMedia(); track option.value) {
         <button 
             mat-menu-item 
-            [class.is-active]="selectedSort() === option.value"
+            [class.is-active]="selectedOption() === option.value"
             (click)="selectSort(option.value)">
             {{ option.label }}
         </button>
@@ -68,5 +70,11 @@
 </mat-menu>
 
 @if (isFilterCriteriaPanelExpanded()) {
-<title-filter-criteria/>
+    @if (currentMediaType() === 'movie') {
+        <title-filter-criteria [(resetSort)]="selectedMovieSort"/>
+    } @else if (currentMediaType() === 'tv') {
+        <title-filter-criteria [(resetSort)]="selectedTVSort"/>
+    } @else {
+        <title-filter-criteria [(resetSort)]="selectedAllSort"/>
+    }
 }

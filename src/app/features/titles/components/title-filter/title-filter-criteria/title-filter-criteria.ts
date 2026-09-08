@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, linkedSignal, signal, ViewChild } from '@angular/core';
+import { Component, computed, effect, inject, linkedSignal, model, signal, ViewChild } from '@angular/core';
 import { MatMenu, MatMenuModule } from "@angular/material/menu";
 import { MatCheckbox } from "@angular/material/checkbox";
 import { MatIconModule } from "@angular/material/icon";
@@ -7,7 +7,7 @@ import { UserPreferencesService } from '@core/services/user-preferences-service'
 import { MatButtonModule } from '@angular/material/button';
 import { TmdbApiService } from '@core/services/tmdb-api';
 import { MatSliderModule } from '@angular/material/slider';
-import { ArrayElement, ArrayKeys, CriteriaItem } from '@shared/types/collection.types';
+import { AllSortOptions, ArrayElement, ArrayKeys, CriteriaItem } from '@shared/types/collection.types';
 import { makeSelectionHelpers } from '@shared/helpers/collection.helpers';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
@@ -24,6 +24,8 @@ export class TitleFilterCriteriaComponent {
 
   @ViewChild('monoMenu') monoMenu!: MatMenu;
   @ViewChild('combinedMenu') combinedMenu!: MatMenu;
+
+  readonly resetSort = model<AllSortOptions>('popularity.desc');
 
   readonly selectedRange = signal<'thisYear' | 'lastYear' | null>(null);
   readonly currentYear = new Date().getFullYear();
@@ -122,6 +124,8 @@ export class TitleFilterCriteriaComponent {
 
   resetAll() {
     this.#userPreferencesService.setAllCriteria({});
+    this.#userPreferencesService.setSelectedSort('popularity.desc');
+    this.resetSort.set('popularity.desc');
   }
 
   onReleaseDateChange(key: keyof Criteria, event: Event, index: number) {

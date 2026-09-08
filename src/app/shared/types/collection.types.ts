@@ -6,6 +6,16 @@ export type RangeKeys<T> = { [K in keyof T]: T[K] extends object | undefined ? (
 
 export type Media = MovieMedia | SeriesMedia;
 
+export type MediaType = 'all' | 'movie' | 'tv';
+
+export type AllSortOptions = MovieSortOptions | TVSortOptions;
+
+export type CommonSortOptions = 'popularity.desc' | 'vote_average.desc';
+
+export type MovieSortOptions = CommonSortOptions | 'release_date.desc' | 'revenue.desc' | 'title.asc';
+
+export type TVSortOptions = CommonSortOptions | 'first_air_date.desc' | 'name.asc';
+
 export type CriteriaItem =
   | CriteriaRangeItem<'release'>
   | CriteriaListItem<'genders'>
