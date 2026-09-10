@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, linkedSignal, model, signal, ViewChild } from '@angular/core';
+import { Component, computed, effect, inject, input, linkedSignal, output, signal, ViewChild } from '@angular/core';
 import { MatMenu, MatMenuModule } from "@angular/material/menu";
 import { MatCheckbox } from "@angular/material/checkbox";
 import { MatIconModule } from "@angular/material/icon";
@@ -22,10 +22,11 @@ export class TitleFilterCriteriaComponent {
   readonly #tmdbApiService = inject(TmdbApiService);
   readonly #formBuilder = inject(FormBuilder);
 
+  readonly resetSort = input<AllSortOptions>();
+  readonly resetSortChange = output<AllSortOptions>();
+
   @ViewChild('monoMenu') monoMenu!: MatMenu;
   @ViewChild('combinedMenu') combinedMenu!: MatMenu;
-
-  readonly resetSort = model<AllSortOptions>('popularity.desc');
 
   readonly selectedRange = signal<'thisYear' | 'lastYear' | null>(null);
   readonly currentYear = new Date().getFullYear();
@@ -40,7 +41,7 @@ export class TitleFilterCriteriaComponent {
     { id: 5, key: 'duration', type: 'range' },
     { id: 6, key: 'age', type: 'list', value: signal([]) },
     { id: 7, key: 'moviesAge', type: 'list', groupKeyWith: 'age', value: signal([]) },
-    { id: 8, key: 'seriesAge', type: 'list', groupKeyWith: 'age', value: signal([])}
+    { id: 8, key: 'seriesAge', type: 'list', groupKeyWith: 'age', value: signal([]) }
   ];
 
   readonly filteredCriteria = computed(() => this.criteria.filter(c => !c.groupKeyWith));
@@ -124,8 +125,7 @@ export class TitleFilterCriteriaComponent {
 
   resetAll() {
     this.#userPreferencesService.setAllCriteria({});
-    this.#userPreferencesService.setSelectedSort('popularity.desc');
-    this.resetSort.set('popularity.desc');
+    this.resetSortChange.emit(this.#userPreferencesService.DEFAULT_SORT);
   }
 
   onReleaseDateChange(key: keyof Criteria, event: Event, index: number) {

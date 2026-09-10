@@ -20,6 +20,7 @@ import { OnlineStatusService } from '@core/services/online-status.service';
 import { MatInputModule } from '@angular/material/input';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { StateMessage } from "@shared/components/state-message/state-message";
+import { sortById } from '@shared/helpers/collection.helpers';
 
 @Component({
   selector: 'app-provider-settings',
@@ -42,7 +43,8 @@ export class TitleFilterProviderConfigComponent {
   searchControl = new FormControl('', { nonNullable: true });
   readonly searchTerm = toSignal(this.searchControl.valueChanges, { initialValue: '' });
 
-  readonly selectedProviders = linkedSignal<Provider[]>(() => this.#userPreferencesService.selectedProviders());
+  readonly selectedProviders = linkedSignal<Provider[]>(() => this.#userPreferencesService.providerHelpers.items());
+  // TOFIX : lié à la gestion du count helpers
   readonly countProvidersSelected = computed(() => this.selectedProviders().length);
   readonly hasSelectionProviders = computed(() => this.selectedProviders().length > 0);
   readonly actionsClose = computed(() => this.hasSelectionProviders() ? 'Terminé' : 'Veuillez sélectionner au moins 1 service');
@@ -95,15 +97,6 @@ export class TitleFilterProviderConfigComponent {
     }
   };
 
-  constructor() {
-    effect(() => {
-      this.#dialogRef.disableClose = !this.hasSelectionProviders();
-    })
-    this.#dialogRef.beforeClosed().subscribe(() => {
-      this.#userPreferencesService.setSelectedProviders(this.selectedProviders());
-    });
-  }
-
   isSelected(id: number): boolean {
     return this.selectedProviders().some(p => p.provider_id === id);
   }
@@ -114,21 +107,17 @@ export class TitleFilterProviderConfigComponent {
     const updated = exists
       ? current.filter(p => p.provider_id !== provider.provider_id)
       : [...current, provider];
-    this.selectedProviders.set(this.sortById(updated));
+    this.selectedProviders.set(sortById(updated));
   }
 
   toggleAllProviders(): void {
     const response = this.allProviders();
     if (response.length === 0) return;
-    this.selectedProviders.set(this.areAllProvidersSelected() ? [] : this.sortById(response));
+    this.selectedProviders.set(this.areAllProvidersSelected() ? [] : sortById(response));
   }
 
   removeProvider(id: number): void {
     this.selectedProviders.set(this.selectedProviders().filter(p => p.provider_id !== id));
-  }
-
-  sortById<T extends { provider_id: number }>(items: T[]): T[] {
-    return [...items].sort((a, b) => a.provider_id - b.provider_id);
   }
 
   cleanInput(): void {
@@ -140,4 +129,15 @@ export class TitleFilterProviderConfigComponent {
     if (type === 'all' || type === 'movie') this.providersMovies.reload();
     if (type === 'all' || type === 'tv') this.providersSeries.reload();
   }
+
+  constructor() {
+    effect(() => {
+      this.#dialogRef.disableClose = !this.hasSelectionProviders();
+    })
+
+    this.#dialogRef.beforeClosed().subscribe(() => {
+      this.#userPreferencesService.setSelectedProviders(this.selectedProviders());
+    });
+  }
+  
 }

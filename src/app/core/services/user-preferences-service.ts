@@ -1,6 +1,7 @@
 import { computed, effect, Injectable, signal } from '@angular/core';
 import { Criteria, Provider, UserPreferences } from '@core/models/media-model';
-import { makeRangeHelpers, makeSelectionHelpers } from '@shared/helpers/collection.helpers';
+import { makeRangeHelpers, makeSelectionHelpers, makeSortHelpers } from '@shared/helpers/collection.helpers';
+import { MediaType } from '@shared/types/collection.types';
 
 @Injectable({
   providedIn: 'root',
@@ -8,23 +9,33 @@ import { makeRangeHelpers, makeSelectionHelpers } from '@shared/helpers/collecti
 export class UserPreferencesService {
   readonly STORAGE_KEY = 'data';
   readonly DEFAULT_SORT = 'popularity.desc';
+  readonly DEFAULT_MEDIA = 'movie';
 
   readonly defaultReleaseDate = { startYear: 1900, endYear: new Date().getFullYear() };
   readonly defaultPreferences: UserPreferences = {
-    selectedSort: this.DEFAULT_SORT
+    sortByMedia: {
+      movie: this.DEFAULT_SORT,
+      tv: this.DEFAULT_SORT,
+      all: this.DEFAULT_SORT
+    }
   };
 
   readonly selectedData = signal<UserPreferences>(this.#loadFromStorage());
 
   readonly selectedProviders = computed(() => this.selectedData().selectedProviders ?? []);
   readonly selectedCountProviders = computed(() => this.selectedProviders().length ?? 0);
+  readonly providerHelpers = makeSelectionHelpers('selectedProviders', this.selectedData);
 
   readonly selectedCriteria = computed(() => this.selectedData().selectedCriteria);
+  
+  readonly sortHelpers: Record<MediaType, ReturnType<typeof makeSortHelpers>> = {
+      movie: makeSortHelpers('movie', this.selectedData, this.DEFAULT_SORT),
+      tv: makeSortHelpers('tv', this.selectedData, this.DEFAULT_SORT),
+      all: makeSortHelpers('all', this.selectedData, this.DEFAULT_SORT)
+  };
 
   readonly genreHelpers = makeSelectionHelpers('genders', this.selectedCriteria);
   readonly releaseDateHelpers = makeRangeHelpers('release', this.selectedCriteria, this.defaultReleaseDate, (a, b) => a.startYear === b.startYear && a.endYear === b.endYear);
-
-  readonly selectedSort = computed(() => this.selectedData().selectedSort);
 
   #loadFromStorage(): UserPreferences {
     const raw = localStorage.getItem(this.STORAGE_KEY);
@@ -41,10 +52,6 @@ export class UserPreferencesService {
 
   setSelectedProviders(providers: Provider[]): void {
     this.selectedData.update(current => ({...current, selectedProviders: providers}));
-  }
-
-  setSelectedSort(sort: string): void {
-    this.selectedData.update(current => ({...current, selectedSort: sort}));
   }
 
   setCriteria<K extends keyof Criteria>(key: K, value: Criteria[K]) {

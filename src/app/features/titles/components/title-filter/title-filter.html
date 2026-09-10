@@ -1,53 +1,36 @@
 <div class="filter-items">
     <div class="filter-items__left">
-        <mat-button-toggle-group 
-            class="pill-toggle" 
-            [(value)]="selectedFilter"
-            (change)="onFilterChange($event.value)"
+        <mat-button-toggle-group class="pill-toggle" [(value)]="selectedFilter" (change)="onFilterChange($event.value)"
             hideSingleSelectionIndicator>
             <mat-button-toggle value="all">Tout</mat-button-toggle>
             <mat-button-toggle value="movie">Films</mat-button-toggle>
             <mat-button-toggle value="tv">Séries</mat-button-toggle>
         </mat-button-toggle-group>
         <!-- TOFIX : au navigatateur compulsif, une erreur apparait TypeError: Cannot read properties of undefined (reading 'startTime') -->
-        <span class="filter-items__count" [class.filter-items__count--loading]="isLoading()">{{ countTitles() | number:'1.0-0' }} Titres</span>
+        <span class="filter-items__count" [class.filter-items__count--loading]="isLoading()">{{ countTitles() |
+            number:'1.0-0' }} Titres</span>
     </div>
     <div class="filter-items__right">
-        <button 
-            class="platforms"
-            aria-label="Plateformes disponibles"
+        <button class="platforms" aria-label="Plateformes disponibles"
             (click)="isFilterProviderPanelExpanded.set(!isFilterProviderPanelExpanded())">
             <div class="platforms__stack">
                 @for(provider of selectedProviders() | slice:0:5; track provider.provider_id) {
-                <img 
-                    class="platforms__icon" 
-                    [src]="provider.logo_path | tmdbImage:'w45':'assets/placeholder-icon.png'"
-                    [alt]="provider.provider_name" 
-                    appImgFallback="assets/provider-fallback.svg"/>
+                <img class="platforms__icon" [src]="provider.logo_path | tmdbImage:'w45':'assets/placeholder-icon.png'"
+                    [alt]="provider.provider_name" appImgFallback="assets/provider-fallback.svg" />
                 }
             </div>
             <span class="platforms__badge">{{ countProviders() | number:'1.0-0' }}</span>
         </button>
 
-        <button 
-            mat-icon-button 
-            class="action-btn"
-            [class.is-active]="activeSort()" 
-            aria-label="Trier" 
+        <button mat-icon-button class="action-btn" [class.is-active]="activeSort()" aria-label="Trier"
             [matMenuTriggerFor]="menu">
-            <mat-icon>sort</mat-icon>
+            <mat-icon>sort_by_alpha</mat-icon>
         </button>
-        <button 
-            mat-stroked-button 
-            class="filter-btn"
-            [class.is-active]="activeCountFilters()" 
-            aria-label="Filtres"
+        <button mat-stroked-button class="filter-btn" [class.is-active]="activeCountFilters()" aria-label="Filtres"
             (click)="isFilterCriteriaPanelExpanded.set(!isFilterCriteriaPanelExpanded())">
             <mat-icon>filter_alt</mat-icon>
             Filtres
-            <span 
-                class="filters__badge" 
-                [style.display]="activeCountFilters() > 0 ? 'inline-block' : 'none'">
+            <span class="filters__badge" [style.display]="activeCountFilters() > 0 ? 'inline-block' : 'none'">
                 {{ activeCountFilters() | number:'1.0-0' }}
             </span>
         </button>
@@ -55,26 +38,18 @@
 </div>
 
 @if (isFilterProviderPanelExpanded()) {
-<title-filter-providers [providers]="selectedProviders()" [count]="countProviders()"/>
+<title-filter-providers [providers]="selectedProviders()" [count]="countProviders()" />
 }
 
 <mat-menu #menu="matMenu" class="filter-menu" [overlapTrigger]="false">
     @for (option of selectOptionsByMedia(); track option.value) {
-        <button 
-            mat-menu-item 
-            [class.is-active]="selectedOption() === option.value"
-            (click)="selectSort(option.value)">
-            {{ option.label }}
-        </button>
+    <button mat-menu-item [class.is-active]="selectedOptionByMedia() === option.value"
+        (click)="selectSort(option.value)">
+        {{ option.label }}
+    </button>
     }
 </mat-menu>
 
 @if (isFilterCriteriaPanelExpanded()) {
-    @if (currentMediaType() === 'movie') {
-        <title-filter-criteria [(resetSort)]="selectedMovieSort"/>
-    } @else if (currentMediaType() === 'tv') {
-        <title-filter-criteria [(resetSort)]="selectedTVSort"/>
-    } @else {
-        <title-filter-criteria [(resetSort)]="selectedAllSort"/>
-    }
+<title-filter-criteria [resetSort]="selectedOptionByMedia()" (resetSortChange)="onResetSortChange($event)" />
 }

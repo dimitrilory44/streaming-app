@@ -1,10 +1,10 @@
 import { Signal } from "@angular/core";
-import { AllSortOptions, CommonSortOptions, Media } from "@shared/types/collection.types";
+import { AllSortOptions, Media, MediaType } from "@shared/types/collection.types";
 
 export interface UserPreferences {
   selectedProviders?: Provider[];
   selectedCriteria?: Criteria;
-  selectedSort: string;
+  sortByMedia: Record<MediaType, AllSortOptions>;
 }
 
 interface CriteriaBase<K extends keyof Criteria> {
@@ -105,6 +105,11 @@ export interface SeriesMedia extends BaseMedia {
   media_type: 'tv';
   name: string;
   first_air_date: string;
+}
+
+export interface MediaConfig {
+  options: SortOption<AllSortOptions>[];
+  route: string[];
 }
 
 export interface SortOption<T extends AllSortOptions> {

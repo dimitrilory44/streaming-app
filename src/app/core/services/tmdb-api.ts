@@ -5,6 +5,7 @@ import { HttpClient, httpResource } from '@angular/common/http';
 import { UserPreferencesService } from './user-preferences-service';
 import { catchError, map, timeout } from 'rxjs/operators';
 import { of, Subscription } from 'rxjs';
+import { MediaType } from '@shared/types/collection.types';
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +16,7 @@ export class TmdbApiService {
   readonly #userPreferencesService = inject(UserPreferencesService);
 
   readonly #MOVIE_API_URL = environment.tmdbUrl;
-  readonly mediaType = signal<'all' | 'movie' | 'tv'>('movie');
+  readonly mediaType = signal<MediaType>('movie');
   
   readonly providersIds = computed(() => this.#userPreferencesService.selectedProviders().map(sp => sp.provider_id).join('|'));
   readonly genresIds = computed(() => this.#userPreferencesService.genreHelpers.items().map(sg => sg.id).join('|'));
@@ -26,25 +27,23 @@ export class TmdbApiService {
     const endDate = items.endYear ? `${items.endYear}-12-31` : `${new Date().getFullYear()}-12-31`;
     return { beginDate, endDate }
   });
-
-  readonly sortFilter = computed(() => this.#userPreferencesService.selectedSort());
-
+  
   readonly movieCollection = httpResource<TitleCollection>(() => `${this.#MOVIE_API_URL}/list/1`);
-
+  
   readonly #moviesGender = httpResource<GenreList>(() => ({
     url: `${this.#MOVIE_API_URL}/genre/movie/list`,
     params: { language: 'fr-FR' } 
   }));
-
+  
   readonly #seriesGender = httpResource<GenreList>(() => ({
     url: `${this.#MOVIE_API_URL}/genre/tv/list`,
     params: { language: 'fr-FR'}
   })); 
-
+  
   readonly allGenders = computed<Genre[]>(() => {
     const movieGenderResults = this.#moviesGender.value()?.genres ?? [];
     const seriesGenderResults = this.#seriesGender.value()?.genres ?? [];
-
+    
     return Array.from(
       new Map(
         [...movieGenderResults, ...seriesGenderResults].map
@@ -56,6 +55,10 @@ export class TmdbApiService {
     );
   });
 
+  sortFilter(mediaType: MediaType) {
+    return this.#userPreferencesService.sortHelpers[mediaType].items();
+  }
+  
   getPopularMovies(page: Signal<number>) {
     return this.#getPopular('movie', page);
   }
@@ -78,20 +81,23 @@ export class TmdbApiService {
         language: 'fr-FR',
         watch_region: 'FR',
         page: page(),
-        sort_by: this.sortFilter(),
+        sort_by: this.sortFilter(mediaType),
         with_watch_providers: this.providersIds()
       };
 
       const isDateFilterActive = !this.#userPreferencesService.releaseDateHelpers.isDefault();
       const isGenderFilterActive = this.#userPreferencesService.genreHelpers.hasItems();
 
-      if (isDateFilterActive || isGenderFilterActive) {
+      if (isDateFilterActive) {
         const { beginDate, endDate } = this.filterYear();
-        const genders = this.genresIds();
         const gteKey = mediaType === 'movie' ? 'primary_release_date.gte' : 'first_air_date.gte';
         const lteKey = mediaType === 'movie' ? 'primary_release_date.lte' : 'first_air_date.lte';
         params[gteKey] = beginDate;
         params[lteKey] = endDate;
+      }
+
+      if (isGenderFilterActive) {
+        const genders = this.genresIds();
         params['with_genres'] = genders;
       }
 

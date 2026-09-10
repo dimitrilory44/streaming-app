@@ -5,7 +5,7 @@ import { TmdbApiService } from '@core/services/tmdb-api';
 import { MovieMedia, SeriesMedia } from '@core/models/media-model';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { StateMessage } from "@shared/components/state-message/state-message";
-import { Media, MediaType } from '@shared/types/collection.types';
+import { CommonSortOptions, Comparator, Media, MediaType } from '@shared/types/collection.types';
 import { pick } from '@shared/helpers/collection.helpers';
 
 @Component({
@@ -28,12 +28,16 @@ export class PopularTitlesComponent {
   readonly selectedBeginYear = computed(() => this.#tmdbApiService.filterYear().beginDate);
   readonly selectedEndYear = computed(() => this.#tmdbApiService.filterYear().endDate);
 
-  readonly sortMenu = this.#tmdbApiService.sortFilter;
+  readonly sortMenu = computed(() => this.#tmdbApiService.sortFilter(this.mediaType()));
 
   readonly moviesPopular = this.#tmdbApiService.getPopularMovies(this.currentPage);
   readonly seriesPopular = this.#tmdbApiService.getPopularSeries(this.currentPage);
 
   readonly allPopular = computed(() => {
+    const comparators: Record<CommonSortOptions, Comparator<Media>> = {
+      'popularity.desc': (a, b) => b.popularity - a.popularity,
+      'vote_average.desc': (a, b) => b.vote_average - a.vote_average,
+    };
     const moviesResults = (this.moviesPopular.value()?.results ?? []).map(m => ({
       ...m,
       media_type: 'movie' as const
@@ -42,7 +46,7 @@ export class PopularTitlesComponent {
       ...m,
       media_type: 'tv' as const
     }) as SeriesMedia);
-    return [...moviesResults, ...tvResults].sort((a, b) => b.popularity - a.popularity);
+    return [...moviesResults, ...tvResults].sort(comparators[this.sortMenu() as CommonSortOptions]);
   });
 
   readonly results = computed(() => {
@@ -71,6 +75,18 @@ export class PopularTitlesComponent {
     return pick(this.moviesPopular.isLoading(), this.seriesPopular.isLoading(), this.moviesPopular.isLoading() || this.seriesPopular.isLoading(), this.mediaType());
   });
 
+  onLoadMore(): void {
+    this.isLoadingMore.set(true);
+    this.loadMoreError.set(false);
+    this.currentPage.update(p => p + 1);
+  }
+  
+  onRetry(): void {
+    const type = this.mediaType();
+    if (type === 'all' || type === 'movie') this.moviesPopular.reload();
+    if (type === 'all' || type === 'tv') this.seriesPopular.reload();
+  }
+
   constructor() {
     effect(() => {
       this.selectedGenresIds();
@@ -91,7 +107,7 @@ export class PopularTitlesComponent {
         }
         return;
       }
- 
+
       if (this.isInitialLoading()) return;
 
       this.loadMoreError.set(false);
@@ -103,18 +119,6 @@ export class PopularTitlesComponent {
       });
       this.isLoadingMore.set(false);
     });
-  }
-
-  onLoadMore(): void {
-    this.isLoadingMore.set(true);
-    this.loadMoreError.set(false);
-    this.currentPage.update(p => p + 1);
-  }
-
-  onRetry(): void {
-    const type = this.mediaType();
-    if (type === 'all' || type === 'movie') this.moviesPopular.reload();
-    if (type === 'all' || type === 'tv') this.seriesPopular.reload();
   }
 
 }
