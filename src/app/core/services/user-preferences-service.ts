@@ -22,8 +22,6 @@ export class UserPreferencesService {
 
   readonly selectedData = signal<UserPreferences>(this.#loadFromStorage());
 
-  readonly selectedProviders = computed(() => this.selectedData().selectedProviders ?? []);
-  readonly selectedCountProviders = computed(() => this.selectedProviders().length ?? 0);
   readonly providerHelpers = makeSelectionHelpers('selectedProviders', this.selectedData);
 
   readonly selectedCriteria = computed(() => this.selectedData().selectedCriteria);

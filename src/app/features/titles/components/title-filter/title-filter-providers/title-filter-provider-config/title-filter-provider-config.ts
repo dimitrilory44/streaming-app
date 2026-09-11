@@ -1,6 +1,6 @@
 import { Component, computed, effect, inject, linkedSignal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { TmdbApiService } from '@core/services/tmdb-api';
 import { TmdbImagePipe } from '@shared/pipes/tmdb-image.pipe';
 
@@ -11,7 +11,6 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { IconChipComponent } from '@shared/components/icon-chip/icon-chip';
 import { DecimalPipe } from '@angular/common';
-import { UserPreferencesService } from '@core/services/user-preferences-service';
 import { SwiperDirective } from '@shared/directives/swiper.directive';
 import { Provider } from '@core/models/media-model';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -29,10 +28,10 @@ import { sortById } from '@shared/helpers/collection.helpers';
   styleUrl: './title-filter-provider-config.scss',
 })
 export class TitleFilterProviderConfigComponent {
-  readonly #dialogRef = inject(MatDialogRef<TitleFilterProviderConfigComponent>);
+  readonly #dialogRef = inject(MatDialogRef<TitleFilterProviderConfigComponent, Provider[]>);
   readonly #tmdbApiService = inject(TmdbApiService);
-  readonly #userPreferencesService = inject(UserPreferencesService);
   readonly #onlineStatus = inject(OnlineStatusService);
+  readonly #data = inject(MAT_DIALOG_DATA);
 
   readonly isOnline = this.#onlineStatus.isOnline;
   readonly mediaType = this.#tmdbApiService.mediaType;
@@ -40,22 +39,21 @@ export class TitleFilterProviderConfigComponent {
   readonly providersMovies = this.#tmdbApiService.getProvidersMovies();
   readonly providersSeries = this.#tmdbApiService.getProvidersSeries();
 
-  searchControl = new FormControl('', { nonNullable: true });
+  readonly searchControl = new FormControl('', { nonNullable: true });
   readonly searchTerm = toSignal(this.searchControl.valueChanges, { initialValue: '' });
 
-  readonly selectedProviders = linkedSignal<Provider[]>(() => this.#userPreferencesService.providerHelpers.items());
-  // TOFIX : lié à la gestion du count helpers
+  readonly selectedProviders = linkedSignal<Provider[]>(() => this.#data.providers);
   readonly countProvidersSelected = computed(() => this.selectedProviders().length);
   readonly hasSelectionProviders = computed(() => this.selectedProviders().length > 0);
   readonly actionsClose = computed(() => this.hasSelectionProviders() ? 'Terminé' : 'Veuillez sélectionner au moins 1 service');
 
-  readonly areAllProvidersSelected = computed<boolean>(() => {
+  readonly areAllProvidersSelected = computed(() => {
     const response = this.allProviders();
     if (response.length === 0) return false;
     return response.every(p => this.selectedProviders().some(sp => sp.provider_id === p.provider_id));
   });
 
-  readonly partiallyComplete = computed<boolean>(() => {
+  readonly partiallyComplete = computed(() => {
     return this.selectedProviders().length > 0 && !this.areAllProvidersSelected();
   });
 
@@ -135,9 +133,11 @@ export class TitleFilterProviderConfigComponent {
       this.#dialogRef.disableClose = !this.hasSelectionProviders();
     })
 
-    this.#dialogRef.beforeClosed().subscribe(() => {
-      this.#userPreferencesService.setSelectedProviders(this.selectedProviders());
+    this.#dialogRef.backdropClick().subscribe(() => {
+      if (this.hasSelectionProviders()) {
+        this.#dialogRef.close(this.selectedProviders());
+      }
     });
   }
-  
+
 }

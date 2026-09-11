@@ -102,7 +102,7 @@
 
 </mat-dialog-content>
 <mat-dialog-actions class="dialog-actions">
-  <button class="dialog-action primary rounded" [mat-dialog-close]="false" [disabled]="!hasSelectionProviders()" [class.dialog-action--blocked]="!hasSelectionProviders()">{{actionsClose()}}</button>
+  <button class="dialog-action primary rounded" [mat-dialog-close]="selectedProviders()" [disabled]="!hasSelectionProviders()" [class.dialog-action--blocked]="!hasSelectionProviders()">{{actionsClose()}}</button>
 </mat-dialog-actions>
 
 } @else if(hasError()) {

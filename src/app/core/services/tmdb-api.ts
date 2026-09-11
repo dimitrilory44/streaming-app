@@ -18,7 +18,7 @@ export class TmdbApiService {
   readonly #MOVIE_API_URL = environment.tmdbUrl;
   readonly mediaType = signal<MediaType>('movie');
   
-  readonly providersIds = computed(() => this.#userPreferencesService.selectedProviders().map(sp => sp.provider_id).join('|'));
+  readonly providersIds = computed(() => this.#userPreferencesService.providerHelpers.items().map(sp => sp.provider_id).join('|'));
   readonly genresIds = computed(() => this.#userPreferencesService.genreHelpers.items().map(sg => sg.id).join('|'));
 
   readonly filterYear = computed(() => {

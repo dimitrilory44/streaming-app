@@ -6,6 +6,7 @@ import { IconChipComponent } from "@shared/components/icon-chip/icon-chip";
 import { SwiperDirective } from '@shared/directives/swiper.directive';
 import { TmdbImagePipe } from '@shared/pipes/tmdb-image.pipe';
 import { TitleFilterProviderConfigComponent } from './title-filter-provider-config/title-filter-provider-config';
+import { UserPreferencesService } from '@core/services/user-preferences-service';
 
 @Component({
   selector: 'title-filter-providers',
@@ -15,6 +16,7 @@ import { TitleFilterProviderConfigComponent } from './title-filter-provider-conf
 })
 export class TitleFilterProvidersComponent {
   readonly #dialog = inject(MatDialog);
+  readonly #userPreferencesService = inject(UserPreferencesService);
 
   readonly providers = input<Provider[]>([]);
   readonly count = input<number>(1);
@@ -28,15 +30,22 @@ export class TitleFilterProvidersComponent {
   };
 
   openDialog() {
-    const dialogRef = this.#dialog.open(TitleFilterProviderConfigComponent, {
-      panelClass: 'dialog-panel',
-      width: '600px',
-      height: '600px',
-      disableClose: true
+    const dialogRef = this.#dialog.open
+      <TitleFilterProviderConfigComponent,
+        { providers: Provider[] },
+        Provider[]
+      >(TitleFilterProviderConfigComponent, {
+        panelClass: 'dialog-panel',
+        width: '600px',
+        height: '600px',
+        data: {
+          providers: this.providers(),
+        }
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log(`Dialog result: ${result}`);
+      if (!result) return;
+      this.#userPreferencesService.setSelectedProviders(result);
     });
   }
 }
