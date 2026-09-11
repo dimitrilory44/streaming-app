@@ -180,15 +180,16 @@ export class TitleFilterCriteriaComponent {
   }
 
   constructor() {
-    // TOFIX : problème de synchro avec les valeurs de mat-slider (warning)
     effect(() => {
       this.loadSelectedRange();
-      if (this.#userPreferencesService.releaseDateHelpers.isDefault()) {
-        this.releaseDates.clear();
-        this.addReleaseDate({ startYear: 1900, endYear: new Date().getFullYear() });
+      const dates = this.#userPreferencesService.releaseDateHelpers.isDefault()
+        ? { startYear: 1900, endYear: new Date().getFullYear() }
+        : this.#userPreferencesService.releaseDateHelpers.items();
+
+      if (this.releaseDates.length === 0) {
+        this.addReleaseDate(dates);
       } else {
-        this.releaseDates.clear();
-        this.addReleaseDate(this.#userPreferencesService.releaseDateHelpers.items());
+        this.releaseDates.at(0).patchValue(dates, { emitEvent: false });
       }
     });
   }

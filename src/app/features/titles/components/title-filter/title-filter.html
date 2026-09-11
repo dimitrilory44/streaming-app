@@ -6,7 +6,6 @@
             <mat-button-toggle value="movie">Films</mat-button-toggle>
             <mat-button-toggle value="tv">Séries</mat-button-toggle>
         </mat-button-toggle-group>
-        <!-- TOFIX : au navigatateur compulsif, une erreur apparait TypeError: Cannot read properties of undefined (reading 'startTime') -->
         <span class="filter-items__count" [class.filter-items__count--loading]="isLoading()">{{ countTitles() |
             number:'1.0-0' }} Titres</span>
     </div>
