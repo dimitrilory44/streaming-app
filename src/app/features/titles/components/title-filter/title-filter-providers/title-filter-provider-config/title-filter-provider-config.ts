@@ -19,7 +19,6 @@ import { OnlineStatusService } from '@core/services/online-status.service';
 import { MatInputModule } from '@angular/material/input';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { StateMessage } from "@shared/components/state-message/state-message";
-import { sortById } from '@shared/helpers/collection.helpers';
 
 @Component({
   selector: 'app-provider-settings',
@@ -105,13 +104,13 @@ export class TitleFilterProviderConfigComponent {
     const updated = exists
       ? current.filter(p => p.provider_id !== provider.provider_id)
       : [...current, provider];
-    this.selectedProviders.set(sortById(updated));
+    this.selectedProviders.set(updated.sort((a, b) => a.provider_id - b.provider_id));
   }
 
   toggleAllProviders(): void {
     const response = this.allProviders();
     if (response.length === 0) return;
-    this.selectedProviders.set(this.areAllProvidersSelected() ? [] : sortById(response));
+    this.selectedProviders.set(this.areAllProvidersSelected() ? [] : response.sort((a, b) => a.provider_id - b.provider_id));
   }
 
   removeProvider(id: number): void {

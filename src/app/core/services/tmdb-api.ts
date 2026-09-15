@@ -20,6 +20,7 @@ export class TmdbApiService {
   
   readonly providersIds = computed(() => this.#userPreferencesService.providerHelpers.items().map(sp => sp.provider_id).join('|'));
   readonly genresIds = computed(() => this.#userPreferencesService.genreHelpers.items().map(sg => sg.id).join('|'));
+  readonly genresExcludedIds = computed(() => this.#userPreferencesService.genreExcludedHelpers.items().map(sg => sg.id).join('|'));
 
   readonly filterYear = computed(() => {
     const items = this.#userPreferencesService.releaseDateHelpers.items();
@@ -87,6 +88,7 @@ export class TmdbApiService {
 
       const isDateFilterActive = !this.#userPreferencesService.releaseDateHelpers.isDefault();
       const isGenderFilterActive = this.#userPreferencesService.genreHelpers.hasItems();
+      const isGenderExcludedFilterActive = this.#userPreferencesService.genreExcludedHelpers.hasItems();
 
       if (isDateFilterActive) {
         const { beginDate, endDate } = this.filterYear();
@@ -95,10 +97,15 @@ export class TmdbApiService {
         params[gteKey] = beginDate;
         params[lteKey] = endDate;
       }
-
+      
       if (isGenderFilterActive) {
         const genders = this.genresIds();
         params['with_genres'] = genders;
+      }
+      
+      if (isGenderExcludedFilterActive) {
+        const excludedGenders = this.genresExcludedIds();
+        params['without_genres'] = excludedGenders;
       }
 
       return {

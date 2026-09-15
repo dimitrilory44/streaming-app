@@ -7,6 +7,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { StateMessage } from "@shared/components/state-message/state-message";
 import { CommonSortOptions, Comparator, Media, MediaType } from '@shared/types/collection.types';
 import { pick } from '@shared/helpers/collection.helpers';
+import { UserPreferencesService } from '@core/services/user-preferences-service';
 
 @Component({
   selector: 'popular-page',
@@ -16,6 +17,7 @@ import { pick } from '@shared/helpers/collection.helpers';
 })
 export class PopularTitlesComponent {
   readonly #tmdbApiService = inject(TmdbApiService);
+  readonly #userPreferencesService = inject(UserPreferencesService);
 
   readonly mediaType = input.required<MediaType>();
   readonly titles = signal<Media[]>([]);
@@ -85,6 +87,10 @@ export class PopularTitlesComponent {
     const type = this.mediaType();
     if (type === 'all' || type === 'movie') this.moviesPopular.reload();
     if (type === 'all' || type === 'tv') this.seriesPopular.reload();
+  }
+
+  onResetFilter(): void {
+    this.#userPreferencesService.setAllCriteria({});
   }
 
   constructor() {

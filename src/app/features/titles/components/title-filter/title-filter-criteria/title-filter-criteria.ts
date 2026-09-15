@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, linkedSignal, output, signal, ViewChild } from '@angular/core';
+import { Component, computed, effect, inject, input, output, signal, ViewChild } from '@angular/core';
 import { MatMenu, MatMenuModule } from "@angular/material/menu";
 import { MatCheckbox } from "@angular/material/checkbox";
 import { MatIconModule } from "@angular/material/icon";
@@ -7,9 +7,10 @@ import { UserPreferencesService } from '@core/services/user-preferences-service'
 import { MatButtonModule } from '@angular/material/button';
 import { TmdbApiService } from '@core/services/tmdb-api';
 import { MatSliderModule } from '@angular/material/slider';
-import { AllSortOptions, ArrayElement, ArrayKeys, CriteriaItem } from '@shared/types/collection.types';
+import { AllSortOptions, ArrayElement, ArrayKeys, CriteriaItem, GenderState } from '@shared/types/collection.types';
 import { makeSelectionHelpers } from '@shared/helpers/collection.helpers';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { DEFAULT_AGE_KEY, DEFAULT_COUNTRY_KEY, DEFAULT_DURATION_KEY, DEFAULT_EXCLUDED_GENDERS_KEY, DEFAULT_GENDERS_KEY, DEFAULT_MOVIES_AGE_KEY, DEFAULT_NOTE_KEY, DEFAULT_NOTES_KEY, DEFAULT_RELEASE_DATE, DEFAULT_RELEASE_KEY, DEFAULT_SORT, DEFAULT_TV_AGE_KEY } from '@shared/constants/preference-key';
 
 @Component({
   selector: 'title-filter-criteria',
@@ -33,18 +34,29 @@ export class TitleFilterCriteriaComponent {
   multiCriteria: CriteriaItem[] = [];
 
   readonly criteria: CriteriaItem[] = [
-    { id: 0, key: 'release', type: 'range', hasSelected: false },
-    { id: 1, key: 'genders', type: 'list', hasSelected: false, value: signal(this.#tmdbApiService.allGenders()) },
-    { id: 2, key: 'note', type: 'range', hasSelected: false },
-    { id: 3, key: 'notes', type: 'list', groupKeyWith: 'note' },
-    { id: 4, key: 'country', type: 'list', value: signal([]) },
-    { id: 5, key: 'duration', type: 'range' },
-    { id: 6, key: 'age', type: 'list', value: signal([]) },
-    { id: 7, key: 'moviesAge', type: 'list', groupKeyWith: 'age', value: signal([]) },
-    { id: 8, key: 'seriesAge', type: 'list', groupKeyWith: 'age', value: signal([]) }
+    { id: 0, key: DEFAULT_RELEASE_KEY, type: 'range' },
+    { id: 1, key: DEFAULT_GENDERS_KEY, type: 'list', value: this.#tmdbApiService.allGenders },
+    { id: 2, key: DEFAULT_NOTE_KEY, type: 'range' },
+    { id: 3, key: DEFAULT_NOTES_KEY, type: 'list', groupKeyWith: DEFAULT_NOTE_KEY, value: signal([]) },
+    { id: 4, key: DEFAULT_COUNTRY_KEY, type: 'list' },
+    { id: 5, key: DEFAULT_DURATION_KEY, type: 'range' },
+    { id: 6, key: DEFAULT_AGE_KEY, type: 'list' },
+    { id: 7, key: DEFAULT_MOVIES_AGE_KEY, type: 'list', groupKeyWith: DEFAULT_AGE_KEY },
+    { id: 8, key: DEFAULT_TV_AGE_KEY, type: 'list', groupKeyWith: DEFAULT_AGE_KEY }
   ];
 
   readonly filteredCriteria = computed(() => this.criteria.filter(c => !c.groupKeyWith));
+
+  readonly genderStates = computed<Map<number, GenderState>>(() => {
+    const included = this.#userPreferencesService.genreHelpers.items();
+    const excluded = this.#userPreferencesService.genreExcludedHelpers.items();
+
+    const map = new Map<number, GenderState>();
+    included.forEach(g => map.set(g.id, 'includedGenders'));
+    excluded.forEach(g => map.set(g.id, 'excludedGenders'));
+
+    return map;
+  });
 
   form = this.#formBuilder.group({
     releaseDates: this.#formBuilder.array<FormGroup>([])
@@ -65,67 +77,104 @@ export class TitleFilterCriteriaComponent {
     return this.releaseDates.value;
   }
 
-  onCriteriaChange(key: string) {
+  onCriteriaChange(key: keyof Criteria) {
     switch (key) {
-      case 'release': return !this.#userPreferencesService.releaseDateHelpers.isDefault();
-      case 'genders': return this.#userPreferencesService.genreHelpers.hasItems();
+      case DEFAULT_RELEASE_KEY: return !this.#userPreferencesService.releaseDateHelpers.isDefault();
+      case DEFAULT_GENDERS_KEY: return this.#userPreferencesService.genreHelpers.hasItems() || this.#userPreferencesService.genreExcludedHelpers.hasItems();
       default: return false;
     }
   }
 
-  onConvertKeyToLabel(key: string) {
+  onConvertKeyToLabel(key: keyof Criteria) {
     switch (key) {
-      case 'release': return 'Année de sortie';
-      case 'genders': return 'Genres';
-      case 'note': return 'Note';
-      case 'notes': return 'Nombres de notes';
-      case 'country': return 'Pays de production';
-      case 'duration': return 'Durée';
-      case 'age': return 'Age'
-      case 'moviesAge': return 'Films';
-      case 'seriesAge': return 'Séries'
+      case DEFAULT_RELEASE_KEY: return 'Année de sortie';
+      case DEFAULT_GENDERS_KEY: return 'Genres';
+      case DEFAULT_NOTE_KEY: return 'Note';
+      case DEFAULT_NOTES_KEY: return 'Nombres de notes';
+      case DEFAULT_COUNTRY_KEY: return 'Pays de production';
+      case DEFAULT_DURATION_KEY: return 'Durée';
+      case DEFAULT_AGE_KEY: return 'Age';
+      case DEFAULT_MOVIES_AGE_KEY: return 'Films';
+      case DEFAULT_TV_AGE_KEY: return 'Séries';
       default: return '';
     }
   }
 
-  isMultiMode(key: string): boolean {
+  isMultiMode(key: keyof Criteria): boolean {
     return this.criteria.some(item => item.groupKeyWith === key);
   }
 
-  onGenresMenuOpened(id: number, key: string) {
+  onGenresMenuOpened(id: number, key: keyof Criteria) {
     this.multiCriteria = this.criteria.filter(item => item.groupKeyWith === key || item.key === key);
     this.criteria[id].hasSelected = true;
   }
 
-  onGenresMenuClosed(id: number, key: string) {
+  onGenresMenuClosed(id: number, key: keyof Criteria) {
     this.multiCriteria = this.criteria.filter(item => item.groupKeyWith === key || item.key === key);
     this.criteria[id].hasSelected = false;
   }
 
-  isSelectionSelected(key: string, idItem: number): boolean {
+  isSelectionSelected(key: keyof Criteria, idItem: number): boolean {
     switch (key) {
-      case 'genders': return linkedSignal<Genre[]>(() => this.#userPreferencesService.genreHelpers.items())().some(g => g.id === idItem);
-      default: return false;
+      case DEFAULT_GENDERS_KEY: return this.genderStates().get(idItem) === 'includedGenders'
+      case DEFAULT_RELEASE_KEY:
+      case DEFAULT_NOTE_KEY:
+      case DEFAULT_DURATION_KEY:
+        return false;
+      default: return makeSelectionHelpers(key, this.#userPreferencesService.criteria).items().some(g => g.id === idItem);
+    }
+  }
+
+  onCriteriaCheckboxClick(event: MouseEvent, criteria: CriteriaItem, item: Genre): void {
+    if (criteria.key === DEFAULT_GENDERS_KEY) {
+      event.preventDefault();
+      this.cycleGender(item);
+    } else {
+      this.toggleItem(criteria.key as ArrayKeys<Criteria> & keyof Criteria, item);
     }
   }
 
   toggleItem<K extends ArrayKeys<Criteria> & keyof Criteria>(key: K, item: ArrayElement<NonNullable<Criteria[K]>>): void {
-    const current = linkedSignal<NonNullable<Criteria[K]>>(() => makeSelectionHelpers(key, this.#userPreferencesService.selectedCriteria).items());
-    const exists = current().some(g => g.id === item.id);
+    const current = makeSelectionHelpers(key, this.#userPreferencesService.criteria).items();
+    const exists = current.some(g => g.id === item.id);
     const updated = exists
-      ? current().filter(g => g.id !== item.id)
-      : [...current(), item];
-    current.set(updated.sort((a, b) => a.id - b.id));
-    this.#userPreferencesService.setCriteria(key, current());
+      ? current.filter(g => g.id !== item.id)
+      : [...current, item];
+    this.#userPreferencesService.setCriteria(key, [...updated].sort((a, b) => a.id - b.id));
+  }
+
+  cycleGender(item: Genre): void {
+    const state = this.genderStates().get(item.id) ?? 'none';
+
+    switch (state) {
+      case 'none':
+        this.toggleItem(DEFAULT_GENDERS_KEY, item);
+        break;
+      case 'includedGenders':
+        this.toggleItem(DEFAULT_GENDERS_KEY, item);
+        this.toggleItem(DEFAULT_EXCLUDED_GENDERS_KEY, item);
+        break;
+      case 'excludedGenders':
+        this.toggleItem(DEFAULT_EXCLUDED_GENDERS_KEY, item);
+        break;
+    }
   }
 
   reset(key: keyof Criteria) {
-    this.#userPreferencesService.setCriteria(key, { startYear: 1900, endYear: new Date().getFullYear() } as ReleaseDate);
+    switch (key) {
+      case DEFAULT_GENDERS_KEY:
+        this.#userPreferencesService.setCriteria(DEFAULT_GENDERS_KEY, []);
+        this.#userPreferencesService.setCriteria(DEFAULT_EXCLUDED_GENDERS_KEY, []);
+        return;
+      default:
+        this.#userPreferencesService.setCriteria(key, DEFAULT_RELEASE_DATE);
+        return;
+    }
   }
 
   resetAll() {
     this.#userPreferencesService.setAllCriteria({});
-    this.resetSortChange.emit(this.#userPreferencesService.DEFAULT_SORT);
+    this.resetSortChange.emit(DEFAULT_SORT);
   }
 
   onReleaseDateChange(key: keyof Criteria, event: Event, index: number) {
@@ -183,7 +232,7 @@ export class TitleFilterCriteriaComponent {
     effect(() => {
       this.loadSelectedRange();
       const dates = this.#userPreferencesService.releaseDateHelpers.isDefault()
-        ? { startYear: 1900, endYear: new Date().getFullYear() }
+        ? DEFAULT_RELEASE_DATE
         : this.#userPreferencesService.releaseDateHelpers.items();
 
       if (this.releaseDates.length === 0) {

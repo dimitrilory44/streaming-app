@@ -15,7 +15,8 @@ import { TitleFilterCriteriaComponent } from '@features/titles/components/title-
 import { AllSortOptions, Media, MediaType } from '@shared/types/collection.types';
 import { TitleFilterProvidersComponent } from './title-filter-providers/title-filter-providers';
 import { MediaConfig } from '@core/models/media-model';
-import { commonSortOptions, sortMovieOptions, sortTVOptions } from '@shared/constants/sort-options';
+import { DEFAULT_MEDIA } from '@shared/constants/preference-key';
+import { COMMON_SORT_OPTIONS, MOVIE_SORT_OPTIONS, SERIES_SORT_OPTIONS } from '@shared/constants/sort-options';
 
 @Component({
   selector: 'title-filter',
@@ -30,9 +31,9 @@ export class TitleFilterComponent {
   readonly items = input<Media[]>([]);
   readonly isLoading = input<boolean>(false);
   readonly countTitles = input<number>(0);
-  readonly currentMediaType = input<MediaType>(this.#userPreferencesService.DEFAULT_MEDIA);
+  readonly currentMediaType = input<MediaType>(DEFAULT_MEDIA);
 
-  readonly selectedFilter = model<MediaType>(this.#userPreferencesService.DEFAULT_MEDIA);
+  readonly selectedFilter = model<MediaType>(DEFAULT_MEDIA);
   readonly isFilterProviderPanelExpanded = signal(false);
   readonly isSortExpanded = signal(false);
   readonly isFilterCriteriaPanelExpanded = signal(false);
@@ -44,16 +45,16 @@ export class TitleFilterComponent {
   readonly activeSort = computed(() => !this.#userPreferencesService.sortHelpers[this.currentMediaType()].isDefault());
   
   readonly mediaConfig: Record<MediaType, MediaConfig> = {
-    movie: { options: sortMovieOptions, route: ['/popular/movies'] },
-    tv: { options: sortTVOptions, route: ['/popular/series'] },
-    all: { options: commonSortOptions, route: ['/popular/all'] }
+    movie: { options: MOVIE_SORT_OPTIONS, route: ['/popular/movies'] },
+    tv: { options: SERIES_SORT_OPTIONS, route: ['/popular/series'] },
+    all: { options: COMMON_SORT_OPTIONS, route: ['/popular/all'] }
   };
 
   readonly selectOptionsByMedia = computed(() => this.mediaConfig[this.currentMediaType()].options);
 
   readonly activeCountFilters = computed(() => {
     let count = 0;
-    count += this.#userPreferencesService.genreHelpers.count();
+    count += this.#userPreferencesService.genreHelpers.count() || this.#userPreferencesService.genreExcludedHelpers.count() ? 1 : 0;
     count += this.#userPreferencesService.releaseDateHelpers.isDefault() ? 0 : 1;
     // TODO : autres
     return count;

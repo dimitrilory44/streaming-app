@@ -1,20 +1,18 @@
 import { SortOption } from "@core/models/media-model";
 import { CommonSortOptions, MovieSortOptions, TVSortOptions } from "@shared/types/collection.types";
 
-export const commonSortOptions: SortOption<CommonSortOptions>[] = [
+export const COMMON_SORT_OPTIONS: SortOption<CommonSortOptions>[] = [
     { value: 'popularity.desc', label: 'Popularité' },
     { value: 'vote_average.desc', label: 'Mieux notés' }
 ];
-
-export const sortMovieOptions: SortOption<MovieSortOptions>[] = [
-    ...commonSortOptions,
+export const MOVIE_SORT_OPTIONS: SortOption<MovieSortOptions>[] = [
+    ...COMMON_SORT_OPTIONS,
     { value: 'release_date.desc', label: 'Année de sortie' },
     { value: 'revenue.desc', label: 'Box-office' },
     { value: 'title.asc', label: 'Alphabétique' }
 ];
-
-export const sortTVOptions: SortOption<TVSortOptions>[] = [
-    ...commonSortOptions,
+export const SERIES_SORT_OPTIONS: SortOption<TVSortOptions>[] = [
+    ...COMMON_SORT_OPTIONS,
     { value: 'first_air_date.desc', label: 'Date de diffusion' },
     { value: 'name.asc', label: 'Alphabétique' },
 ];

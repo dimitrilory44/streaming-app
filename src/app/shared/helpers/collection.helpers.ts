@@ -62,28 +62,6 @@ export function getMediaDate(media: Media): string {
 }
 
 /**
- * Trie une liste d'éléments (par exemple des plateformes de streaming /
- * "providers") par leur identifiant `provider_id`, du plus petit au plus
- * grand.
- *
- * Le générique `T extends { provider_id: number }` accepte n'importe quel
- * type d'objet, tant qu'il possède au minimum un champ `provider_id`
- * numérique — la fonction reste donc réutilisable au-delà d'un seul
- * type précis de "provider".
- *
- * `[...items]` crée une copie du tableau avant de le trier : `.sort()`
- * trie normalement le tableau "en place" (en le modifiant directement),
- * ce qui serait un effet de bord indésirable si `items` provient d'un
- * signal ou d'une donnée que l'on ne veut pas muter directement.
- *
- * @param items La liste d'éléments à trier.
- * @returns Une nouvelle liste, triée par `provider_id` croissant.
- */
-export function sortById<T extends { provider_id: number }>(items: T[]): T[] {
-    return [...items].sort((a, b) => a.provider_id - b.provider_id);
-}
-
-/**
  * Sélectionne l'une de trois valeurs possibles selon le type de média
  * actif (film, série, ou "tous").
  *
@@ -234,11 +212,11 @@ export function makeRangeHelpers<K extends RangeKeys<Criteria> & keyof Criteria>
  */
 export function makeSortHelpers(media: MediaType, selectedData: WritableSignal<UserPreferences>, defaultValue: AllSortOptions) {
     const items = computed(() => {
-        return selectedData().sortByMedia[media];
+        return selectedData().sort[media];
     });
     const isDefault = computed(() => {
         return items() === defaultValue;
     });
-    const set = (value: AllSortOptions) => selectedData.update(current => ({ ...current, sortByMedia: { ...current.sortByMedia, [media]: value } }));
+    const set = (value: AllSortOptions) => selectedData.update(current => ({ ...current, sort: { ...current.sort, [media]: value } }));
     return { items, isDefault, set };
 }

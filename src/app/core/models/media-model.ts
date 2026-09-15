@@ -1,10 +1,11 @@
 import { Signal } from "@angular/core";
+import { DEFAULT_EXCLUDED_GENDERS_KEY, DEFAULT_GENDERS_KEY } from "@shared/constants/preference-key";
 import { AllSortOptions, Media, MediaType } from "@shared/types/collection.types";
 
 export interface UserPreferences {
-  selectedProviders?: Provider[];
-  selectedCriteria?: Criteria;
-  sortByMedia: Record<MediaType, AllSortOptions>;
+  providers?: Provider[];
+  criteria?: Criteria;
+  sort: Record<MediaType, AllSortOptions>;
 }
 
 /**
@@ -79,6 +80,7 @@ export interface CriteriaRangeItem<K extends keyof Criteria> extends CriteriaBas
 
 export interface Criteria {
   genders?: Genre[];
+  excludedGenders?: Genre[];
   release?: ReleaseDate;
   note?: number;
   notes?: any[];

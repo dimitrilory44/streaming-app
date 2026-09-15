@@ -45,7 +45,7 @@ export class TitleFilterProvidersComponent {
 
     dialogRef.afterClosed().subscribe(result => {
       if (!result) return;
-      this.#userPreferencesService.setSelectedProviders(result);
+      this.#userPreferencesService.setProviders(result);
     });
   }
 }

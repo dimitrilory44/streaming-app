@@ -1,4 +1,5 @@
 import { CriteriaListItem, CriteriaRangeItem, MovieMedia, SeriesMedia } from "@core/models/media-model";
+import { DEFAULT_AGE_KEY, DEFAULT_COUNTRY_KEY, DEFAULT_DURATION_KEY, DEFAULT_GENDERS_KEY, DEFAULT_MOVIES_AGE_KEY, DEFAULT_NOTE_KEY, DEFAULT_NOTES_KEY,DEFAULT_RELEASE_KEY, DEFAULT_TV_AGE_KEY } from '@shared/constants/preference-key';
 
 /**
  * Extrait, parmi les clés de `T`, uniquement celles dont la valeur est
@@ -76,6 +77,7 @@ export type ArrayElement<T> = T extends (infer U)[] ? U : never;
  */
 export type RangeKeys<T> = { [K in keyof T]: T[K] extends object | undefined ? (T[K] extends any[] | undefined ? never : K) : never }[keyof T];
 
+export type GenderState = 'none' | 'includedGenders' | 'excludedGenders';
 /**
  * Signature standard d'une fonction de comparaison, telle qu'attendue
  * par `Array.prototype.sort()`.
@@ -159,12 +161,12 @@ export type MovieSortOptions = CommonSortOptions | 'release_date.desc' | 'revenu
 export type TVSortOptions = CommonSortOptions | 'first_air_date.desc' | 'name.asc';
 
 export type CriteriaItem =
-  | CriteriaRangeItem<'release'>
-  | CriteriaListItem<'genders'>
-  | CriteriaRangeItem<'note'>
-  | CriteriaListItem<'notes'>
-  | CriteriaListItem<'country'>
-  | CriteriaRangeItem<'duration'>
-  | CriteriaListItem<'age'>
-  | CriteriaListItem<'moviesAge'>
-  | CriteriaListItem<'seriesAge'>;
+  | CriteriaRangeItem<typeof DEFAULT_RELEASE_KEY>
+  | CriteriaListItem<typeof DEFAULT_GENDERS_KEY>
+  | CriteriaRangeItem<typeof DEFAULT_NOTE_KEY>
+  | CriteriaListItem<typeof DEFAULT_NOTES_KEY>
+  | CriteriaListItem<typeof DEFAULT_COUNTRY_KEY>
+  | CriteriaRangeItem<typeof DEFAULT_DURATION_KEY>
+  | CriteriaListItem<typeof DEFAULT_AGE_KEY>
+  | CriteriaListItem<typeof DEFAULT_MOVIES_AGE_KEY>
+  | CriteriaListItem<typeof DEFAULT_TV_AGE_KEY>;

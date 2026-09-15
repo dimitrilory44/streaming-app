@@ -29,10 +29,19 @@
                 @if (criteria.type === 'list') {
                 <div class="criteria-panel__list">
                     @for (item of criteria.value?.() ?? []; track item.id) {
-                    <mat-checkbox class="btn-checkbox" [checked]="isSelectionSelected(criteria.key, item.id)"
-                        (change)="toggleItem(criteria.key, item)" (click)="$event.stopPropagation()">
-                        {{ item.name}}
-                    </mat-checkbox>
+                        <mat-checkbox class="btn-checkbox"
+                            [class.is-display]="genderStates().get(item.id) === 'excludedGenders'" 
+                            [checked]="isSelectionSelected(criteria.key, item.id)"
+                            (click)="onCriteriaCheckboxClick($event, criteria, item)">
+                            {{ item.name}}
+                        </mat-checkbox>
+                        
+                        @if (criteria.key === 'genders' && genderStates().get(item.id) === 'excludedGenders') {
+                        <button mat-icon-button (click)="onCriteriaCheckboxClick($event, criteria, item)">
+                            <mat-icon class="exclude-badge">remove_circle</mat-icon>
+                            <span class="exclude-badge__label">{{ item.name}}</span>
+                        </button>
+                        }
                     }
                 </div>
                 } @else {
@@ -82,18 +91,21 @@
             </div>
             <div class="criteria-panel__box">
                 @if (multi.type === 'list') {
+                @if (multi.value) {
                 <div style="display: flex; flex-flow: wrap;">
                     <mat-checkbox class="btn-checkbox">1k+</mat-checkbox>
                     <mat-checkbox class="btn-checkbox">10k+</mat-checkbox>
                     <mat-checkbox class="btn-checkbox">100k+</mat-checkbox>
                     <mat-checkbox class="btn-checkbox">1m+</mat-checkbox>
                 </div>
+                }
                 } @else {
                 <div class="criteria-panel__range">
                     <form>
                         <div>
                             <div class="criteria-panel__range__slider">
-                                <img src="assets/tmdb_logo.jpg" alt="icone_tmdb" width="24" height="24" style="margin-right: 10px">
+                                <img src="assets/tmdb_logo.jpg" alt="icone_tmdb" width="24" height="24"
+                                    style="margin-right: 10px">
                                 <div class="filter_area__start">0</div>
                                 <mat-slider min="0" max="10" step="1" discrete="true" showTickMarks="true"
                                     class="filter_area">

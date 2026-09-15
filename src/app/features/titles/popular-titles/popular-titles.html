@@ -30,8 +30,9 @@
     } @else {
     <state-message 
         illustration="assets/no_series_results.svg" 
-        hint="Aucun films ou series trouvé" 
-        [showRetry]="false"
+        hint="Aucun films ou series trouvé"
+        retryLabel="Supprimer les filtres" 
+        (retry)="onResetFilter()"
         />
     }
 
