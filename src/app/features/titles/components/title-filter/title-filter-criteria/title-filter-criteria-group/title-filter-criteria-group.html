@@ -1,0 +1,23 @@
+@for (criterion of criteria(); track criterion.key) {
+    <div class="criteria-panel__header">
+        <span class="criteria-panel__title">{{onConvertKeyToLabel(criterion.key)}}</span>
+        <button class="criteria-panel__reset" (click)="resetRequested.emit(criterion.key)">
+            <mat-icon>close</mat-icon>
+            Réinitialiser
+        </button>
+    </div>
+    <div class="criteria-panel__box">
+        @if (criterion.type === 'list') {
+            @if (criterion.value) {
+            <div style="display: flex; flex-flow: wrap;">
+                <mat-checkbox class="btn-checkbox">1k+</mat-checkbox>
+                <mat-checkbox class="btn-checkbox">10k+</mat-checkbox>
+                <mat-checkbox class="btn-checkbox">100k+</mat-checkbox>
+                <mat-checkbox class="btn-checkbox">1m+</mat-checkbox>
+            </div>
+            }
+        } @else {
+        <title-filter-criteria-range [criterion]="criterion" />
+        }
+    </div>
+}

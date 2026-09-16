@@ -1,5 +1,4 @@
 import { Signal } from "@angular/core";
-import { DEFAULT_EXCLUDED_GENDERS_KEY, DEFAULT_GENDERS_KEY } from "@shared/constants/preference-key";
 import { AllSortOptions, Media, MediaType } from "@shared/types/collection.types";
 
 export interface UserPreferences {
@@ -33,7 +32,6 @@ export interface UserPreferences {
  *   regroupement.
  */
 interface CriteriaBase<K extends keyof Criteria> {
-  id: number;
   key: K;
   hasSelected?: boolean;
   groupKeyWith?: string;

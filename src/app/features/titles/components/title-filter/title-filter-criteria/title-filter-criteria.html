@@ -1,16 +1,16 @@
 <div class="filter-panel">
-    @for (criteria of filteredCriteria(); track criteria.id) {
+    @for (criterion of filteredCriteria(); track criterion.key) {
     <div class="filter-items">
-        <span [class.is-active]="onCriteriaChange(criteria.key)">{{onConvertKeyToLabel(criteria.key)}}</span>
+        <span [class.is-active]="onCriteriaChange(criterion.key)">{{onConvertKeyToLabel(criterion.key)}}</span>
         <button mat-icon-button class="filter-trigger"
-            [matMenuTriggerFor]="isMultiMode(criteria.key) ? combinedMenu : monoMenu"
-            (menuOpened)="onGenresMenuOpened(criteria.id, criteria.key)"
-            (menuClosed)="onGenresMenuClosed(criteria.id, criteria.key)">
+            [matMenuTriggerFor]="isMultiMode(criterion.key) ? combinedMenu : monoMenu"
+            (menuOpened)="onGenresMenuOpened(criterion.key)"
+            (menuClosed)="onGenresMenuClosed(criterion.key)">
 
-            @if (criteria.hasSelected) {
-            <mat-icon [class.is-active]="onCriteriaChange(criteria.key)">expand_less</mat-icon>
+            @if (criterion.hasSelected) {
+            <mat-icon [class.is-active]="onCriteriaChange(criterion.key)">expand_less</mat-icon>
             } @else {
-            <mat-icon [class.is-active]="onCriteriaChange(criteria.key)">expand_more</mat-icon>
+            <mat-icon [class.is-active]="onCriteriaChange(criterion.key)">expand_more</mat-icon>
             }
         </button>
     </div>
@@ -18,62 +18,18 @@
     <mat-menu #monoMenu="matMenu" class="criteria-menu" [overlapTrigger]="false" yPosition="below">
         <div class="criteria-panel" (click)="$event.stopPropagation()">
             <div class="criteria-panel__header">
-                <span class="criteria-panel__title">{{onConvertKeyToLabel(criteria.key)}}</span>
-                <button class="criteria-panel__reset" (click)="reset(criteria.key)">
+                <span class="criteria-panel__title">{{onConvertKeyToLabel(criterion.key)}}</span>
+                <button class="criteria-panel__reset" (click)="reset(criterion.key)">
                     <mat-icon>close</mat-icon>
                     Réinitialiser
                 </button>
             </div>
 
             <div class="criteria-panel__box">
-                @if (criteria.type === 'list') {
-                <div class="criteria-panel__list">
-                    @for (item of criteria.value?.() ?? []; track item.id) {
-                        <mat-checkbox class="btn-checkbox"
-                            [class.is-display]="genderStates().get(item.id) === 'excludedGenders'" 
-                            [checked]="isSelectionSelected(criteria.key, item.id)"
-                            (click)="onCriteriaCheckboxClick($event, criteria, item)">
-                            {{ item.name}}
-                        </mat-checkbox>
-                        
-                        @if (criteria.key === 'genders' && genderStates().get(item.id) === 'excludedGenders') {
-                        <button mat-icon-button (click)="onCriteriaCheckboxClick($event, criteria, item)">
-                            <mat-icon class="exclude-badge">remove_circle</mat-icon>
-                            <span class="exclude-badge__label">{{ item.name}}</span>
-                        </button>
-                        }
-                    }
-                </div>
+                @if (criterion.type === 'list') {
+                <title-filter-criteria-list [criterion]="criterion"/>
                 } @else {
-                <div class="criteria-panel__range">
-                    <form [formGroup]="form">
-                        <div formArrayName="releaseDates">
-                            @for (group of releaseDates.controls; track group; let i = $index) {
-                            <div [formGroupName]="i" class="criteria-panel__range__slider">
-                                <div class="filter_area__start">1900</div>
-                                <mat-slider min="1900" max="2026" step="1" discrete="true" showTickMarks="true"
-                                    class="filter_area">
-                                    <input formControlName="startYear" value="1900" matSliderStartThumb
-                                        (change)="onReleaseDateChange(criteria.key, $event, i)">
-                                    <input formControlName="endYear" value="2026" matSliderEndThumb
-                                        (change)="onReleaseDateChange(criteria.key, $event, i)">
-                                </mat-slider>
-                                <div class="filter_area__end">{{ currentYear }}</div>
-                            </div>
-                            <div class="criteria-panel__range__actions">
-                                <mat-checkbox class="btn-checkbox" [checked]="selectedRange() === 'thisYear'"
-                                    (click)="$event.stopPropagation()"
-                                    (change)="onSelectRangePreset(criteria.key, i, 'thisYear')">
-                                    Cette année</mat-checkbox>
-                                <mat-checkbox class="btn-checkbox" [checked]="selectedRange() === 'lastYear'"
-                                    (change)="onSelectRangePreset(criteria.key, i, 'lastYear')"
-                                    (click)="$event.stopPropagation()">
-                                    Année dernière</mat-checkbox>
-                            </div>
-                            }
-                        </div>
-                    </form>
-                </div>
+                <title-filter-criteria-range [criterion]="criterion"/>
                 }
             </div>
         </div>
@@ -81,44 +37,9 @@
 
     <mat-menu #combinedMenu="matMenu" class="criteria-menu" [overlapTrigger]="false" yPosition="below">
         <div class="criteria-panel" (click)="$event.stopPropagation()">
-            @for (multi of multiCriteria; track multi.id) {
-            <div class="criteria-panel__header">
-                <span class="criteria-panel__title">{{onConvertKeyToLabel(multi.key)}}</span>
-                <button class="criteria-panel__reset" (click)="reset(multi.key)">
-                    <mat-icon>close</mat-icon>
-                    Réinitialiser
-                </button>
-            </div>
-            <div class="criteria-panel__box">
-                @if (multi.type === 'list') {
-                @if (multi.value) {
-                <div style="display: flex; flex-flow: wrap;">
-                    <mat-checkbox class="btn-checkbox">1k+</mat-checkbox>
-                    <mat-checkbox class="btn-checkbox">10k+</mat-checkbox>
-                    <mat-checkbox class="btn-checkbox">100k+</mat-checkbox>
-                    <mat-checkbox class="btn-checkbox">1m+</mat-checkbox>
-                </div>
-                }
-                } @else {
-                <div class="criteria-panel__range">
-                    <form>
-                        <div>
-                            <div class="criteria-panel__range__slider">
-                                <img src="assets/tmdb_logo.jpg" alt="icone_tmdb" width="24" height="24"
-                                    style="margin-right: 10px">
-                                <div class="filter_area__start">0</div>
-                                <mat-slider min="0" max="10" step="1" discrete="true" showTickMarks="true"
-                                    class="filter_area">
-                                    <input matSliderThumb>
-                                </mat-slider>
-                                <div class="filter_area__end">10</div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                }
-            </div>
-            }
+            <filter-criteria-group 
+                [criteria]="criteria.filter(item => item.groupKeyWith === criterion.key || item.key === criterion.key)" 
+                (resetRequested)="reset($event)"/>
         </div>
     </mat-menu>
     }

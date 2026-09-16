@@ -1,0 +1,35 @@
+.criteria-panel {
+  background: #11151f;
+  padding: 10px 15px;
+
+  &__range {
+    min-width: 500px;
+
+    &__slider {
+      display: flex; 
+      align-items: center;
+    }
+
+    &__actions {
+      display: flex;
+      margin-top: 10px;
+    }
+  }
+}
+
+.filter_area {
+  width: 240px;
+
+  &__start,
+  &__end {
+    color: white;
+  }
+
+  &__start {
+    margin-right: 10px;
+  }
+
+  &__end {
+    margin-left: 10px;
+  }
+}

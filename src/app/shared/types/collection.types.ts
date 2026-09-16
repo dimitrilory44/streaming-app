@@ -75,7 +75,7 @@ export type ArrayElement<T> = T extends (infer U)[] ? U : never;
  * Utilisé par `makeRangeHelpers` (fichier des helpers) pour restreindre
  * les clés de `Criteria` qu'on a le droit de lui passer.
  */
-export type RangeKeys<T> = { [K in keyof T]: T[K] extends object | undefined ? (T[K] extends any[] | undefined ? never : K) : never }[keyof T];
+export type RangeKeys<T> = { [K in keyof T]: T[K] extends any[] | undefined ? never : K }[keyof T];
 
 export type GenderState = 'none' | 'includedGenders' | 'excludedGenders';
 /**
@@ -159,6 +159,8 @@ export type MovieSortOptions = CommonSortOptions | 'release_date.desc' | 'revenu
  * séries).
  */
 export type TVSortOptions = CommonSortOptions | 'first_air_date.desc' | 'name.asc';
+
+export type CriteriaTypes = 'range' | 'list';
 
 export type CriteriaItem =
   | CriteriaRangeItem<typeof DEFAULT_RELEASE_KEY>

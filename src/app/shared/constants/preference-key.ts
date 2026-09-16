@@ -1,4 +1,4 @@
-import { ReleaseDate, UserPreferences } from "@core/models/media-model";
+import { Criteria, ReleaseDate, UserPreferences } from "@core/models/media-model";
 
 export const DEFAULT_STORAGE_KEY = 'data';
 export const DEFAULT_PROVIDERS_KEY = 'providers';
@@ -24,3 +24,15 @@ export const DEFAULT_SORT_MEDIA: UserPreferences = {
     }
 };
 export const DEFAULT_MEDIA = 'movie';
+
+export const CRITERIA_LABELS: Partial<Record<keyof Criteria, string>> = {
+  [DEFAULT_RELEASE_KEY]: 'Année de sortie',
+  [DEFAULT_GENDERS_KEY]: 'Genres',
+  [DEFAULT_NOTE_KEY]: 'Note',
+  [DEFAULT_NOTES_KEY]: 'Nombre de notes',
+  [DEFAULT_COUNTRY_KEY]: 'Pays de production',
+  [DEFAULT_DURATION_KEY]: 'Durée',
+  [DEFAULT_AGE_KEY]: 'Âge',
+  [DEFAULT_MOVIES_AGE_KEY]: 'Films',
+  [DEFAULT_TV_AGE_KEY]: 'Séries'
+};
