@@ -20,7 +20,7 @@ export class UserPreferencesService {
 
   readonly genreHelpers = makeSelectionHelpers(DEFAULT_GENDERS_KEY, this.criteria);
   readonly genreExcludedHelpers = makeSelectionHelpers(DEFAULT_EXCLUDED_GENDERS_KEY, this.criteria);
-  readonly releaseDateHelpers = makeRangeHelpers(DEFAULT_RELEASE_KEY, this.criteria, DEFAULT_RELEASE_DATE, (a, b) => a.startYear === b.startYear && a.endYear === b.endYear);
+  readonly releaseDateHelpers = makeRangeHelpers(DEFAULT_RELEASE_KEY, this.criteria, DEFAULT_RELEASE_DATE, (a, b) => a.min === b.min && a.max === b.max);
 
   #loadFromStorage(): UserPreferences {
     const raw = localStorage.getItem(DEFAULT_STORAGE_KEY);

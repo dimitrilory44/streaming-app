@@ -83,15 +83,15 @@ export interface Criteria {
   note?: number;
   notes?: any[];
   country?: any[];
-  duration?: object;
+  duration?: number;
   age?: any[];
   moviesAge?: any[];
   seriesAge?: any[];
 }
 
 export interface ReleaseDate {
-  startYear: number;
-  endYear: number;
+  min: number;
+  max: number;
 }
 
 export interface ProvidersState<T> {

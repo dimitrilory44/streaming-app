@@ -1,36 +1,35 @@
-@if (criterion().key === 'release') {
+@let key = criterion().key;
 <div class="criteria-panel__range">
     <form [formGroup]="form">
-        <div formArrayName="releaseDates">
-            @for (group of releaseDates.controls; track group; let i = $index) {
-            <div [formGroupName]="i" class="criteria-panel__range__slider">
-                <div class="filter_area__start">1900</div>
-                <mat-slider min="1900" max="2026" step="1" discrete="true" showTickMarks="true" class="filter_area">
-                    <input formControlName="startYear" value="1900" matSliderStartThumb
-                        (change)="onReleaseDateChange(criterion().key, $event, i)">
-                    <input formControlName="endYear" value="2026" matSliderEndThumb
-                        (change)="onReleaseDateChange(criterion().key, $event, i)">
+        @if (isMonoCriterion(key)) {
+            @if (key === 'release') {
+            <div [formGroupName]="key" class="criteria-panel__range__slider">
+                <div class="filter_area__start">{{ DEFAULT_RELEASE_DATE.min }}</div>
+                <mat-slider [min]="DEFAULT_RELEASE_DATE.min" [max]="DEFAULT_RELEASE_DATE.max" step="1" discrete="true"
+                    showTickMarks="true" class="filter_area">
+                    <input formControlName="min" matSliderStartThumb (change)="onReleaseDateChange(key)">
+                    <input formControlName="max" matSliderEndThumb (change)="onReleaseDateChange(key)">
                 </mat-slider>
-                <div class="filter_area__end">{{ currentYear }}</div>
+                <div class="filter_area__end">{{ DEFAULT_RELEASE_DATE.max }}</div>
             </div>
             <div class="criteria-panel__range__actions">
                 <mat-checkbox class="btn-checkbox" [checked]="selectedRange() === 'thisYear'"
-                    (click)="$event.stopPropagation()" (change)="onSelectRangePreset('release', i, 'thisYear')">
+                    (change)="onSelectRangePreset(key, 'thisYear')" (click)="$event.stopPropagation()">
                     Cette année</mat-checkbox>
                 <mat-checkbox class="btn-checkbox" [checked]="selectedRange() === 'lastYear'"
-                    (change)="onSelectRangePreset(criterion().key, i, 'lastYear')" (click)="$event.stopPropagation()">
+                    (change)="onSelectRangePreset(key, 'lastYear')" (click)="$event.stopPropagation()">
                     Année dernière</mat-checkbox>
             </div>
             }
-        </div>
-    </form>
-</div>
-}
 
-@if (criterion().key === 'note') {
-<div class="criteria-panel__range">
-    <form>
-        <div>
+            <!-- TODO : template filtrage par duree -->
+            @if (key === 'duration') {
+            <div [formGroupName]="key"></div>
+            }
+
+        } @else {
+        <!-- TODO : template filtrage par note -->
+        <div [formGroupName]="key">
             <div class="criteria-panel__range__slider">
                 <img src="assets/tmdb_logo.jpg" alt="icone_tmdb" width="24" height="24" style="margin-right: 10px">
                 <div class="filter_area__start">0</div>
@@ -40,6 +39,6 @@
                 <div class="filter_area__end">10</div>
             </div>
         </div>
+        }
     </form>
 </div>
-}

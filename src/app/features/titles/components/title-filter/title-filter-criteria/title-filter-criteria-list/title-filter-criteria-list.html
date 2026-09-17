@@ -7,12 +7,12 @@
         {{ item.name}}
     </mat-checkbox>
 
-    @if (criterion().key === 'genders' && genderStates().get(item.id) === 'excludedGenders') {
-    <button mat-icon-button (click)="onCriteriaCheckboxClick($event, criterion(), item)">
-        <mat-icon class="exclude-badge">remove_circle</mat-icon>
-        <span class="exclude-badge__label">{{ item.name}}</span>
-    </button>
-    }
+        @if (criterion().key === 'genders' && genderStates().get(item.id) === 'excludedGenders') {
+        <button mat-icon-button (click)="onCriteriaCheckboxClick($event, criterion(), item)">
+            <mat-icon class="exclude-badge">remove_circle</mat-icon>
+            <span class="exclude-badge__label">{{ item.name}}</span>
+        </button>
+        }
 
     }
 </div>

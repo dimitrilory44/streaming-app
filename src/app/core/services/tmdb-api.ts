@@ -24,8 +24,8 @@ export class TmdbApiService {
 
   readonly filterYear = computed(() => {
     const items = this.#userPreferencesService.releaseDateHelpers.items();
-    const beginDate = items.startYear ? `${items.startYear}-01-01` : '1900-01-01';
-    const endDate = items.endYear ? `${items.endYear}-12-31` : `${new Date().getFullYear()}-12-31`;
+    const beginDate = items.min ? `${items.min}-01-01` : '1900-01-01';
+    const endDate = items.max ? `${items.max}-12-31` : `${new Date().getFullYear()}-12-31`;
     return { beginDate, endDate }
   });
   

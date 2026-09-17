@@ -14,7 +14,7 @@ export const DEFAULT_AGE_KEY = 'age';
 export const DEFAULT_MOVIES_AGE_KEY = 'moviesAge';
 export const DEFAULT_TV_AGE_KEY = 'seriesAge';
 
-export const DEFAULT_RELEASE_DATE: ReleaseDate = { startYear: 1900, endYear: new Date().getFullYear() };
+export const DEFAULT_RELEASE_DATE: ReleaseDate = { min: 1900, max: new Date().getFullYear() };
 export const DEFAULT_SORT = 'popularity.desc';
 export const DEFAULT_SORT_MEDIA: UserPreferences = {
     sort: {
@@ -36,3 +36,5 @@ export const CRITERIA_LABELS: Partial<Record<keyof Criteria, string>> = {
   [DEFAULT_MOVIES_AGE_KEY]: 'Films',
   [DEFAULT_TV_AGE_KEY]: 'Séries'
 };
+
+export const MONO_RANGE_KEYS = ['release', 'duration'] as const;

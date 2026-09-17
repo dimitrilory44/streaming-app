@@ -4,7 +4,7 @@ import { MatCheckbox } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { Criteria, CriteriaListItem, Genre } from '@core/models/media-model';
 import { UserPreferencesService } from '@core/services/user-preferences-service';
-import { DEFAULT_DURATION_KEY, DEFAULT_EXCLUDED_GENDERS_KEY, DEFAULT_GENDERS_KEY, DEFAULT_NOTE_KEY, DEFAULT_RELEASE_KEY } from '@shared/constants/preference-key';
+import { DEFAULT_EXCLUDED_GENDERS_KEY, DEFAULT_GENDERS_KEY } from '@shared/constants/preference-key';
 import { makeSelectionHelpers } from '@shared/helpers/collection.helpers';
 import { ArrayElement, ArrayKeys, GenderState } from '@shared/types/collection.types';
 
@@ -33,11 +33,7 @@ export class TitleFilterCriteriaListComponent {
   isSelectionSelected(key: keyof Criteria, idItem: number): boolean {
     switch (key) {
       case DEFAULT_GENDERS_KEY: return this.genderStates().get(idItem) === 'includedGenders';
-      case DEFAULT_RELEASE_KEY:
-      case DEFAULT_NOTE_KEY:
-      case DEFAULT_DURATION_KEY:
-        return false;
-      default: return makeSelectionHelpers(key, this.#userPreferencesService.criteria).items().some(g => g.id === idItem);
+      default: return false;
     }
   }
 
