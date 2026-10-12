@@ -52,7 +52,7 @@ export class TitleFilterCriteriaListComponent {
     const updated = exists
       ? current.filter(g => g.id !== item.id)
       : [...current, item];
-    this.#userPreferencesService.setCriteria(key, [...updated].sort((a, b) => a.id - b.id));
+    this.#userPreferencesService.setCriteria(key, updated.sort((a, b) => a.id - b.id) as Criteria[K]);
   }
 
   cycleGender(item: Genre): void {
@@ -71,4 +71,5 @@ export class TitleFilterCriteriaListComponent {
         break;
     }
   }
+
 }

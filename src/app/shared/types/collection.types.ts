@@ -168,9 +168,8 @@ export type CriteriaItem =
   | CriteriaRangeItem<typeof DEFAULT_RELEASE_KEY>
   | CriteriaListItem<typeof DEFAULT_GENDERS_KEY>
   | CriteriaRangeItem<typeof DEFAULT_NOTE_KEY>
-  | CriteriaListItem<typeof DEFAULT_NOTES_KEY>
+  | CriteriaRangeItem<typeof DEFAULT_NOTES_KEY>
   | CriteriaListItem<typeof DEFAULT_COUNTRY_KEY>
   | CriteriaRangeItem<typeof DEFAULT_DURATION_KEY>
-  | CriteriaListItem<typeof DEFAULT_AGE_KEY>
   | CriteriaListItem<typeof DEFAULT_MOVIES_AGE_KEY>
   | CriteriaListItem<typeof DEFAULT_TV_AGE_KEY>;

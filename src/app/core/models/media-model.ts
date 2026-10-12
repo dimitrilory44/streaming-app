@@ -1,5 +1,5 @@
 import { Signal } from "@angular/core";
-import { AllSortOptions, Media, MediaType } from "@shared/types/collection.types";
+import { AllSortOptions, CriteriaItem, Media, MediaType } from "@shared/types/collection.types";
 
 export interface UserPreferences {
   providers?: Provider[];
@@ -81,12 +81,18 @@ export interface Criteria {
   excludedGenders?: Genre[];
   release?: ReleaseDate;
   note?: number;
-  notes?: any[];
-  country?: any[];
+  notes?: number;
+  country?: Country[];
   duration?: number;
   age?: any[];
-  moviesAge?: any[];
-  seriesAge?: any[];
+  moviesAge?: Certification[];
+  seriesAge?: Certification[];
+}
+
+export interface FilterMenu {
+  key: string;
+  label?: string;
+  members: CriteriaItem['key'][];
 }
 
 export interface ReleaseDate {
@@ -109,6 +115,14 @@ export interface TitleDiscover {
 
 export interface GenreList {
   genres: Genre[];
+}
+
+export interface CountryList {
+  results: Country[];
+}
+
+export interface CertificationList {
+  certifications: Record<string, Certification[]>;
 }
 
 export interface ProvidersApi {
@@ -136,6 +150,19 @@ export interface Provider {
 export interface Genre {
   id: number;
   name: string;
+}
+
+export interface Country {
+  id: number;
+  iso_3166_1: string;
+  name: string; 
+}
+
+export interface Certification {
+  id: number;
+  certification: string;
+  name: string;
+  order: number;
 }
 
 interface BaseMedia {

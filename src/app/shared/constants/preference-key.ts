@@ -1,4 +1,4 @@
-import { Criteria, ReleaseDate, UserPreferences } from "@core/models/media-model";
+import { Criteria, FilterMenu, ReleaseDate, UserPreferences } from "@core/models/media-model";
 
 export const DEFAULT_STORAGE_KEY = 'data';
 export const DEFAULT_PROVIDERS_KEY = 'providers';
@@ -36,5 +36,14 @@ export const CRITERIA_LABELS: Partial<Record<keyof Criteria, string>> = {
   [DEFAULT_MOVIES_AGE_KEY]: 'Films',
   [DEFAULT_TV_AGE_KEY]: 'Séries'
 };
+
+export const FILTER_MENUS: FilterMenu[] = [
+  { key: 'release',  members: [DEFAULT_RELEASE_KEY] },
+  { key: 'genders',  members: [DEFAULT_GENDERS_KEY] },
+  { key: 'note',     members: [DEFAULT_NOTE_KEY, DEFAULT_NOTES_KEY] },
+  { key: 'country',  members: [DEFAULT_COUNTRY_KEY] },
+  { key: 'duration', members: [DEFAULT_DURATION_KEY] },
+  { key: 'age',      label: 'Age', members: [DEFAULT_MOVIES_AGE_KEY, DEFAULT_TV_AGE_KEY] },
+];
 
 export const MONO_RANGE_KEYS = ['release', 'duration'] as const;

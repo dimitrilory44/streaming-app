@@ -1,6 +1,6 @@
 import { computed, effect, Injectable, signal } from '@angular/core';
 import { Criteria, Provider, UserPreferences } from '@core/models/media-model';
-import { DEFAULT_EXCLUDED_GENDERS_KEY, DEFAULT_GENDERS_KEY, DEFAULT_PROVIDERS_KEY, DEFAULT_RELEASE_DATE, DEFAULT_RELEASE_KEY, DEFAULT_SORT, DEFAULT_SORT_MEDIA, DEFAULT_STORAGE_KEY } from '@shared/constants/preference-key';
+import { DEFAULT_EXCLUDED_GENDERS_KEY, DEFAULT_GENDERS_KEY, DEFAULT_NOTE_KEY, DEFAULT_NOTES_KEY, DEFAULT_PROVIDERS_KEY, DEFAULT_RELEASE_DATE, DEFAULT_RELEASE_KEY, DEFAULT_SORT, DEFAULT_SORT_MEDIA, DEFAULT_STORAGE_KEY } from '@shared/constants/preference-key';
 import { makeRangeHelpers, makeSelectionHelpers, makeSortHelpers } from '@shared/helpers/collection.helpers';
 import { MediaType } from '@shared/types/collection.types';
 
@@ -21,6 +21,8 @@ export class UserPreferencesService {
   readonly genreHelpers = makeSelectionHelpers(DEFAULT_GENDERS_KEY, this.criteria);
   readonly genreExcludedHelpers = makeSelectionHelpers(DEFAULT_EXCLUDED_GENDERS_KEY, this.criteria);
   readonly releaseDateHelpers = makeRangeHelpers(DEFAULT_RELEASE_KEY, this.criteria, DEFAULT_RELEASE_DATE, (a, b) => a.min === b.min && a.max === b.max);
+  readonly noteHelpers = makeRangeHelpers(DEFAULT_NOTE_KEY, this.criteria, 0);
+  readonly notesHelpers = makeRangeHelpers(DEFAULT_NOTES_KEY, this.criteria, 0);
 
   #loadFromStorage(): UserPreferences {
     const raw = localStorage.getItem(DEFAULT_STORAGE_KEY);

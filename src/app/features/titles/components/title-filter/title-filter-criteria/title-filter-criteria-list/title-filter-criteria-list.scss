@@ -6,6 +6,11 @@
     column-gap: 10px; 
     display: grid; 
     grid-template-columns: 45% 55%;
+
+    &__checkbox {
+      display: flex; 
+      flex-flow: wrap;
+    }
   }
 }
 

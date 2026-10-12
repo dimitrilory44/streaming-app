@@ -5,6 +5,10 @@
   &__range {
     min-width: 500px;
 
+    &__logo {
+      margin-right: 10px
+    }
+
     &__slider {
       display: flex; 
       align-items: center;

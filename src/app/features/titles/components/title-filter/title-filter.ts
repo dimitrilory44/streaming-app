@@ -56,6 +56,8 @@ export class TitleFilterComponent {
     let count = 0;
     count += this.#userPreferencesService.genreHelpers.count() || this.#userPreferencesService.genreExcludedHelpers.count() ? 1 : 0;
     count += this.#userPreferencesService.releaseDateHelpers.isDefault() ? 0 : 1;
+    count += this.#userPreferencesService.noteHelpers.isDefault() ? 0 : 1;
+    count += this.#userPreferencesService.notesHelpers.isDefault() ? 0 : 1;
     // TODO : autres
     return count;
   });

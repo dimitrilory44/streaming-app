@@ -28,6 +28,9 @@ export class TmdbApiService {
     const endDate = items.max ? `${items.max}-12-31` : `${new Date().getFullYear()}-12-31`;
     return { beginDate, endDate }
   });
+
+  readonly filterNote = computed(() => this.#userPreferencesService.noteHelpers.items());
+  readonly filterNotes = computed(() => this.#userPreferencesService.notesHelpers.items());
   
   readonly movieCollection = httpResource<TitleCollection>(() => `${this.#MOVIE_API_URL}/list/1`);
   
@@ -89,6 +92,8 @@ export class TmdbApiService {
       const isDateFilterActive = !this.#userPreferencesService.releaseDateHelpers.isDefault();
       const isGenderFilterActive = this.#userPreferencesService.genreHelpers.hasItems();
       const isGenderExcludedFilterActive = this.#userPreferencesService.genreExcludedHelpers.hasItems();
+      const isNoteFilterActive = !this.#userPreferencesService.noteHelpers.isDefault();
+      const isNotesCountFilterActive = !this.#userPreferencesService.notesHelpers.isDefault();
 
       if (isDateFilterActive) {
         const { beginDate, endDate } = this.filterYear();
@@ -106,6 +111,16 @@ export class TmdbApiService {
       if (isGenderExcludedFilterActive) {
         const excludedGenders = this.genresExcludedIds();
         params['without_genres'] = excludedGenders;
+      }
+
+      if (isNoteFilterActive) {
+        const note = this.#userPreferencesService.noteHelpers.items();
+        params['vote_average.gte'] = note;
+      }
+
+      if (isNotesCountFilterActive) {
+        const notes = this.#userPreferencesService.notesHelpers.items();
+        params['vote_count.gte'] = notes;
       }
 
       return {

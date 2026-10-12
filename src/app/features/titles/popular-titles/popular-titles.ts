@@ -29,6 +29,8 @@ export class PopularTitlesComponent {
   readonly selectedGenresIds = this.#tmdbApiService.genresIds;
   readonly selectedBeginYear = computed(() => this.#tmdbApiService.filterYear().beginDate);
   readonly selectedEndYear = computed(() => this.#tmdbApiService.filterYear().endDate);
+  readonly selectedNote = computed(() => this.#tmdbApiService.filterNote());
+  readonly selectedNotes = computed(() => this.#tmdbApiService.filterNotes());
 
   readonly sortMenu = computed(() => this.#tmdbApiService.sortFilter(this.mediaType()));
 
@@ -99,6 +101,8 @@ export class PopularTitlesComponent {
       this.selectedProviderIds();
       this.selectedBeginYear();
       this.selectedEndYear();
+      this.selectedNote();
+      this.selectedNotes();
       this.sortMenu();
       this.titles.set([]);
       this.currentPage.set(1);

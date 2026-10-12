@@ -1,52 +1,31 @@
 <div class="filter-panel">
-    @for (criterion of filteredCriteria(); track criterion.key) {
-    <div class="filter-items">
-        <span [class.is-active]="onCriteriaChange(criterion.key)">{{onConvertKeyToLabel(criterion.key)}}</span>
-        <button mat-icon-button class="filter-trigger"
-            [matMenuTriggerFor]="isMultiMode(criterion.key) ? combinedMenu : monoMenu"
-            (menuOpened)="onGenresMenuOpened(criterion.key)"
-            (menuClosed)="onGenresMenuClosed(criterion.key)">
-
-            @if (criterion.hasSelected) {
-            <mat-icon [class.is-active]="onCriteriaChange(criterion.key)">expand_less</mat-icon>
-            } @else {
-            <mat-icon [class.is-active]="onCriteriaChange(criterion.key)">expand_more</mat-icon>
-            }
+    @for (menu of menus(); track menu.key) {
+      <div class="filter-items">
+        <span [class.is-active]="menu.isActive">{{ menu.label }}</span>
+        <button mat-icon-button class="filter-trigger" [matMenuTriggerFor]="panel"
+            (menuOpened)="onMenuOpened(menu.key)"
+            (menuClosed)="onMenuClosed(menu.key)">
+          <mat-icon [class.is-active]="menu.isActive">
+            {{ openMenuKey() === menu.key ? 'expand_less' : 'expand_more' }}
+          </mat-icon>
         </button>
-    </div>
-
-    <mat-menu #monoMenu="matMenu" class="criteria-menu" [overlapTrigger]="false" yPosition="below">
+      </div>
+    
+      <mat-menu #panel="matMenu" class="criteria-menu" [overlapTrigger]="false" yPosition="below">
         <div class="criteria-panel" (click)="$event.stopPropagation()">
-            <div class="criteria-panel__header">
-                <span class="criteria-panel__title">{{onConvertKeyToLabel(criterion.key)}}</span>
-                <button class="criteria-panel__reset" (click)="reset(criterion.key)">
-                    <mat-icon>close</mat-icon>
-                    Réinitialiser
-                </button>
-            </div>
-
-            <div class="criteria-panel__box">
-                @if (criterion.type === 'list') {
-                <title-filter-criteria-list [criterion]="criterion"/>
-                } @else {
-                <title-filter-criteria-range [criterion]="criterion"/>
-                }
-            </div>
+          <filter-criteria-group
+            [title]="menu.label"
+            [criteria]="menu.criteria"
+            (resetRequested)="reset($event)" />
         </div>
-    </mat-menu>
-
-    <mat-menu #combinedMenu="matMenu" class="criteria-menu" [overlapTrigger]="false" yPosition="below">
-        <div class="criteria-panel" (click)="$event.stopPropagation()">
-            <filter-criteria-group 
-                [criteria]="criteria.filter(item => item.groupKeyWith === criterion.key || item.key === criterion.key)" 
-                (resetRequested)="reset($event)"/>
-        </div>
-    </mat-menu>
+      </mat-menu>
     }
+
     <div class="criteria-panel__end">
         <button class="criteria-panel__reset" (click)="resetAll()">
             <mat-icon>close</mat-icon>
             Réinitialiser
         </button>
     </div>
+
 </div>
