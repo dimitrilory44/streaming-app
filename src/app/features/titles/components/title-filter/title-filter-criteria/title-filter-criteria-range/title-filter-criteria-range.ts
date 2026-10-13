@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSliderModule } from '@angular/material/slider';
 import { Criteria, CriteriaRangeItem, ReleaseDate } from '@core/models/media-model';
 import { UserPreferencesService } from '@core/services/user-preferences-service';
-import { DEFAULT_NOTES_KEY, DEFAULT_RELEASE_DATE } from '@shared/constants/preference-key';
+import { DEFAULT_NOTES_KEY, DEFAULT_RELEASE_DATE } from '@shared/constants/filter-preferences';
 import { isMonoCriterion } from '@shared/helpers/collection.helpers';
 import { RangeKeys } from '@shared/types/collection.types';
 

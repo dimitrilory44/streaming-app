@@ -15,7 +15,7 @@ import { TitleFilterCriteriaComponent } from '@features/titles/components/title-
 import { AllSortOptions, Media, MediaType } from '@shared/types/collection.types';
 import { TitleFilterProvidersComponent } from './title-filter-providers/title-filter-providers';
 import { MediaConfig } from '@core/models/media-model';
-import { DEFAULT_MEDIA } from '@shared/constants/preference-key';
+import { DEFAULT_MEDIA } from '@shared/constants/filter-preferences';
 import { COMMON_SORT_OPTIONS, MOVIE_SORT_OPTIONS, SERIES_SORT_OPTIONS } from '@shared/constants/sort-options';
 
 @Component({

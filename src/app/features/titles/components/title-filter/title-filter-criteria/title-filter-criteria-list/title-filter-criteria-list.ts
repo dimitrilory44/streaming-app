@@ -4,7 +4,7 @@ import { MatCheckbox } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { Criteria, CriteriaListItem, Genre } from '@core/models/media-model';
 import { UserPreferencesService } from '@core/services/user-preferences-service';
-import { DEFAULT_EXCLUDED_GENDERS_KEY, DEFAULT_GENDERS_KEY } from '@shared/constants/preference-key';
+import { DEFAULT_EXCLUDED_GENDERS_KEY, DEFAULT_GENDERS_KEY } from '@shared/constants/filter-preferences';
 import { makeSelectionHelpers } from '@shared/helpers/collection.helpers';
 import { ArrayElement, ArrayKeys, GenderState } from '@shared/types/collection.types';
 

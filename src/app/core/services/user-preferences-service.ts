@@ -1,6 +1,6 @@
 import { computed, effect, Injectable, signal } from '@angular/core';
 import { Criteria, Provider, UserPreferences } from '@core/models/media-model';
-import { DEFAULT_EXCLUDED_GENDERS_KEY, DEFAULT_GENDERS_KEY, DEFAULT_NOTE_KEY, DEFAULT_NOTES_KEY, DEFAULT_PROVIDERS_KEY, DEFAULT_RELEASE_DATE, DEFAULT_RELEASE_KEY, DEFAULT_SORT, DEFAULT_SORT_MEDIA, DEFAULT_STORAGE_KEY } from '@shared/constants/preference-key';
+import { DEFAULT_EXCLUDED_GENDERS_KEY, DEFAULT_GENDERS_KEY, DEFAULT_NOTE_KEY, DEFAULT_NOTES_KEY, DEFAULT_PROVIDERS_KEY, DEFAULT_RELEASE_DATE, DEFAULT_RELEASE_KEY, DEFAULT_SORT, DEFAULT_SORT_MEDIA, DEFAULT_STORAGE_KEY } from '@shared/constants/filter-preferences';
 import { makeRangeHelpers, makeSelectionHelpers, makeSortHelpers } from '@shared/helpers/collection.helpers';
 import { MediaType } from '@shared/types/collection.types';
 

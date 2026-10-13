@@ -28,8 +28,7 @@
             }
 
         } @else {
-        <!-- TODO : template filtrage par note -->
-        @if (key === 'note') {
+            @if (key === 'note') {
             <div class="criteria-panel__range__slider">
                 <img src="assets/tmdb_logo.jpg" class="criteria-panel_range__logo" alt="icone_tmdb" width="24" height="24">
                 <div class="filter_area__start">0</div>
@@ -38,17 +37,18 @@
                 </mat-slider>
                 <div class="filter_area__end">10</div>
             </div>
-        }
+            }
 
-        @if (key === 'notes') {
+            @if (key === 'notes') {
             <div class="criteria-panel__list__checkbox">
                 @for (option of options; track option.value) {
-                    <mat-checkbox class="btn-checkbox" [checked]="selected() === option.value" (change)="onSelectList(option.value)">
-                        {{ option.label }}
-                    </mat-checkbox>
+                <mat-checkbox class="btn-checkbox" [checked]="selected() === option.value"
+                    (change)="onSelectList(option.value)">
+                    {{ option.label }}
+                </mat-checkbox>
                 }
             </div>
+            }
         }
-    }
     </form>
 </div>

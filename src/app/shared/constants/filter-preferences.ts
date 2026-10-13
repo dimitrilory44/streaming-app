@@ -1,4 +1,4 @@
-import { Criteria, FilterMenu, ReleaseDate, UserPreferences } from "@core/models/media-model";
+import { Criteria, CriteriaList, ReleaseDate, UserPreferences } from "@core/models/media-model";
 
 export const DEFAULT_STORAGE_KEY = 'data';
 export const DEFAULT_PROVIDERS_KEY = 'providers';
@@ -13,6 +13,8 @@ export const DEFAULT_DURATION_KEY = 'duration';
 export const DEFAULT_AGE_KEY = 'age';
 export const DEFAULT_MOVIES_AGE_KEY = 'moviesAge';
 export const DEFAULT_TV_AGE_KEY = 'seriesAge';
+export const DEFAULT_TYPE_RANGE = 'range';
+export const DEFAULT_TYPE_LIST = 'list';
 
 export const DEFAULT_RELEASE_DATE: ReleaseDate = { min: 1900, max: new Date().getFullYear() };
 export const DEFAULT_SORT = 'popularity.desc';
@@ -32,18 +34,17 @@ export const CRITERIA_LABELS: Partial<Record<keyof Criteria, string>> = {
   [DEFAULT_NOTES_KEY]: 'Nombre de notes',
   [DEFAULT_COUNTRY_KEY]: 'Pays de production',
   [DEFAULT_DURATION_KEY]: 'Durée',
-  [DEFAULT_AGE_KEY]: 'Âge',
   [DEFAULT_MOVIES_AGE_KEY]: 'Films',
   [DEFAULT_TV_AGE_KEY]: 'Séries'
 };
 
-export const FILTER_MENUS: FilterMenu[] = [
-  { key: 'release',  members: [DEFAULT_RELEASE_KEY] },
-  { key: 'genders',  members: [DEFAULT_GENDERS_KEY] },
-  { key: 'note',     members: [DEFAULT_NOTE_KEY, DEFAULT_NOTES_KEY] },
-  { key: 'country',  members: [DEFAULT_COUNTRY_KEY] },
-  { key: 'duration', members: [DEFAULT_DURATION_KEY] },
-  { key: 'age',      label: 'Age', members: [DEFAULT_MOVIES_AGE_KEY, DEFAULT_TV_AGE_KEY] },
+export const CRITERIA_LIST: CriteriaList[] = [
+  { key: DEFAULT_RELEASE_KEY, item: [{ key: DEFAULT_RELEASE_KEY, type: DEFAULT_TYPE_RANGE }] },
+  { key: DEFAULT_GENDERS_KEY, item: [{ key: DEFAULT_GENDERS_KEY, type: DEFAULT_TYPE_LIST }] },
+  { key: DEFAULT_NOTE_KEY, item: [{ key: DEFAULT_NOTE_KEY, type: DEFAULT_TYPE_RANGE }, { key: DEFAULT_NOTES_KEY, type: DEFAULT_TYPE_RANGE }] },
+  { key: DEFAULT_COUNTRY_KEY, item: [{ key: DEFAULT_COUNTRY_KEY, type: DEFAULT_TYPE_LIST }] },
+  { key: DEFAULT_DURATION_KEY, item: [{ key: DEFAULT_DURATION_KEY, type: DEFAULT_TYPE_RANGE }] },
+  { key: DEFAULT_AGE_KEY, label: 'Age', item: [{ key: DEFAULT_MOVIES_AGE_KEY, type: DEFAULT_TYPE_LIST }, { key: DEFAULT_TV_AGE_KEY, type: DEFAULT_TYPE_LIST }] }
 ];
 
-export const MONO_RANGE_KEYS = ['release', 'duration'] as const;
+export const MONO_RANGE_KEYS = [DEFAULT_RELEASE_KEY, DEFAULT_DURATION_KEY] as const;

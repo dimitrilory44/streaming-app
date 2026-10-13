@@ -84,15 +84,14 @@ export interface Criteria {
   notes?: number;
   country?: Country[];
   duration?: number;
-  age?: any[];
   moviesAge?: Certification[];
   seriesAge?: Certification[];
 }
 
-export interface FilterMenu {
+export interface CriteriaList {
   key: string;
   label?: string;
-  members: CriteriaItem['key'][];
+  item: CriteriaItem[];
 }
 
 export interface ReleaseDate {

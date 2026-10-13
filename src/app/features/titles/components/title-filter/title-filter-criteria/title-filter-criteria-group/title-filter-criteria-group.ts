@@ -20,10 +20,6 @@ export class TitleFilterCriteriaGroupComponent {
 
   readonly onConvertKeyToLabel = convertKeyToLabel;
 
-  readonly showSubtitles = computed(() => this.criteria().length > 1);
-
-  resetGroup() {
-    this.criteria().forEach(c => this.resetRequested.emit(c.key));
-  }
+  readonly isMultiCriteria = computed(() => this.criteria().length > 1);
 
 }

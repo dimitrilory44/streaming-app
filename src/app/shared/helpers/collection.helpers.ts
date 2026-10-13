@@ -1,6 +1,6 @@
 import { computed, Signal, WritableSignal } from "@angular/core";
 import { Criteria, UserPreferences } from "@core/models/media-model";
-import { MONO_RANGE_KEYS } from "@shared/constants/preference-key";
+import { MONO_RANGE_KEYS } from "@shared/constants/filter-preferences";
 import { AllSortOptions, ArrayKeys, Media, MediaType, MonoRangeKey, RangeKeys } from "@shared/types/collection.types";
 
 /**

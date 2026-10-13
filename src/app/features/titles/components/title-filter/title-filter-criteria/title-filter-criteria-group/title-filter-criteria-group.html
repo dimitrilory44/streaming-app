@@ -1,17 +1,13 @@
-<div class="criteria-panel__header">
-  <span class="criteria-panel__title">{{ title() }}</span>
-  <button class="criteria-panel__reset" (click)="resetGroup()">
-    <mat-icon>close</mat-icon>
-    Réinitialiser
-  </button>
-</div>
-
 @for (criterion of criteria(); track criterion.key) {
 <div class="criteria-panel__box">
-  @if (showSubtitles()) {
-    <span class="criteria-panel__subtitle">{{ onConvertKeyToLabel(criterion.key) }}</span>
-  }
-
+  <div class="criteria-panel__header">
+      <span class="criteria-panel__title">{{ isMultiCriteria() ? onConvertKeyToLabel(criterion.key) : title() }}</span>
+      <button class="criteria-panel__reset" (click)="resetRequested.emit(criterion.key)">
+        <mat-icon>close</mat-icon>
+        Réinitialiser
+      </button>
+  </div>
+  
   @if (criterion.type === 'list') {
   <title-filter-criteria-list [criterion]="criterion" />
   } @else {

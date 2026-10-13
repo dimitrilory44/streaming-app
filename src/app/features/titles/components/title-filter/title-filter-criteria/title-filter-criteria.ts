@@ -5,8 +5,8 @@ import { Criteria } from '@core/models/media-model';
 import { UserPreferencesService } from '@core/services/user-preferences-service';
 import { MatButtonModule } from '@angular/material/button';
 import { TmdbApiService } from '@core/services/tmdb-api';
-import { AllSortOptions, CriteriaItem } from '@shared/types/collection.types';
-import { DEFAULT_COUNTRY_KEY, DEFAULT_DURATION_KEY, DEFAULT_EXCLUDED_GENDERS_KEY, DEFAULT_GENDERS_KEY, DEFAULT_MOVIES_AGE_KEY, DEFAULT_NOTE_KEY, DEFAULT_NOTES_KEY, DEFAULT_RELEASE_DATE, DEFAULT_RELEASE_KEY, DEFAULT_SORT, DEFAULT_TV_AGE_KEY, FILTER_MENUS } from '@shared/constants/preference-key';
+import { AllSortOptions } from '@shared/types/collection.types';
+import * as PREF from '@shared/constants/filter-preferences';
 import { TitleFilterCriteriaGroupComponent } from './title-filter-criteria-group/title-filter-criteria-group';
 import { convertKeyToLabel } from '@shared/helpers/criteria.helpers';
 
@@ -25,41 +25,29 @@ export class TitleFilterCriteriaComponent {
 
   readonly openMenuKey = signal<string | null>(null);
 
-  readonly criteria: CriteriaItem[] = [
-    { key: DEFAULT_RELEASE_KEY, type: 'range' },
-    { key: DEFAULT_GENDERS_KEY, type: 'list', value: this.#tmdbApiService.allGenders },
-    { key: DEFAULT_NOTE_KEY, type: 'range' },
-    { key: DEFAULT_NOTES_KEY, type: 'range' },
-    { key: DEFAULT_COUNTRY_KEY, type: 'list' },
-    { key: DEFAULT_DURATION_KEY, type: 'range' },
-    { key: DEFAULT_MOVIES_AGE_KEY, type: 'list' },
-    { key: DEFAULT_TV_AGE_KEY, type: 'list' }
-  ];
+  readonly criteriaList = computed(() => {
+    const genders = this.#tmdbApiService.allGenders ?? [];
 
-  readonly filteredCriteria = computed(() => this.criteria.filter(c => !c.groupKeyWith));
-  readonly onConvertKeyToLabel = convertKeyToLabel;
-
-  readonly menus = computed(() => FILTER_MENUS.map(menu => {
-      const criteria = menu.members
-        .map(key => this.filteredCriteria().find(c => c.key === key))
-        .filter((c): c is NonNullable<typeof c> => !!c);
+    return PREF.CRITERIA_LIST.map(criteria => {
+      const buildCriteria = criteria.item.map(c =>
+        c.key === PREF.DEFAULT_GENDERS_KEY ? { ...c, value: genders } : c
+      );
       return {
-        ...menu,
-        label: menu.label ?? this.onConvertKeyToLabel(menu.members[0]),
-        criteria,
-        isActive: menu.members.some(key => this.isCriterionActive(key)),
+        ...criteria,
+        label: criteria.label ?? convertKeyToLabel(buildCriteria[0].key),
+        items: buildCriteria,
+        isActive: buildCriteria.some(c => this.isCriterionActive(c.key)),
       };
-    }).filter(menu => menu.criteria.length > 0)
-  );
+    });
+  });
 
   isCriterionActive(key: keyof Criteria): boolean {
-    const prefs = this.#userPreferencesService;
     switch (key) {
-      case DEFAULT_RELEASE_KEY: return !prefs.releaseDateHelpers.isDefault();
-      case DEFAULT_NOTE_KEY: return !prefs.noteHelpers.isDefault();
-      case DEFAULT_GENDERS_KEY: return prefs.genreHelpers.hasItems() || prefs.genreExcludedHelpers.hasItems();
+      case PREF.DEFAULT_RELEASE_KEY: return !this.#userPreferencesService.releaseDateHelpers.isDefault();
+      case PREF.DEFAULT_NOTE_KEY: return !this.#userPreferencesService.noteHelpers.isDefault();
+      case PREF.DEFAULT_GENDERS_KEY: return this.#userPreferencesService.genreHelpers.hasItems() || this.#userPreferencesService.genreExcludedHelpers.hasItems();
       default: {
-        const value = prefs.criteria()?.[key];
+        const value = this.#userPreferencesService.criteria()?.[key];
         return Array.isArray(value) ? value.length > 0 : value != null;
       }
     }
@@ -70,15 +58,15 @@ export class TitleFilterCriteriaComponent {
 
   reset(key: keyof Criteria) {
     switch (key) {
-      case DEFAULT_RELEASE_KEY:
-        this.#userPreferencesService.setCriteria(DEFAULT_RELEASE_KEY, DEFAULT_RELEASE_DATE);
+      case PREF.DEFAULT_RELEASE_KEY:
+        this.#userPreferencesService.setCriteria(PREF.DEFAULT_RELEASE_KEY, PREF.DEFAULT_RELEASE_DATE);
         return;
-      case DEFAULT_GENDERS_KEY:
-        this.#userPreferencesService.setCriteria(DEFAULT_GENDERS_KEY, []);
-        this.#userPreferencesService.setCriteria(DEFAULT_EXCLUDED_GENDERS_KEY, []);
+      case PREF.DEFAULT_GENDERS_KEY:
+        this.#userPreferencesService.setCriteria(PREF.DEFAULT_GENDERS_KEY, []);
+        this.#userPreferencesService.setCriteria(PREF.DEFAULT_EXCLUDED_GENDERS_KEY, []);
         return;
-      case DEFAULT_NOTE_KEY:
-        this.#userPreferencesService.setCriteria(DEFAULT_NOTE_KEY, 0);
+      case PREF.DEFAULT_NOTE_KEY:
+        this.#userPreferencesService.setCriteria(PREF.DEFAULT_NOTE_KEY, 0);
         return;
       default:
         this.#userPreferencesService.setAllCriteria({});
@@ -88,7 +76,7 @@ export class TitleFilterCriteriaComponent {
 
   resetAll() {
     this.#userPreferencesService.setAllCriteria({});
-    this.resetSortChange.emit(DEFAULT_SORT);
+    this.resetSortChange.emit(PREF.DEFAULT_SORT);
   }
 
 }
