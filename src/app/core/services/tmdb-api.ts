@@ -1,11 +1,12 @@
 import { computed, effect, inject, Injectable, Injector, Signal, signal } from '@angular/core';
 import { environment } from '@environments/environment';
-import { Genre, GenreList, Providers, ProvidersApi, ProvidersState, TitleCollection, TitleDiscover } from '@core/models/media-model';
+import { Country, Genre, GenreList, Providers, ProvidersApi, ProvidersState, TitleCollection, TitleDiscover, TmdbCountry } from '@core/models/media-model';
 import { HttpClient, httpResource } from '@angular/common/http';
 import { UserPreferencesService } from './user-preferences-service';
 import { catchError, map, timeout } from 'rxjs/operators';
 import { of, Subscription } from 'rxjs';
 import { MediaType } from '@shared/types/collection.types';
+import { COUNTRY_ID } from '@shared/constants/filter-preferences';
 
 @Injectable({
   providedIn: 'root',
@@ -31,6 +32,7 @@ export class TmdbApiService {
 
   readonly filterNote = computed(() => this.#userPreferencesService.noteHelpers.items());
   readonly filterNotes = computed(() => this.#userPreferencesService.notesHelpers.items());
+  readonly filterCountry = computed(() => this.#userPreferencesService.countryHelpers.items().map(sg => sg.code).join('|'));
   
   readonly movieCollection = httpResource<TitleCollection>(() => `${this.#MOVIE_API_URL}/list/1`);
   
@@ -58,6 +60,18 @@ export class TmdbApiService {
       ).values()
     );
   });
+
+  readonly allCountries = httpResource<Country[]>(() => ({
+    url: `${this.#MOVIE_API_URL}/configuration/countries`,
+    params: { language: 'fr-FR' },
+  }),
+  {
+    defaultValue: [] as Country[],
+    parse: (raw): Country[] => (raw as TmdbCountry[])
+      .map(c => ({ id: COUNTRY_ID(c.iso_3166_1), code: c.iso_3166_1, name: c.native_name }))
+      .sort((a, b) => a.name.localeCompare(b.name, 'fr'))
+  }
+  );
 
   sortFilter(mediaType: MediaType) {
     return this.#userPreferencesService.sortHelpers[mediaType].items();
@@ -94,6 +108,7 @@ export class TmdbApiService {
       const isGenderExcludedFilterActive = this.#userPreferencesService.genreExcludedHelpers.hasItems();
       const isNoteFilterActive = !this.#userPreferencesService.noteHelpers.isDefault();
       const isNotesCountFilterActive = !this.#userPreferencesService.notesHelpers.isDefault();
+      const isCountryFilterActive = this.#userPreferencesService.countryHelpers.hasItems();
 
       if (isDateFilterActive) {
         const { beginDate, endDate } = this.filterYear();
@@ -114,13 +129,18 @@ export class TmdbApiService {
       }
 
       if (isNoteFilterActive) {
-        const note = this.#userPreferencesService.noteHelpers.items();
+        const note = this.filterNote();
         params['vote_average.gte'] = note;
       }
 
       if (isNotesCountFilterActive) {
-        const notes = this.#userPreferencesService.notesHelpers.items();
+        const notes = this.filterNotes();
         params['vote_count.gte'] = notes;
+      }
+
+      if (isCountryFilterActive) {
+        const countries = this.filterCountry();
+        params['with_origin_country'] = countries;
       }
 
       return {

@@ -1,10 +1,10 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, effect, inject, input, linkedSignal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { Criteria, CriteriaListItem, Genre } from '@core/models/media-model';
 import { UserPreferencesService } from '@core/services/user-preferences-service';
-import { DEFAULT_EXCLUDED_GENDERS_KEY, DEFAULT_GENDERS_KEY } from '@shared/constants/filter-preferences';
+import { DEFAULT_COUNTRY_KEY, DEFAULT_EXCLUDED_GENDERS_KEY, DEFAULT_GENDERS_KEY } from '@shared/constants/filter-preferences';
 import { makeSelectionHelpers } from '@shared/helpers/collection.helpers';
 import { ArrayElement, ArrayKeys, GenderState } from '@shared/types/collection.types';
 
@@ -18,6 +18,25 @@ export class TitleFilterCriteriaListComponent {
   readonly #userPreferencesService = inject(UserPreferencesService);
 
   readonly criterion = input.required<CriteriaListItem<ArrayKeys<Criteria> & keyof Criteria>>();
+  
+  readonly #pageSize = computed(() => this.criterion().pageSize ?? Infinity);
+  readonly limit = linkedSignal(() => this.#pageSize());
+  
+  readonly #items = computed(() => this.criterion().value ?? []);
+  
+  readonly #ordered = computed(() => {
+    const pinned = this.criterion().pinnedIds ?? [];
+    const rank = (id: number) => {
+      const i = pinned.indexOf(id);
+      return i === -1 ? pinned.length : i;
+    };
+    return [...this.#items()].sort((a, b) => rank(a.id) - rank(b.id));
+  });
+
+  readonly #selectedIds = computed(() => {
+    const list = (this.#userPreferencesService.criteria()?.[this.criterion().key] ?? []) as { id: number }[];
+    return new Set(list.map(i => i.id));
+  });
 
   readonly genderStates = computed<Map<number, GenderState>>(() => {
     const included = this.#userPreferencesService.genreHelpers.items();
@@ -30,20 +49,34 @@ export class TitleFilterCriteriaListComponent {
     return map;
   });
 
+  readonly visibleCountries = computed(() => {
+    return [
+      ...this.#ordered().slice(0, this.limit()),
+      ...this.#ordered().slice(this.limit()).filter(i => this.#selectedIds().has(i.id)),
+    ];
+  });
+
+  readonly remaining = computed(() => Math.max(this.#ordered().length - this.limit(), 0));
+
+  showMore() {
+    this.limit.update(n => n + (this.criterion().pageSize ?? 0));
+  }
+
   isSelectionSelected(key: keyof Criteria, idItem: number): boolean {
     switch (key) {
       case DEFAULT_GENDERS_KEY: return this.genderStates().get(idItem) === 'includedGenders';
+      case DEFAULT_COUNTRY_KEY: return this.#selectedIds().has(idItem);
       default: return false;
     }
   }
 
-  onCriteriaCheckboxClick(event: MouseEvent, criteria: CriteriaListItem<ArrayKeys<Criteria> & keyof Criteria>, item: Genre): void {
-    if (criteria.key === DEFAULT_GENDERS_KEY) {
-      event.preventDefault();
-      this.cycleGender(item);
-    } else {
-      this.toggleItem(criteria.key, item);
-    }
+  onGenreCheckboxClick(event: MouseEvent, item: Genre): void {
+    event.preventDefault();
+    this.cycleGender(item);
+  }
+
+  onCriteriaCheckboxClick<K extends ArrayKeys<Criteria> & keyof Criteria>(criteria: CriteriaListItem<K>, item: ArrayElement<NonNullable<Criteria[K]>>): void {
+    this.toggleItem(criteria.key, item);
   }
 
   toggleItem<K extends ArrayKeys<Criteria> & keyof Criteria>(key: K, item: ArrayElement<NonNullable<Criteria[K]>>): void {
@@ -70,6 +103,12 @@ export class TitleFilterCriteriaListComponent {
         this.toggleItem(DEFAULT_EXCLUDED_GENDERS_KEY, item);
         break;
     }
+  }
+
+  constructor() {
+    effect(() => {
+      this.limit.set(this.criterion().pageSize ?? Infinity)
+    });
   }
 
 }

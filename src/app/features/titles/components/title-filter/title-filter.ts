@@ -58,6 +58,7 @@ export class TitleFilterComponent {
     count += this.#userPreferencesService.releaseDateHelpers.isDefault() ? 0 : 1;
     count += this.#userPreferencesService.noteHelpers.isDefault() ? 0 : 1;
     count += this.#userPreferencesService.notesHelpers.isDefault() ? 0 : 1;
+    count += this.#userPreferencesService.countryHelpers.count() ? 1 : 0;
     // TODO : autres
     return count;
   });

@@ -31,6 +31,7 @@ export class PopularTitlesComponent {
   readonly selectedEndYear = computed(() => this.#tmdbApiService.filterYear().endDate);
   readonly selectedNote = computed(() => this.#tmdbApiService.filterNote());
   readonly selectedNotes = computed(() => this.#tmdbApiService.filterNotes());
+  readonly selectedCountries = computed(() => this.#tmdbApiService.filterCountry());
 
   readonly sortMenu = computed(() => this.#tmdbApiService.sortFilter(this.mediaType()));
 
@@ -103,6 +104,7 @@ export class PopularTitlesComponent {
       this.selectedEndYear();
       this.selectedNote();
       this.selectedNotes();
+      this.selectedCountries();
       this.sortMenu();
       this.titles.set([]);
       this.currentPage.set(1);

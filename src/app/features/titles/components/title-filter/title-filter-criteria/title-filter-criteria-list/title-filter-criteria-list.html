@@ -1,19 +1,37 @@
 @let key = criterion().key;
 @if (key === 'genders') {
     <div class="criteria-panel__list">
-        @for (item of criterion().value?.() ?? []; track item.id) {
+        @for (item of criterion().value ?? []; track item.id) {
             <mat-checkbox class="btn-checkbox" [class.is-display]="genderStates().get(item.id) === 'excludedGenders'"
                 [checked]="isSelectionSelected(key, item.id)"
-                (click)="onCriteriaCheckboxClick($event, criterion(), item)">
+                (click)="onGenreCheckboxClick($event, item)">
                 {{ item.name}}
             </mat-checkbox>
 
             @if (key === 'genders' && genderStates().get(item.id) === 'excludedGenders') {
-            <button mat-icon-button (click)="onCriteriaCheckboxClick($event, criterion(), item)">
+            <button mat-icon-button (click)="onGenreCheckboxClick($event, item)">
                 <mat-icon class="exclude-badge">remove_circle</mat-icon>
                 <span class="exclude-badge__label">{{ item.name}}</span>
             </button>
             }
+        }
+    </div>
+}
+
+@if (key === 'country') {
+    <div class="criteria-panel__list">
+        @for (country of visibleCountries(); track country.id) {
+            <mat-checkbox class="btn-checkbox"
+                [checked]="isSelectionSelected(key, country.id)"
+                (click)="onCriteriaCheckboxClick(criterion(), country)">
+                {{ country.name }}
+            </mat-checkbox>
+        }
+
+        @if (remaining() > 0) {
+            <button mat-stroked-button class="criteria-panel__list__more" (click)="showMore()">
+                Voir plus de pays...
+            </button>
         }
     </div>
 }

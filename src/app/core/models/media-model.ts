@@ -34,7 +34,6 @@ export interface UserPreferences {
 interface CriteriaBase<K extends keyof Criteria> {
   key: K;
   hasSelected?: boolean;
-  groupKeyWith?: string;
 }
 
 /**
@@ -55,7 +54,9 @@ interface CriteriaBase<K extends keyof Criteria> {
  */
 export interface CriteriaListItem<K extends keyof Criteria> extends CriteriaBase<K> {
   type: 'list';
-  value?: Signal<NonNullable<Criteria[K]>>;
+  value?: NonNullable<Criteria[K]>;
+  pinnedIds?: number[];
+  pageSize?: number;
 }
 
 /**
@@ -73,7 +74,7 @@ export interface CriteriaListItem<K extends keyof Criteria> extends CriteriaBase
  */
 export interface CriteriaRangeItem<K extends keyof Criteria> extends CriteriaBase<K> {
   type: 'range';
-  value?: Signal<NonNullable<Criteria[K]>>;
+  value?: NonNullable<Criteria[K]>;
 }
 
 export interface Criteria {
@@ -153,8 +154,14 @@ export interface Genre {
 
 export interface Country {
   id: number;
-  iso_3166_1: string;
+  code: string;
   name: string; 
+}
+
+export interface TmdbCountry {
+  iso_3166_1: string;
+  english_name: string;
+  native_name: string;
 }
 
 export interface Certification {

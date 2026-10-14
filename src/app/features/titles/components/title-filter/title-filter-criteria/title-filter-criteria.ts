@@ -22,15 +22,17 @@ export class TitleFilterCriteriaComponent {
 
   readonly resetSort = input<AllSortOptions>();
   readonly resetSortChange = output<AllSortOptions>();
-
   readonly openMenuKey = signal<string | null>(null);
 
   readonly criteriaList = computed(() => {
-    const genders = this.#tmdbApiService.allGenders ?? [];
+    const genders = this.#tmdbApiService.allGenders() ?? [];
+    const countries = this.#tmdbApiService.allCountries.value() ?? [];
 
     return PREF.CRITERIA_LIST.map(criteria => {
       const buildCriteria = criteria.item.map(c =>
-        c.key === PREF.DEFAULT_GENDERS_KEY ? { ...c, value: genders } : c
+        c.key === PREF.DEFAULT_GENDERS_KEY ? { ...c, value: genders }
+          : c.key === PREF.DEFAULT_COUNTRY_KEY ? { ...c, value: countries }
+            : c
       );
       return {
         ...criteria,
@@ -46,6 +48,7 @@ export class TitleFilterCriteriaComponent {
       case PREF.DEFAULT_RELEASE_KEY: return !this.#userPreferencesService.releaseDateHelpers.isDefault();
       case PREF.DEFAULT_NOTE_KEY: return !this.#userPreferencesService.noteHelpers.isDefault();
       case PREF.DEFAULT_GENDERS_KEY: return this.#userPreferencesService.genreHelpers.hasItems() || this.#userPreferencesService.genreExcludedHelpers.hasItems();
+      case PREF.DEFAULT_COUNTRY_KEY: return this.#userPreferencesService.countryHelpers.hasItems();
       default: {
         const value = this.#userPreferencesService.criteria()?.[key];
         return Array.isArray(value) ? value.length > 0 : value != null;
@@ -67,6 +70,9 @@ export class TitleFilterCriteriaComponent {
         return;
       case PREF.DEFAULT_NOTE_KEY:
         this.#userPreferencesService.setCriteria(PREF.DEFAULT_NOTE_KEY, 0);
+        return;
+      case PREF.DEFAULT_COUNTRY_KEY:
+        this.#userPreferencesService.setCriteria(PREF.DEFAULT_COUNTRY_KEY, []);
         return;
       default:
         this.#userPreferencesService.setAllCriteria({});

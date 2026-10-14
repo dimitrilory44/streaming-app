@@ -11,6 +11,17 @@
       display: flex; 
       flex-flow: wrap;
     }
+
+    &__more {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: none;
+      border: none;
+      color: #f5c518;
+      cursor: pointer;
+      width: 200px;
+    }
   }
 }
 

@@ -27,6 +27,8 @@ export const DEFAULT_SORT_MEDIA: UserPreferences = {
 };
 export const DEFAULT_MEDIA = 'movie';
 
+export const COUNTRY_ID = (code: string): number => code.charCodeAt(0) * 256 + code.charCodeAt(1);
+
 export const CRITERIA_LABELS: Partial<Record<keyof Criteria, string>> = {
   [DEFAULT_RELEASE_KEY]: 'Année de sortie',
   [DEFAULT_GENDERS_KEY]: 'Genres',
@@ -42,9 +44,19 @@ export const CRITERIA_LIST: CriteriaList[] = [
   { key: DEFAULT_RELEASE_KEY, item: [{ key: DEFAULT_RELEASE_KEY, type: DEFAULT_TYPE_RANGE }] },
   { key: DEFAULT_GENDERS_KEY, item: [{ key: DEFAULT_GENDERS_KEY, type: DEFAULT_TYPE_LIST }] },
   { key: DEFAULT_NOTE_KEY, item: [{ key: DEFAULT_NOTE_KEY, type: DEFAULT_TYPE_RANGE }, { key: DEFAULT_NOTES_KEY, type: DEFAULT_TYPE_RANGE }] },
-  { key: DEFAULT_COUNTRY_KEY, item: [{ key: DEFAULT_COUNTRY_KEY, type: DEFAULT_TYPE_LIST }] },
+  { 
+    key: DEFAULT_COUNTRY_KEY, 
+    item: [{ 
+        key: DEFAULT_COUNTRY_KEY, 
+        type: DEFAULT_TYPE_LIST,
+        pinnedIds: ['FR', 'US', 'DE', 'BR', 'AU', 'NZ'].map(code => COUNTRY_ID(code)),
+        pageSize: 6,
+    }],  
+  },
   { key: DEFAULT_DURATION_KEY, item: [{ key: DEFAULT_DURATION_KEY, type: DEFAULT_TYPE_RANGE }] },
   { key: DEFAULT_AGE_KEY, label: 'Age', item: [{ key: DEFAULT_MOVIES_AGE_KEY, type: DEFAULT_TYPE_LIST }, { key: DEFAULT_TV_AGE_KEY, type: DEFAULT_TYPE_LIST }] }
 ];
 
 export const MONO_RANGE_KEYS = [DEFAULT_RELEASE_KEY, DEFAULT_DURATION_KEY] as const;
+
+
