@@ -15,8 +15,10 @@
     }
 
     &__actions {
-      display: flex;
-      margin-top: 10px;
+      display: grid;
+      grid-template-columns: repeat(4, auto);
+      justify-content: start;
+      gap: 4px;
     }
   }
 }

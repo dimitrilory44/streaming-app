@@ -27,12 +27,19 @@ export class TmdbApiService {
     const items = this.#userPreferencesService.releaseDateHelpers.items();
     const beginDate = items.min ? `${items.min}-01-01` : '1900-01-01';
     const endDate = items.max ? `${items.max}-12-31` : `${new Date().getFullYear()}-12-31`;
-    return { beginDate, endDate }
+    return { beginDate, endDate };
   });
 
   readonly filterNote = computed(() => this.#userPreferencesService.noteHelpers.items());
   readonly filterNotes = computed(() => this.#userPreferencesService.notesHelpers.items());
   readonly filterCountry = computed(() => this.#userPreferencesService.countryHelpers.items().map(sg => sg.code).join('|'));
+
+  readonly filterDuration = computed(() => {
+    const items = this.#userPreferencesService.durationHelpers.items();
+    const beginDuration = items.min ? Math.round(items.min * 60) : 0;
+    const endDuration = items.max ? Math.round(items.max * 60) : 180;
+    return { beginDuration, endDuration };
+  });
   
   readonly movieCollection = httpResource<TitleCollection>(() => `${this.#MOVIE_API_URL}/list/1`);
   
@@ -109,6 +116,7 @@ export class TmdbApiService {
       const isNoteFilterActive = !this.#userPreferencesService.noteHelpers.isDefault();
       const isNotesCountFilterActive = !this.#userPreferencesService.notesHelpers.isDefault();
       const isCountryFilterActive = this.#userPreferencesService.countryHelpers.hasItems();
+      const isDurationFilterActive = !this.#userPreferencesService.durationHelpers.isDefault();
 
       if (isDateFilterActive) {
         const { beginDate, endDate } = this.filterYear();
@@ -141,6 +149,12 @@ export class TmdbApiService {
       if (isCountryFilterActive) {
         const countries = this.filterCountry();
         params['with_origin_country'] = countries;
+      }
+
+      if (isDurationFilterActive) {
+        const { beginDuration, endDuration } = this.filterDuration();
+        params['with_runtime.gte'] = beginDuration;
+        params['with_runtime.lte'] = endDuration;
       }
 
       return {

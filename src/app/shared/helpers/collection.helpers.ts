@@ -1,7 +1,6 @@
 import { computed, Signal, WritableSignal } from "@angular/core";
 import { Criteria, UserPreferences } from "@core/models/media-model";
-import { MONO_RANGE_KEYS } from "@shared/constants/filter-preferences";
-import { AllSortOptions, ArrayKeys, Media, MediaType, MonoRangeKey, RangeKeys } from "@shared/types/collection.types";
+import { AllSortOptions, ArrayKeys, Media, MediaType, RangeKeys } from "@shared/types/collection.types";
 
 /**
  * Calcule la longueur d'un tableau (readonly ou non), en gérant le cas où
@@ -220,8 +219,4 @@ export function makeSortHelpers(media: MediaType, selectedData: WritableSignal<U
     });
     const set = (value: AllSortOptions) => selectedData.update(current => ({ ...current, sort: { ...current.sort, [media]: value } }));
     return { items, isDefault, set };
-}
-
-export function isMonoCriterion(key: RangeKeys<Criteria>): key is MonoRangeKey {
-    return MONO_RANGE_KEYS.includes(key as MonoRangeKey);
 }

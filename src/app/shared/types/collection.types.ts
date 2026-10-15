@@ -1,5 +1,5 @@
 import { CriteriaListItem, CriteriaRangeItem, MovieMedia, SeriesMedia } from "@core/models/media-model";
-import { DEFAULT_COUNTRY_KEY, DEFAULT_DURATION_KEY, DEFAULT_GENDERS_KEY, DEFAULT_MOVIES_AGE_KEY, DEFAULT_NOTE_KEY, DEFAULT_NOTES_KEY, DEFAULT_RELEASE_KEY, DEFAULT_TV_AGE_KEY, MONO_RANGE_KEYS } from '@shared/constants/filter-preferences';
+import { DEFAULT_COUNTRY_KEY, DEFAULT_DURATION_KEY, DEFAULT_GENDERS_KEY, DEFAULT_MOVIES_AGE_KEY, DEFAULT_NOTE_KEY, DEFAULT_NOTES_KEY, DEFAULT_RELEASE_KEY, DEFAULT_TV_AGE_KEY } from '@shared/constants/filter-preferences';
 
 /**
  * Extrait, parmi les clés de `T`, uniquement celles dont la valeur est
@@ -160,7 +160,7 @@ export type MovieSortOptions = CommonSortOptions | 'release_date.desc' | 'revenu
  */
 export type TVSortOptions = CommonSortOptions | 'first_air_date.desc' | 'name.asc';
 
-export type MonoRangeKey = typeof MONO_RANGE_KEYS[number];
+export type DurationPreset = '<30m' | '45m' | '1h' | '1.5h' | '2h' | '2.5h+';
 
 export type CriteriaItem =
   | CriteriaRangeItem<typeof DEFAULT_RELEASE_KEY>

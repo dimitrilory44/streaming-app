@@ -4,11 +4,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSliderModule } from '@angular/material/slider';
-import { Criteria, CriteriaRangeItem, ReleaseDate } from '@core/models/media-model';
+import { Criteria, CriteriaRangeItem, Duration, ReleaseDate } from '@core/models/media-model';
 import { UserPreferencesService } from '@core/services/user-preferences-service';
-import { DEFAULT_NOTES_KEY, DEFAULT_RELEASE_DATE } from '@shared/constants/filter-preferences';
-import { isMonoCriterion } from '@shared/helpers/collection.helpers';
-import { RangeKeys } from '@shared/types/collection.types';
+import { DEFAULT_DURATION, DEFAULT_NOTES_KEY, DEFAULT_RELEASE_DATE, DURATION_PRESETS } from '@shared/constants/filter-preferences';
+import { DurationPreset, RangeKeys } from '@shared/types/collection.types';
 
 @Component({
   selector: 'title-filter-criteria-range',
@@ -23,24 +22,36 @@ export class TitleFilterCriteriaRangeComponent {
   readonly criterion = input.required<CriteriaRangeItem<RangeKeys<Criteria> & keyof Criteria>>();
 
   readonly selectedRange = signal<'thisYear' | 'lastYear' | null>(null);
+  readonly selectedDuration = signal<'<30m' | '45m' | '1h' | '1.5h' | '2h' | '2.5h+' | null>(null);
   readonly DEFAULT_RELEASE_DATE = DEFAULT_RELEASE_DATE;
-  readonly isMonoCriterion = isMonoCriterion;
+  readonly DEFAULT_DURATION = DEFAULT_DURATION;
 
-  readonly options = [
-    {value: 1000, label: '1k+'},
-    {value: 10000, label: '10k+'},
-    {value: 100000, label: '100k+'},
-    {value: 1000000, label: '1m+'},
+  readonly optionsNotes = [
+    { value: 1000, label: '1k+' },
+    { value: 10000, label: '10k+' },
+    { value: 100000, label: '100k+' },
+    { value: 1000000, label: '1m+' },
   ];
+
+  readonly optionsDuration = [
+    { value: 0.5, label: '<30m' },
+    { value: 0.75, label: '45m' },
+    { value: 1, label: '1h' },
+    { value: 1.5, label: '1.5h' },
+    { value: 2, label: '2h' },
+    { value: 3, label: '2.5h+' },
+  ] as const;
 
   form = this.#formBuilder.group({
     release: this.#formBuilder.group({
       min: this.#formBuilder.nonNullable.control(DEFAULT_RELEASE_DATE.min),
       max: this.#formBuilder.nonNullable.control(DEFAULT_RELEASE_DATE.max)
     }),
-    // TODO : form duration à terminer
     note: this.#formBuilder.nonNullable.control(0),
-    duration: this.#formBuilder.nonNullable.control(0)
+    duration: this.#formBuilder.group({
+      min: this.#formBuilder.nonNullable.control(0),
+      max: this.#formBuilder.nonNullable.control(2.5)
+    })
   });
 
   get note(): number {
@@ -51,15 +62,34 @@ export class TitleFilterCriteriaRangeComponent {
     return this.form.controls.release.getRawValue();
   }
 
-  readonly selected = computed(() => this.#userPreferencesService.notesHelpers.items() ?? null);
+  get durationRange(): Duration {
+    return this.form.controls.duration.getRawValue();
+  }
+
+  readonly selectedNotes = computed(() => this.#userPreferencesService.notesHelpers.items() ?? null);
 
   onReleaseDateChange(key: keyof Criteria) {
     this.selectedRange.set(null);
     this.#userPreferencesService.setCriteria(key, this.releaseDate);
   }
 
+  onDurationChange(key: keyof Criteria) {
+    this.selectedDuration.set(null);
+    this.#userPreferencesService.setCriteria(key, this.durationRange);
+  }
+
   onNoteChange(key: keyof Criteria) {
     this.#userPreferencesService.setCriteria(key, this.note);
+  }
+
+  onSelectDurationChange(key: keyof Criteria, preset: '<30m' | '45m' | '1h' | '1.5h' | '2h' | '2.5h+') {
+    const newPreset = this.selectedDuration() === preset ? null : preset;
+    this.selectedDuration.set(newPreset);
+
+    const range = newPreset ? DURATION_PRESETS[newPreset] : DEFAULT_DURATION;
+    this.form.controls.duration.patchValue(range);
+
+    this.#userPreferencesService.setCriteria(key, this.durationRange);
   }
 
   onSelectRangePreset(key: keyof Criteria, preset: 'thisYear' | 'lastYear') {
@@ -81,6 +111,16 @@ export class TitleFilterCriteriaRangeComponent {
     this.#userPreferencesService.setCriteria(key, this.releaseDate);
   }
 
+  loadSelectedDuration() {
+    const { min, max } = this.#userPreferencesService.durationHelpers.items();
+
+    const match = (Object.keys(DURATION_PRESETS) as DurationPreset[]).find(
+      (p) => DURATION_PRESETS[p].min === min && DURATION_PRESETS[p].max === max
+    );
+
+    this.selectedDuration.set(match ?? null);
+  }
+
   loadSelectedRange() {
     const startYear = this.#userPreferencesService.releaseDateHelpers.items().min;
     if (startYear === this.DEFAULT_RELEASE_DATE.max) {
@@ -93,21 +133,26 @@ export class TitleFilterCriteriaRangeComponent {
   }
 
   onSelectList(value: number) {
-    const next = this.selected() === value ? 0 : value;  
+    const next = this.selectedNotes() === value ? 0 : value;
     this.#userPreferencesService.setCriteria(DEFAULT_NOTES_KEY, next);
   }
 
   constructor() {
     effect(() => {
       this.loadSelectedRange();
+      this.loadSelectedDuration();
       const dates = this.#userPreferencesService.releaseDateHelpers.isDefault()
         ? DEFAULT_RELEASE_DATE
         : this.#userPreferencesService.releaseDateHelpers.items();
       const note = this.#userPreferencesService.noteHelpers.isDefault()
         ? 0
         : this.#userPreferencesService.noteHelpers.items();
+      const duration = this.#userPreferencesService.durationHelpers.isDefault()
+        ? DEFAULT_DURATION
+        : this.#userPreferencesService.durationHelpers.items();
       this.form.controls.release.patchValue(dates, { emitEvent: false });
       this.form.controls.note.patchValue(note, { emitEvent: false });
+      this.form.controls.duration.patchValue(duration, { emitEvent: false });
     });
   }
 

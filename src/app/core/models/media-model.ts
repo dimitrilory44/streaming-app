@@ -84,7 +84,7 @@ export interface Criteria {
   note?: number;
   notes?: number;
   country?: Country[];
-  duration?: number;
+  duration?: Duration;
   moviesAge?: Certification[];
   seriesAge?: Certification[];
 }
@@ -96,6 +96,11 @@ export interface CriteriaList {
 }
 
 export interface ReleaseDate {
+  min: number;
+  max: number;
+}
+
+export interface Duration {
   min: number;
   max: number;
 }
