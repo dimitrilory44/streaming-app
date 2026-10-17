@@ -172,7 +172,7 @@ export interface TmdbCountry {
 export interface Certification {
   id: number;
   certification: string;
-  name: string;
+  meaning: string;
   order: number;
 }
 

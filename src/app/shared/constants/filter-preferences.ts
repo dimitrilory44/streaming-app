@@ -38,6 +38,7 @@ export const DEFAULT_SORT_MEDIA: UserPreferences = {
 export const DEFAULT_MEDIA = 'movie';
 
 export const COUNTRY_ID = (code: string): number => code.charCodeAt(0) * 256 + code.charCodeAt(1);
+export const CERTIFICATION_ID = (certification: string): number => certification.charCodeAt(0) * 256 + certification.charCodeAt(1);
 
 export const CRITERIA_LABELS: Partial<Record<keyof Criteria, string>> = {
   [DEFAULT_RELEASE_KEY]: 'Année de sortie',

@@ -2,9 +2,9 @@ import { Component, computed, effect, inject, input, linkedSignal } from '@angul
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
-import { Criteria, CriteriaListItem, Genre } from '@core/models/media-model';
+import { Certification, Country, Criteria, CriteriaListItem, Genre } from '@core/models/media-model';
 import { UserPreferencesService } from '@core/services/user-preferences-service';
-import { DEFAULT_COUNTRY_KEY, DEFAULT_EXCLUDED_GENDERS_KEY, DEFAULT_GENDERS_KEY } from '@shared/constants/filter-preferences';
+import { DEFAULT_COUNTRY_KEY, DEFAULT_EXCLUDED_GENDERS_KEY, DEFAULT_GENDERS_KEY, DEFAULT_MOVIES_AGE_KEY, DEFAULT_TV_AGE_KEY } from '@shared/constants/filter-preferences';
 import { makeSelectionHelpers } from '@shared/helpers/collection.helpers';
 import { ArrayElement, ArrayKeys, GenderState } from '@shared/types/collection.types';
 
@@ -22,20 +22,29 @@ export class TitleFilterCriteriaListComponent {
   readonly #pageSize = computed(() => this.criterion().pageSize ?? Infinity);
   readonly limit = linkedSignal(() => this.#pageSize());
   
-  readonly #items = computed(() => this.criterion().value ?? []);
+  readonly countries = computed(() => this.criterion().value as Country[] ?? []);
+  readonly genders = computed(() => this.criterion().value as Genre[] ?? []);
+  readonly certificationMovie = computed(() => this.criterion().value as Certification[] ?? []);
+  readonly certificationSerie = computed(() => this.criterion().value as Certification[] ?? []);
   
-  readonly #ordered = computed(() => {
+  readonly #orderedCountries = computed(() => {
     const pinned = this.criterion().pinnedIds ?? [];
     const rank = (id: number) => {
       const i = pinned.indexOf(id);
       return i === -1 ? pinned.length : i;
     };
-    return [...this.#items()].sort((a, b) => rank(a.id) - rank(b.id));
+    return [...this.countries()].sort((a, b) => rank(a.id) - rank(b.id));
   });
 
   readonly #selectedIds = computed(() => {
     const list = (this.#userPreferencesService.criteria()?.[this.criterion().key] ?? []) as { id: number }[];
     return new Set(list.map(i => i.id));
+  });
+
+  readonly #selectedCertification = computed(() => {
+    const criteria = this.#userPreferencesService.criteria();
+    const lists = [criteria?.[DEFAULT_MOVIES_AGE_KEY], criteria?.[DEFAULT_TV_AGE_KEY]];
+    return new Set(lists.flatMap(l => (l ?? []).map(i => i.certification)));
   });
 
   readonly genderStates = computed<Map<number, GenderState>>(() => {
@@ -49,14 +58,15 @@ export class TitleFilterCriteriaListComponent {
     return map;
   });
 
-  readonly visibleCountries = computed(() => {
+  readonly visibleCountries = computed<Country[]>(() => {
+    const countries = this.#orderedCountries().filter((item): item is Country => 'code' in item);
     return [
-      ...this.#ordered().slice(0, this.limit()),
-      ...this.#ordered().slice(this.limit()).filter(i => this.#selectedIds().has(i.id)),
+      ...countries.slice(0, this.limit()),
+      ...countries.slice(this.limit()).filter(i => this.#selectedIds().has(i.id)),
     ];
   });
 
-  readonly remaining = computed(() => Math.max(this.#ordered().length - this.limit(), 0));
+  readonly remaining = computed(() => Math.max(this.#orderedCountries().length - this.limit(), 0));
 
   showMore() {
     this.limit.update(n => n + (this.criterion().pageSize ?? 0));
@@ -65,11 +75,16 @@ export class TitleFilterCriteriaListComponent {
   isSelectionSelected(key: keyof Criteria, idItem: number): boolean {
     switch (key) {
       case DEFAULT_GENDERS_KEY: return this.genderStates().get(idItem) === 'includedGenders';
-      case DEFAULT_COUNTRY_KEY: return this.#selectedIds().has(idItem);
+      case DEFAULT_COUNTRY_KEY:
+        return this.#selectedIds().has(idItem);
       default: return false;
     }
   }
 
+  isSelectionSelectedByCertif(certifItem: string): boolean {
+    return this.#selectedCertification().has(certifItem);
+  }
+ 
   onGenreCheckboxClick(event: MouseEvent, item: Genre): void {
     event.preventDefault();
     this.cycleGender(item);

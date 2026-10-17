@@ -1,7 +1,7 @@
 @switch (criterion().key) {
     @case ('genders') {
         <div class="criteria-panel__list">
-            @for (item of criterion().value ?? []; track item.id) {
+            @for (item of genders(); track item.id) {
             <mat-checkbox class="btn-checkbox" [class.is-display]="genderStates().get(item.id) === 'excludedGenders'"
                 [checked]="isSelectionSelected(criterion().key, item.id)" (click)="onGenreCheckboxClick($event, item)">
                 {{ item.name}}
@@ -30,6 +30,28 @@
             <button mat-stroked-button class="criteria-panel__list__more" (click)="showMore()">
                 Voir plus de pays...
             </button>
+            }
+        </div>
+    }
+
+    @case ('moviesAge') {
+        <div class="criteria-panel__list__other">
+            @for (certification of certificationMovie(); track certification.order) {
+            <mat-checkbox class="btn-checkbox" [checked]="isSelectionSelectedByCertif(certification.certification)"
+                (click)="onCriteriaCheckboxClick(criterion(), certification)">
+                {{ certification.certification }}
+            </mat-checkbox>
+            }
+        </div>
+    }
+
+    @case ('seriesAge') {
+        <div class="criteria-panel__list__other">
+            @for (certification of certificationSerie(); track certification.order) {
+            <mat-checkbox class="btn-checkbox" [checked]="isSelectionSelectedByCertif(certification.certification)"
+                (click)="onCriteriaCheckboxClick(criterion(), certification)">
+                {{ certification.certification }}
+            </mat-checkbox>
             }
         </div>
     }

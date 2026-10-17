@@ -1,11 +1,13 @@
 @for (criterion of criteria(); track criterion.key) {
 <div class="criteria-panel__box">
   <div class="criteria-panel__header">
-      <span class="criteria-panel__title">{{ isMultiCriteria() ? onConvertKeyToLabel(criterion.key) : title() }}</span>
+    <span class="criteria-panel__title">{{ isMultiCriteria() ? onConvertKeyToLabel(criterion.key) : title() }}</span>
+    @if (criterion.key !== 'seriesAge') {
       <button class="criteria-panel__reset" (click)="resetRequested.emit(criterion.key)">
         <mat-icon>close</mat-icon>
         Réinitialiser
       </button>
+    }
   </div>
   
   @if (criterion.type === 'list') {

@@ -1,6 +1,6 @@
 import { computed, effect, inject, Injectable, Injector, Signal, signal } from '@angular/core';
 import { environment } from '@environments/environment';
-import { Country, Genre, GenreList, Providers, ProvidersApi, ProvidersState, TitleCollection, TitleDiscover, TmdbCountry } from '@core/models/media-model';
+import { CertificationList, Country, Genre, GenreList, Providers, ProvidersApi, ProvidersState, TitleCollection, TitleDiscover, TmdbCountry } from '@core/models/media-model';
 import { HttpClient, httpResource } from '@angular/common/http';
 import { UserPreferencesService } from './user-preferences-service';
 import { catchError, map, timeout } from 'rxjs/operators';
@@ -33,6 +33,8 @@ export class TmdbApiService {
   readonly filterNote = computed(() => this.#userPreferencesService.noteHelpers.items());
   readonly filterNotes = computed(() => this.#userPreferencesService.notesHelpers.items());
   readonly filterCountry = computed(() => this.#userPreferencesService.countryHelpers.items().map(sg => sg.code).join('|'));
+  readonly filterAgeMovie = computed(() => this.#userPreferencesService.ageMoviesHelpers.items().map(sg => sg.certification).join('|'));
+  readonly filterAgeSerie = computed(() => this.#userPreferencesService.ageSeriesHelpers.items().map(sg => sg.certification).join('|'));
 
   readonly filterDuration = computed(() => {
     const items = this.#userPreferencesService.durationHelpers.items();
@@ -80,6 +82,30 @@ export class TmdbApiService {
   }
   );
 
+  readonly allCertificationAgeMovie = this.#http
+  .get<CertificationList>(`${this.#MOVIE_API_URL}/certification/movie/list`)
+  .pipe(
+    map(res => res.certifications['FR'] ?? []),
+    map(certifications =>
+      certifications.map((certification, index) => ({
+        ...certification,
+        id: index + 1
+      }))
+    )
+  );
+
+  readonly allCertificationAgeSerie = this.#http
+  .get<CertificationList>(`${this.#MOVIE_API_URL}/certification/tv/list`)
+  .pipe(
+    map(res => res.certifications['FR'] ?? []),
+    map(certifications =>
+      certifications.map((certification, index) => ({
+        ...certification,
+        id: index + 1
+      }))
+    )
+  );
+
   sortFilter(mediaType: MediaType) {
     return this.#userPreferencesService.sortHelpers[mediaType].items();
   }
@@ -117,6 +143,8 @@ export class TmdbApiService {
       const isNotesCountFilterActive = !this.#userPreferencesService.notesHelpers.isDefault();
       const isCountryFilterActive = this.#userPreferencesService.countryHelpers.hasItems();
       const isDurationFilterActive = !this.#userPreferencesService.durationHelpers.isDefault();
+      const isMovieAgeFilterActive = this.#userPreferencesService.ageMoviesHelpers.hasItems();
+      const isSerieAgeFilterActive = this.#userPreferencesService.ageSeriesHelpers.hasItems();
 
       if (isDateFilterActive) {
         const { beginDate, endDate } = this.filterYear();
@@ -155,6 +183,18 @@ export class TmdbApiService {
         const { beginDuration, endDuration } = this.filterDuration();
         params['with_runtime.gte'] = beginDuration;
         params['with_runtime.lte'] = endDuration;
+      }
+
+      if (isMovieAgeFilterActive) {
+        const moviesCertification = this.filterAgeMovie();
+        params['certification_country'] = 'FR';
+        params['certification'] = moviesCertification;
+      }
+
+      if (isSerieAgeFilterActive) {
+        const seriesCertification = this.filterAgeSerie();
+        params['certification_country'] = 'FR';
+        params['certification'] = seriesCertification;
       }
 
       return {

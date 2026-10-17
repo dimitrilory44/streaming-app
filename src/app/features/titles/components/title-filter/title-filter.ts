@@ -60,7 +60,8 @@ export class TitleFilterComponent {
     count += this.#userPreferencesService.notesHelpers.isDefault() ? 0 : 1;
     count += this.#userPreferencesService.countryHelpers.count() ? 1 : 0;
     count += this.#userPreferencesService.durationHelpers.isDefault() ? 0 : 1;
-    // TODO : autres
+    count += this.#userPreferencesService.ageMoviesHelpers.count() ? 1 : 0;
+    count += this.#userPreferencesService.ageSeriesHelpers.count() ? 1 : 0;
     return count;
   });
 

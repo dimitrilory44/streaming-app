@@ -25,6 +25,8 @@ export class UserPreferencesService {
   readonly notesHelpers = makeRangeHelpers(PREF.DEFAULT_NOTES_KEY, this.criteria, 0);
   readonly countryHelpers = makeSelectionHelpers(PREF.DEFAULT_COUNTRY_KEY, this.criteria);
   readonly durationHelpers = makeRangeHelpers(PREF.DEFAULT_DURATION_KEY, this.criteria, PREF.DEFAULT_DURATION, (a, b) => a.min === b.min && a.max === b.max);
+  readonly ageMoviesHelpers = makeSelectionHelpers(PREF.DEFAULT_MOVIES_AGE_KEY, this.criteria);
+  readonly ageSeriesHelpers = makeSelectionHelpers(PREF.DEFAULT_TV_AGE_KEY, this.criteria);
 
   #loadFromStorage(): UserPreferences {
     const raw = localStorage.getItem(PREF.DEFAULT_STORAGE_KEY);
