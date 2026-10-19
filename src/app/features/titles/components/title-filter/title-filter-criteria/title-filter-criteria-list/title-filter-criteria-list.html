@@ -36,9 +36,9 @@
 
     @case ('moviesAge') {
         <div class="criteria-panel__list__other">
-            @for (certification of certificationMovie(); track certification.order) {
+            @for (certification of certifications(); track certification.order) {
             <mat-checkbox class="btn-checkbox" [checked]="isSelectionSelectedByCertif(certification.certification)"
-                (click)="onCriteriaCheckboxClick(criterion(), certification)">
+                (click)="toggleCertification(certification)">
                 {{ certification.certification }}
             </mat-checkbox>
             }
@@ -47,9 +47,9 @@
 
     @case ('seriesAge') {
         <div class="criteria-panel__list__other">
-            @for (certification of certificationSerie(); track certification.order) {
+            @for (certification of certifications(); track certification.order) {
             <mat-checkbox class="btn-checkbox" [checked]="isSelectionSelectedByCertif(certification.certification)"
-                (click)="onCriteriaCheckboxClick(criterion(), certification)">
+                (click)="toggleCertification(certification)">
                 {{ certification.certification }}
             </mat-checkbox>
             }

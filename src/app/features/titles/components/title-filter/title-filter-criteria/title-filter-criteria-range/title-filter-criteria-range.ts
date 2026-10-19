@@ -7,6 +7,7 @@ import { MatSliderModule } from '@angular/material/slider';
 import { Criteria, CriteriaRangeItem, Duration, ReleaseDate } from '@core/models/media-model';
 import { UserPreferencesService } from '@core/services/user-preferences-service';
 import { DEFAULT_DURATION, DEFAULT_NOTES_KEY, DEFAULT_RELEASE_DATE, DURATION_PRESETS } from '@shared/constants/filter-preferences';
+import { OPTIONS_DURATION, OPTIONS_NOTES } from '@shared/constants/sort-options';
 import { DurationPreset, RangeKeys } from '@shared/types/collection.types';
 
 @Component({
@@ -23,24 +24,12 @@ export class TitleFilterCriteriaRangeComponent {
 
   readonly selectedRange = signal<'thisYear' | 'lastYear' | null>(null);
   readonly selectedDuration = signal<'<30m' | '45m' | '1h' | '1.5h' | '2h' | '2.5h+' | null>(null);
+  
   readonly DEFAULT_RELEASE_DATE = DEFAULT_RELEASE_DATE;
+  readonly DEFAULT_NOTES_OPTIONS = OPTIONS_NOTES;
+  
   readonly DEFAULT_DURATION = DEFAULT_DURATION;
-
-  readonly optionsNotes = [
-    { value: 1000, label: '1k+' },
-    { value: 10000, label: '10k+' },
-    { value: 100000, label: '100k+' },
-    { value: 1000000, label: '1m+' },
-  ];
-
-  readonly optionsDuration = [
-    { value: 0.5, label: '<30m' },
-    { value: 0.75, label: '45m' },
-    { value: 1, label: '1h' },
-    { value: 1.5, label: '1.5h' },
-    { value: 2, label: '2h' },
-    { value: 3, label: '2.5h+' },
-  ] as const;
+  readonly DEFAULT_DURATION_OPTIONS = OPTIONS_DURATION;
 
   form = this.#formBuilder.group({
     release: this.#formBuilder.group({

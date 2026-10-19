@@ -161,6 +161,9 @@ export type MovieSortOptions = CommonSortOptions | 'release_date.desc' | 'revenu
 export type TVSortOptions = CommonSortOptions | 'first_air_date.desc' | 'name.asc';
 
 export type DurationPreset = '<30m' | '45m' | '1h' | '1.5h' | '2h' | '2.5h+';
+export type NotesPreset = '1k+' | '10k+' | '100k+' | '1m+';
+
+export type AllPreset = DurationPreset | NotesPreset;
 
 export type CriteriaItem =
   | CriteriaRangeItem<typeof DEFAULT_RELEASE_KEY>

@@ -7,6 +7,7 @@ import { catchError, map, timeout } from 'rxjs/operators';
 import { of, Subscription } from 'rxjs';
 import { MediaType } from '@shared/types/collection.types';
 import { COUNTRY_ID } from '@shared/constants/filter-preferences';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -18,7 +19,7 @@ export class TmdbApiService {
 
   readonly #MOVIE_API_URL = environment.tmdbUrl;
   readonly mediaType = signal<MediaType>('movie');
-  
+
   readonly providersIds = computed(() => this.#userPreferencesService.providerHelpers.items().map(sp => sp.provider_id).join('|'));
   readonly genresIds = computed(() => this.#userPreferencesService.genreHelpers.items().map(sg => sg.id).join('|'));
   readonly genresExcludedIds = computed(() => this.#userPreferencesService.genreExcludedHelpers.items().map(sg => sg.id).join('|'));
@@ -42,30 +43,33 @@ export class TmdbApiService {
     const endDuration = items.max ? Math.round(items.max * 60) : 180;
     return { beginDuration, endDuration };
   });
-  
+
+  readonly certificationsMovie = toSignal(this.getCertificationAgeMovie(), { initialValue: [] });
+  readonly certificationsSerie = toSignal(this.getCertificationAgeSerie(), { initialValue: [] });
+
   readonly movieCollection = httpResource<TitleCollection>(() => `${this.#MOVIE_API_URL}/list/1`);
-  
+
   readonly #moviesGender = httpResource<GenreList>(() => ({
     url: `${this.#MOVIE_API_URL}/genre/movie/list`,
-    params: { language: 'fr-FR' } 
+    params: { language: 'fr-FR' }
   }));
-  
+
   readonly #seriesGender = httpResource<GenreList>(() => ({
     url: `${this.#MOVIE_API_URL}/genre/tv/list`,
-    params: { language: 'fr-FR'}
-  })); 
-  
+    params: { language: 'fr-FR' }
+  }));
+
   readonly allGenders = computed<Genre[]>(() => {
     const movieGenderResults = this.#moviesGender.value()?.genres ?? [];
     const seriesGenderResults = this.#seriesGender.value()?.genres ?? [];
-    
+
     return Array.from(
       new Map(
         [...movieGenderResults, ...seriesGenderResults].map
-        (genre => [
-          genre.id,
-          genre
-        ])
+          (genre => [
+            genre.id,
+            genre
+          ])
       ).values()
     );
   });
@@ -74,42 +78,26 @@ export class TmdbApiService {
     url: `${this.#MOVIE_API_URL}/configuration/countries`,
     params: { language: 'fr-FR' },
   }),
-  {
-    defaultValue: [] as Country[],
-    parse: (raw): Country[] => (raw as TmdbCountry[])
-      .map(c => ({ id: COUNTRY_ID(c.iso_3166_1), code: c.iso_3166_1, name: c.native_name }))
-      .sort((a, b) => a.name.localeCompare(b.name, 'fr'))
+    {
+      defaultValue: [] as Country[],
+      parse: (raw): Country[] => (raw as TmdbCountry[])
+        .map(c => ({ id: COUNTRY_ID(c.iso_3166_1), code: c.iso_3166_1, name: c.native_name }))
+        .sort((a, b) => a.name.localeCompare(b.name, 'fr'))
+    }
+  );
+
+  getCertificationAgeMovie() {
+    return this.#getCertification('movie');
+  } 
+
+  getCertificationAgeSerie() {
+    return this.#getCertification('tv');
   }
-  );
-
-  readonly allCertificationAgeMovie = this.#http
-  .get<CertificationList>(`${this.#MOVIE_API_URL}/certification/movie/list`)
-  .pipe(
-    map(res => res.certifications['FR'] ?? []),
-    map(certifications =>
-      certifications.map((certification, index) => ({
-        ...certification,
-        id: index + 1
-      }))
-    )
-  );
-
-  readonly allCertificationAgeSerie = this.#http
-  .get<CertificationList>(`${this.#MOVIE_API_URL}/certification/tv/list`)
-  .pipe(
-    map(res => res.certifications['FR'] ?? []),
-    map(certifications =>
-      certifications.map((certification, index) => ({
-        ...certification,
-        id: index + 1
-      }))
-    )
-  );
 
   sortFilter(mediaType: MediaType) {
     return this.#userPreferencesService.sortHelpers[mediaType].items();
   }
-  
+
   getPopularMovies(page: Signal<number>) {
     return this.#getPopular('movie', page);
   }
@@ -124,6 +112,20 @@ export class TmdbApiService {
 
   getProvidersSeries() {
     return this.#getProviders('tv');
+  }
+
+  #getCertification(mediaType: 'movie' | 'tv') {
+    return this.#http
+      .get<CertificationList>(`${this.#MOVIE_API_URL}/certification/${mediaType}/list`)
+      .pipe(
+        map(res => res.certifications['FR'] ?? []),
+        map(certifications =>
+          certifications.map((certification, index) => ({
+            ...certification,
+            id: index + 1
+          }))
+        )
+      );
   }
 
   #getPopular(mediaType: 'movie' | 'tv', page: Signal<number>) {
@@ -143,8 +145,7 @@ export class TmdbApiService {
       const isNotesCountFilterActive = !this.#userPreferencesService.notesHelpers.isDefault();
       const isCountryFilterActive = this.#userPreferencesService.countryHelpers.hasItems();
       const isDurationFilterActive = !this.#userPreferencesService.durationHelpers.isDefault();
-      const isMovieAgeFilterActive = this.#userPreferencesService.ageMoviesHelpers.hasItems();
-      const isSerieAgeFilterActive = this.#userPreferencesService.ageSeriesHelpers.hasItems();
+      const ageCertification = mediaType === 'movie' ? this.filterAgeMovie() : this.filterAgeSerie();
 
       if (isDateFilterActive) {
         const { beginDate, endDate } = this.filterYear();
@@ -153,12 +154,12 @@ export class TmdbApiService {
         params[gteKey] = beginDate;
         params[lteKey] = endDate;
       }
-      
+
       if (isGenderFilterActive) {
         const genders = this.genresIds();
         params['with_genres'] = genders;
       }
-      
+
       if (isGenderExcludedFilterActive) {
         const excludedGenders = this.genresExcludedIds();
         params['without_genres'] = excludedGenders;
@@ -185,16 +186,9 @@ export class TmdbApiService {
         params['with_runtime.lte'] = endDuration;
       }
 
-      if (isMovieAgeFilterActive) {
-        const moviesCertification = this.filterAgeMovie();
+      if (ageCertification) {
         params['certification_country'] = 'FR';
-        params['certification'] = moviesCertification;
-      }
-
-      if (isSerieAgeFilterActive) {
-        const seriesCertification = this.filterAgeSerie();
-        params['certification_country'] = 'FR';
-        params['certification'] = seriesCertification;
+        params['certification'] = ageCertification;
       }
 
       return {

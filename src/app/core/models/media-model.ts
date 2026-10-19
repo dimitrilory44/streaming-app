@@ -1,5 +1,5 @@
 import { Signal } from "@angular/core";
-import { AllSortOptions, CriteriaItem, Media, MediaType } from "@shared/types/collection.types";
+import { AllPreset, AllSortOptions, CriteriaItem, DurationPreset, Media, MediaType } from "@shared/types/collection.types";
 
 export interface UserPreferences {
   providers?: Provider[];
@@ -205,6 +205,21 @@ export interface MediaConfig {
 
 export interface SortOption<T extends AllSortOptions> {
   value: T;
+  label: string;
+}
+
+export interface SortOtionCriteria<T extends AllPreset>  {
+  value: number;
+  label: T;
+}
+
+export interface SortOptionDuration {
+  value: number;
+  label: string;
+}
+
+export interface SortOptionNotes {
+  value: number;
   label: string;
 }
 

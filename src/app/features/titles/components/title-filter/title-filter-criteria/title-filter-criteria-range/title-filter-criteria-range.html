@@ -34,7 +34,7 @@
 
             @case ('notes') {
                 <div class="criteria-panel__list__checkbox">
-                    @for (option of optionsNotes; track option.value) {
+                    @for (option of DEFAULT_NOTES_OPTIONS; track option.value) {
                     <mat-checkbox class="btn-checkbox" [checked]="selectedNotes() === option.value"
                         (change)="onSelectList(option.value)">
                         {{ option.label }}
@@ -54,9 +54,9 @@
                     <div class="filter_area__end">2.5h+</div>
                 </div>
                 <div class="criteria-panel__range__actions">
-                    @for (option of optionsDuration; track option.value) {
+                    @for (option of DEFAULT_DURATION_OPTIONS; track option.value) {
                     <mat-checkbox class="btn-checkbox" [checked]="selectedDuration() === option.label"
-                        (change)="onSelectDurationChange(criterion().key, option.label)">
+                        (change)="onSelectDurationChange(criterion().key, $any(option.label))">
                         {{ option.label }}
                     </mat-checkbox>
                     }

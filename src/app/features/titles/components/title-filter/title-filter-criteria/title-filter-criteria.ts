@@ -1,5 +1,4 @@
 import { Component, computed, inject, input, output, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { MatMenuModule } from "@angular/material/menu";
 import { MatIconModule } from "@angular/material/icon";
 import { Criteria } from '@core/models/media-model';
@@ -20,25 +19,18 @@ import { convertKeyToLabel } from '@shared/helpers/criteria.helpers';
 export class TitleFilterCriteriaComponent {
   readonly #userPreferencesService = inject(UserPreferencesService);
   readonly #tmdbApiService = inject(TmdbApiService);
-  readonly #moviesAge = toSignal(this.#tmdbApiService.allCertificationAgeMovie, { initialValue: [] });
-  readonly #serieAge = toSignal(this.#tmdbApiService.allCertificationAgeSerie, { initialValue: [] })
 
   readonly resetSort = input<AllSortOptions>();
   readonly resetSortChange = output<AllSortOptions>();
   readonly openMenuKey = signal<string | null>(null);
 
   readonly criteriaList = computed(() => {
-    const genders = this.#tmdbApiService.allGenders() ?? [];
-    const countries = this.#tmdbApiService.allCountries.value() ?? [];
-    const moviesAge = this.#moviesAge();
-    const seriesAge = this.#serieAge();
-
     return PREF.CRITERIA_LIST.map(criteria => {
       const buildCriteria = criteria.item.map(c =>
-        c.key === PREF.DEFAULT_GENDERS_KEY ? { ...c, value: genders }
-          : c.key === PREF.DEFAULT_COUNTRY_KEY ? { ...c, value: countries }
-            : c.key === PREF.DEFAULT_MOVIES_AGE_KEY ? { ...c, value: moviesAge }
-              : c.key === PREF.DEFAULT_TV_AGE_KEY ? { ...c, value: seriesAge }
+        c.key === PREF.DEFAULT_GENDERS_KEY ? { ...c, value: this.#tmdbApiService.allGenders() ?? [] }
+          : c.key === PREF.DEFAULT_COUNTRY_KEY ? { ...c, value: this.#tmdbApiService.allCountries.value() ?? [] }
+            : c.key === PREF.DEFAULT_MOVIES_AGE_KEY ? { ...c, value: this.#tmdbApiService.certificationsMovie() }
+              : c.key === PREF.DEFAULT_TV_AGE_KEY ? { ...c, value: this.#tmdbApiService.certificationsSerie() }
                 : c
       );
       return {

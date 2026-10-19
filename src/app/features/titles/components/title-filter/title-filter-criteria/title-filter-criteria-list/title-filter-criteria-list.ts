@@ -3,6 +3,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { Certification, Country, Criteria, CriteriaListItem, Genre } from '@core/models/media-model';
+import { TmdbApiService } from '@core/services/tmdb-api';
 import { UserPreferencesService } from '@core/services/user-preferences-service';
 import { DEFAULT_COUNTRY_KEY, DEFAULT_EXCLUDED_GENDERS_KEY, DEFAULT_GENDERS_KEY, DEFAULT_MOVIES_AGE_KEY, DEFAULT_TV_AGE_KEY } from '@shared/constants/filter-preferences';
 import { makeSelectionHelpers } from '@shared/helpers/collection.helpers';
@@ -16,17 +17,17 @@ import { ArrayElement, ArrayKeys, GenderState } from '@shared/types/collection.t
 })
 export class TitleFilterCriteriaListComponent {
   readonly #userPreferencesService = inject(UserPreferencesService);
+  readonly #tmdbApiService = inject(TmdbApiService);
 
   readonly criterion = input.required<CriteriaListItem<ArrayKeys<Criteria> & keyof Criteria>>();
-  
+
   readonly #pageSize = computed(() => this.criterion().pageSize ?? Infinity);
   readonly limit = linkedSignal(() => this.#pageSize());
-  
+
   readonly countries = computed(() => this.criterion().value as Country[] ?? []);
   readonly genders = computed(() => this.criterion().value as Genre[] ?? []);
-  readonly certificationMovie = computed(() => this.criterion().value as Certification[] ?? []);
-  readonly certificationSerie = computed(() => this.criterion().value as Certification[] ?? []);
-  
+  readonly certifications = computed(() => this.criterion().value as Certification[] ?? []);
+
   readonly #orderedCountries = computed(() => {
     const pinned = this.criterion().pinnedIds ?? [];
     const rank = (id: number) => {
@@ -75,8 +76,7 @@ export class TitleFilterCriteriaListComponent {
   isSelectionSelected(key: keyof Criteria, idItem: number): boolean {
     switch (key) {
       case DEFAULT_GENDERS_KEY: return this.genderStates().get(idItem) === 'includedGenders';
-      case DEFAULT_COUNTRY_KEY:
-        return this.#selectedIds().has(idItem);
+      case DEFAULT_COUNTRY_KEY: return this.#selectedIds().has(idItem);
       default: return false;
     }
   }
@@ -84,7 +84,7 @@ export class TitleFilterCriteriaListComponent {
   isSelectionSelectedByCertif(certifItem: string): boolean {
     return this.#selectedCertification().has(certifItem);
   }
- 
+
   onGenreCheckboxClick(event: MouseEvent, item: Genre): void {
     event.preventDefault();
     this.cycleGender(item);
@@ -101,6 +101,26 @@ export class TitleFilterCriteriaListComponent {
       ? current.filter(g => g.id !== item.id)
       : [...current, item];
     this.#userPreferencesService.setCriteria(key, updated.sort((a, b) => a.id - b.id) as Criteria[K]);
+  }
+
+  toggleCertification(item: Certification): void {
+    const isSelected = this.isSelectionSelectedByCertif(item.certification);
+
+    const targets = [
+      { key: DEFAULT_MOVIES_AGE_KEY, available: this.#tmdbApiService.certificationsMovie() },
+      { key: DEFAULT_TV_AGE_KEY, available: this.#tmdbApiService.certificationsSerie() },
+    ] as const;
+
+    for (const { key, available } of targets) {
+      const match = available.find(c => c.certification === item.certification);
+      if (!match) continue; 
+
+      const current = makeSelectionHelpers(key, this.#userPreferencesService.criteria).items();
+      const withoutItem = current.filter(c => c.certification !== item.certification);
+      const updated = isSelected ? withoutItem : [...withoutItem, match];
+
+      this.#userPreferencesService.setCriteria(key, updated.sort((a, b) => a.order - b.order));
+    }
   }
 
   cycleGender(item: Genre): void {

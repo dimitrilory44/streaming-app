@@ -35,7 +35,7 @@ export class PopularTitlesComponent {
   readonly selectedBeginDuration = computed(() => this.#tmdbApiService.filterDuration().beginDuration);
   readonly selectedEndDuration = computed(() => this.#tmdbApiService.filterDuration().endDuration);
   readonly selectedMoviesAgeCertification = computed(() => this.#tmdbApiService.filterAgeMovie());
-  readonly selectedSeriesAgeCertification = computed(() => this.#tmdbApiService.filterAgeMovie());
+  readonly selectedSeriesAgeCertification = computed(() => this.#tmdbApiService.filterAgeSerie());
 
   readonly sortMenu = computed(() => this.#tmdbApiService.sortFilter(this.mediaType()));
 
