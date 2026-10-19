@@ -7,11 +7,12 @@
       "@core/*": ["./src/app/core/*"],
       "@shared/*": ["./src/app/shared/*"],
       "@features/*": ["./src/app/features/*"],
-      "@models/*": ["./src/app/models/*"]
+      "@models/*": ["./src/app/core/models/*"],
+      "@environments/*": ["./src/environments/*"]
     }
   },
   "include": [
     "src/**/*.d.ts",
     "src/**/*.spec.ts"
-  ]
+, "src/testing/environments/environment.ts"  ]
 }
