@@ -184,6 +184,17 @@ describe('TitleFilterCriteriaComponent', () => {
 
       expect(component.isCriterionActive(PREF.DEFAULT_DURATION_KEY)).toBe(true);
     });
+
+    it('le nombre de menus surlignés égale le compteur du badge', () => {
+      prefs.setAllCriteria({
+        note: 7, notes: 200,
+        moviesAge: [{ id: 1, certification: 'U', meaning: 'Tous publics', order: 1 }],
+        seriesAge: [{ id: 1, certification: '10', meaning: 'Moins de 10 ans', order: 1 }],
+      });
+
+      const highlighted = component.criteriaList().filter(c => c.isActive).length;
+      expect(highlighted).toBe(prefs.activeCriteriaCount());
+    });
   });
 
   describe('reset', () => {
@@ -252,7 +263,7 @@ describe('TitleFilterCriteriaComponent', () => {
       expect(prefs.releaseDateHelpers.items()).toEqual({ min: 2000, max: 2010 });
     });
 
-    
+
     it('notes : ne devrait réinitialiser que le nombre de notes', () => {
       prefs.setCriteria(PREF.DEFAULT_NOTE_KEY, 8);
       prefs.setCriteria(PREF.DEFAULT_NOTES_KEY, 500);

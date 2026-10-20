@@ -2,7 +2,7 @@ import { computed, effect, Injectable, signal } from '@angular/core';
 import { Criteria, Provider, UserPreferences } from '@core/models/media-model';
 import * as PREF from '@shared/constants/filter-preferences';
 import { makeRangeHelpers, makeSelectionHelpers, makeSortHelpers } from '@shared/helpers/collection.helpers';
-import { MediaType } from '@shared/types/collection.types';
+import { CriteriaItem, MediaType } from '@shared/types/collection.types';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +10,7 @@ import { MediaType } from '@shared/types/collection.types';
 export class UserPreferencesService {
   readonly data = signal<UserPreferences>(this.#loadFromStorage());
   readonly criteria = computed(() => this.data().criteria);
-  
+
   readonly providerHelpers = makeSelectionHelpers(PREF.DEFAULT_PROVIDERS_KEY, this.data);
   readonly sortHelpers: Record<MediaType, ReturnType<typeof makeSortHelpers>> = {
     movie: makeSortHelpers('movie', this.data, PREF.DEFAULT_SORT),
@@ -28,12 +28,70 @@ export class UserPreferencesService {
   readonly ageMoviesHelpers = makeSelectionHelpers(PREF.DEFAULT_MOVIES_AGE_KEY, this.criteria);
   readonly ageSeriesHelpers = makeSelectionHelpers(PREF.DEFAULT_TV_AGE_KEY, this.criteria);
 
+  readonly activeCriteriaCount = computed(() =>
+    PREF.CRITERIA_LIST.filter(group => group.item.some(item => this.isCriterionActive(item.key))).length
+  );
+
+  isCriterionActive(key: keyof Criteria): boolean {
+    switch (key) {
+      case PREF.DEFAULT_RELEASE_KEY: return !this.releaseDateHelpers.isDefault();
+      case PREF.DEFAULT_NOTE_KEY: return !this.noteHelpers.isDefault();
+      case PREF.DEFAULT_NOTES_KEY: return !this.notesHelpers.isDefault();
+      case PREF.DEFAULT_GENDERS_KEY: return this.genreHelpers.hasItems() || this.genreExcludedHelpers.hasItems();
+      case PREF.DEFAULT_COUNTRY_KEY: return this.countryHelpers.hasItems();
+      case PREF.DEFAULT_DURATION_KEY: return !this.durationHelpers.isDefault();
+      case PREF.DEFAULT_MOVIES_AGE_KEY: return this.ageMoviesHelpers.hasItems();
+      case PREF.DEFAULT_TV_AGE_KEY: return this.ageSeriesHelpers.hasItems();
+      default: {
+        const value = this.criteria()?.[key];
+        return Array.isArray(value) ? value.length > 0 : value != null;
+      }
+    }
+  }
+
+  resetCriterion(key: CriteriaItem['key']): void {
+    switch (key) {
+      case PREF.DEFAULT_RELEASE_KEY:
+        this.setCriteria(key, PREF.DEFAULT_RELEASE_DATE);
+        return;
+      case PREF.DEFAULT_GENDERS_KEY:
+        this.setCriteria(PREF.DEFAULT_GENDERS_KEY, []);
+        this.setCriteria(PREF.DEFAULT_EXCLUDED_GENDERS_KEY, []);
+        return;
+      case PREF.DEFAULT_NOTE_KEY:
+        this.setCriteria(key, PREF.DEFAULT_NOTE);
+        return;
+      case PREF.DEFAULT_NOTES_KEY:
+        this.setCriteria(key, 0);
+        return;
+      case PREF.DEFAULT_COUNTRY_KEY:
+        this.setCriteria(key, []);
+        return;
+      case PREF.DEFAULT_DURATION_KEY:
+        this.setCriteria(key, PREF.DEFAULT_DURATION);
+        return;
+      case PREF.DEFAULT_MOVIES_AGE_KEY:
+      case PREF.DEFAULT_TV_AGE_KEY:
+        this.setCriteria(PREF.DEFAULT_MOVIES_AGE_KEY, []);
+        this.setCriteria(PREF.DEFAULT_TV_AGE_KEY, []);
+        return;
+      default: {
+        const unhandled: never = key; 
+        return unhandled;
+      }
+    }
+  }
+
+  resetAllCriteria(): void {
+    this.setAllCriteria({});
+  }
+
   #loadFromStorage(): UserPreferences {
     const raw = localStorage.getItem(PREF.DEFAULT_STORAGE_KEY);
     try {
-      return raw 
-        ? {...PREF.DEFAULT_SORT_MEDIA, ...JSON.parse(raw) as UserPreferences }
-        : {...PREF.DEFAULT_SORT_MEDIA };
+      return raw
+        ? { ...PREF.DEFAULT_SORT_MEDIA, ...JSON.parse(raw) as UserPreferences }
+        : { ...PREF.DEFAULT_SORT_MEDIA };
     } catch (error) {
       console.error(error);
       localStorage.removeItem(PREF.DEFAULT_STORAGE_KEY);
@@ -42,15 +100,15 @@ export class UserPreferencesService {
   }
 
   setProviders(providers: Provider[]): void {
-    this.data.update(current => ({...current, providers: providers}));
+    this.data.update(current => ({ ...current, providers: providers }));
   }
 
   setCriteria<K extends keyof Criteria>(key: K, value: Criteria[K]) {
-    this.data.update(current => ({...current, criteria: { ...current.criteria, [key]: value }}))
+    this.data.update(current => ({ ...current, criteria: { ...current.criteria, [key]: value } }))
   }
 
   setAllCriteria(criteria: Criteria) {
-    this.data.update(current => ({...current, criteria: criteria}));
+    this.data.update(current => ({ ...current, criteria: criteria }));
   }
 
   constructor() {

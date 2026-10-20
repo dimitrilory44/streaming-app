@@ -5,7 +5,7 @@ import { Criteria } from '@core/models/media-model';
 import { UserPreferencesService } from '@core/services/user-preferences-service';
 import { MatButtonModule } from '@angular/material/button';
 import { TmdbApiService } from '@core/services/tmdb-api';
-import { AllSortOptions } from '@shared/types/collection.types';
+import { AllSortOptions, CriteriaItem } from '@shared/types/collection.types';
 import * as PREF from '@shared/constants/filter-preferences';
 import { TitleFilterCriteriaGroupComponent } from './title-filter-criteria-group/title-filter-criteria-group';
 import { convertKeyToLabel } from '@shared/helpers/criteria.helpers';
@@ -42,57 +42,15 @@ export class TitleFilterCriteriaComponent {
     });
   });
 
-  isCriterionActive(key: keyof Criteria): boolean {
-    switch (key) {
-      case PREF.DEFAULT_RELEASE_KEY: return !this.#userPreferencesService.releaseDateHelpers.isDefault();
-      case PREF.DEFAULT_NOTE_KEY: return !this.#userPreferencesService.noteHelpers.isDefault();
-      case PREF.DEFAULT_GENDERS_KEY: return this.#userPreferencesService.genreHelpers.hasItems() || this.#userPreferencesService.genreExcludedHelpers.hasItems();
-      case PREF.DEFAULT_NOTES_KEY: return !this.#userPreferencesService.notesHelpers.isDefault();
-      case PREF.DEFAULT_COUNTRY_KEY: return this.#userPreferencesService.countryHelpers.hasItems();
-      case PREF.DEFAULT_DURATION_KEY: return !this.#userPreferencesService.durationHelpers.isDefault();
-      case PREF.DEFAULT_MOVIES_AGE_KEY: return this.#userPreferencesService.ageMoviesHelpers.hasItems();
-      case PREF.DEFAULT_TV_AGE_KEY: return this.#userPreferencesService.ageSeriesHelpers.hasItems();
-      default: {
-        const value = this.#userPreferencesService.criteria()?.[key];
-        return Array.isArray(value) ? value.length > 0 : value != null;
-      }
-    }
-  }
+  isCriterionActive(key: keyof Criteria): boolean { return this.#userPreferencesService.isCriterionActive(key); }
 
   onMenuOpened(key: string) { this.openMenuKey.set(key); }
   onMenuClosed(key: string) { this.openMenuKey.update(open => open === key ? null : open); }
 
-  reset(key: keyof Criteria) {
-    switch (key) {
-      case PREF.DEFAULT_RELEASE_KEY:
-        this.#userPreferencesService.setCriteria(PREF.DEFAULT_RELEASE_KEY, PREF.DEFAULT_RELEASE_DATE);
-        return;
-      case PREF.DEFAULT_GENDERS_KEY:
-        this.#userPreferencesService.setCriteria(PREF.DEFAULT_GENDERS_KEY, []);
-        this.#userPreferencesService.setCriteria(PREF.DEFAULT_EXCLUDED_GENDERS_KEY, []);
-        return;
-      case PREF.DEFAULT_NOTE_KEY:
-        this.#userPreferencesService.setCriteria(PREF.DEFAULT_NOTE_KEY, 0);
-        return;
-      case PREF.DEFAULT_NOTES_KEY:
-        this.#userPreferencesService.setCriteria(PREF.DEFAULT_NOTES_KEY, 0);
-        return;
-      case PREF.DEFAULT_COUNTRY_KEY:
-        this.#userPreferencesService.setCriteria(PREF.DEFAULT_COUNTRY_KEY, []);
-        return;
-      case PREF.DEFAULT_DURATION_KEY:
-        this.#userPreferencesService.setCriteria(PREF.DEFAULT_DURATION_KEY, PREF.DEFAULT_DURATION);
-        return;
-      case PREF.DEFAULT_MOVIES_AGE_KEY:
-      case PREF.DEFAULT_TV_AGE_KEY:
-        this.#userPreferencesService.setCriteria(PREF.DEFAULT_MOVIES_AGE_KEY, []);
-        this.#userPreferencesService.setCriteria(PREF.DEFAULT_TV_AGE_KEY, []);
-        return;
-    }
-  }
+  reset(key: CriteriaItem['key']) { return this.#userPreferencesService.resetCriterion(key); }
 
   resetAll() {
-    this.#userPreferencesService.setAllCriteria({});
+    this.#userPreferencesService.resetAllCriteria();
     this.resetSortChange.emit(PREF.DEFAULT_SORT);
   }
 

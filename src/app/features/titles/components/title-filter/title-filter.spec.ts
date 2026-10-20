@@ -285,18 +285,23 @@ describe('TitleFilterComponent', () => {
       expect(component.activeCountFilters()).toBe(1);
     });
 
-    it('compte la note, le nombre de notes, le pays et la durée', () => {
+    it('compte la note, le pays et la durée ; le nombre de notes est dans le même menu que la note', () => {
       prefs.setCriteria(PREF.DEFAULT_NOTE_KEY, 7);
       expect(component.activeCountFilters()).toBe(1);
 
       prefs.setCriteria(PREF.DEFAULT_NOTES_KEY, 200);
-      expect(component.activeCountFilters()).toBe(2);
+      expect(component.activeCountFilters()).toBe(1);   // même menu « Note »
 
       prefs.setCriteria(PREF.DEFAULT_COUNTRY_KEY, [{ id: PREF.COUNTRY_ID('FR'), code: 'FR', name: 'France' }]);
-      expect(component.activeCountFilters()).toBe(3);
+      expect(component.activeCountFilters()).toBe(2);
 
       prefs.setCriteria(PREF.DEFAULT_DURATION_KEY, { min: 1, max: 2 });
-      expect(component.activeCountFilters()).toBe(4);
+      expect(component.activeCountFilters()).toBe(3);
+    });
+
+    it('compte le menu Note quand seul le nombre de notes est renseigné', () => {
+      prefs.setCriteria(PREF.DEFAULT_NOTES_KEY, 200);
+      expect(component.activeCountFilters()).toBe(1);
     });
 
     it('la durée par défaut n\'est pas comptée', () => {
@@ -317,25 +322,23 @@ describe('TitleFilterComponent', () => {
         seriesAge: [{ id: 1, certification: '10', meaning: 'Moins de 10 ans', order: 1 }],
       });
 
-      expect(component.activeCountFilters()).toBe(8);
+      expect(component.activeCountFilters()).toBe(PREF.CRITERIA_LIST.length);
     });
 
-    it('compte chaque liste d\'âge renseignée', () => {
+    it('compte le menu Âge une seule fois, quelle que soit la liste renseignée', () => {
       prefs.setCriteria(PREF.DEFAULT_MOVIES_AGE_KEY, [{ id: 1, certification: 'U', meaning: 'Tous publics', order: 1 }]);
       expect(component.activeCountFilters()).toBe(1);
 
       prefs.setCriteria(PREF.DEFAULT_TV_AGE_KEY, [{ id: 1, certification: '10', meaning: 'Moins de 10 ans', order: 1 }]);
-      expect(component.activeCountFilters()).toBe(2);
+      expect(component.activeCountFilters()).toBe(1);
     });
 
-    // À CONFIRMER : une sélection synchronisée (même certification cochée côté films ET séries)
-    // compte pour 2 dans le badge, alors que l'utilisateur voit un seul critère « Âge » actif.
-    it('une certification commune cochée des deux côtés compte deux fois (comportement actuel)', () => {
+    it('compte une seule fois', () => {
       const twelve = { id: 2, certification: '12', meaning: 'Moins de 12 ans', order: 2 };
       prefs.setCriteria(PREF.DEFAULT_MOVIES_AGE_KEY, [twelve]);
       prefs.setCriteria(PREF.DEFAULT_TV_AGE_KEY, [twelve]);
 
-      expect(component.activeCountFilters()).toBe(2);
+      expect(component.activeCountFilters()).toBe(1);
     });
 
     it('le tri et les plateformes n\'entrent pas dans le compteur', () => {

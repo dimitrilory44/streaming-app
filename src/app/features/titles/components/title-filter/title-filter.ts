@@ -52,18 +52,7 @@ export class TitleFilterComponent {
 
   readonly selectOptionsByMedia = computed(() => this.mediaConfig[this.currentMediaType()].options);
 
-  readonly activeCountFilters = computed(() => {
-    let count = 0;
-    count += this.#userPreferencesService.genreHelpers.count() || this.#userPreferencesService.genreExcludedHelpers.count() ? 1 : 0;
-    count += this.#userPreferencesService.releaseDateHelpers.isDefault() ? 0 : 1;
-    count += this.#userPreferencesService.noteHelpers.isDefault() ? 0 : 1;
-    count += this.#userPreferencesService.notesHelpers.isDefault() ? 0 : 1;
-    count += this.#userPreferencesService.countryHelpers.count() ? 1 : 0;
-    count += this.#userPreferencesService.durationHelpers.isDefault() ? 0 : 1;
-    count += this.#userPreferencesService.ageMoviesHelpers.count() ? 1 : 0;
-    count += this.#userPreferencesService.ageSeriesHelpers.count() ? 1 : 0;
-    return count;
-  });
+  readonly activeCountFilters = this.#userPreferencesService.activeCriteriaCount;
 
   onResetSortChange(value: AllSortOptions): void {
     this.#userPreferencesService.sortHelpers[this.currentMediaType()].set(value);

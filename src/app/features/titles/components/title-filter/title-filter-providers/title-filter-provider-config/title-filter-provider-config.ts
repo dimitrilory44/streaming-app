@@ -109,7 +109,11 @@ export class TitleFilterProviderConfigComponent {
   toggleAllProviders(): void {
     const response = this.allProviders();
     if (response.length === 0) return;
-    this.selectedProviders.set(this.areAllProvidersSelected() ? [] : response.sort((a, b) => a.provider_id - b.provider_id));
+    this.selectedProviders.set(
+      this.areAllProvidersSelected()
+        ? []
+        : [...response].sort((a, b) => a.provider_id - b.provider_id)
+    );
   }
 
   removeProvider(id: number): void {
