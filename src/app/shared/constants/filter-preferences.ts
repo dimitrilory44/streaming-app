@@ -19,6 +19,7 @@ export const DEFAULT_TYPE_LIST = 'list';
 
 export const DEFAULT_RELEASE_DATE: ReleaseDate = { min: 1900, max: new Date().getFullYear() };
 export const DEFAULT_DURATION: Duration = { min: 0, max: 3 };
+export const DEFAULT_NOTE: number = 0;
 export const DURATION_PRESETS: Record<DurationPreset, Duration> = {
   '<30m':  { min: DEFAULT_DURATION.min,   max: 0.5 },
   '45m':   { min: 0.5,   max: 0.75 },

@@ -1,7 +1,7 @@
 import { DecimalPipe } from '@angular/common';
 import { Component, inject, input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Provider } from '@core/models/media-model';
+import { Provider, ProviderConfigData } from '@core/models/media-model';
 import { IconChipComponent } from "@shared/components/icon-chip/icon-chip";
 import { SwiperDirective } from '@shared/directives/swiper.directive';
 import { TmdbImagePipe } from '@shared/pipes/tmdb-image.pipe';
@@ -32,7 +32,7 @@ export class TitleFilterProvidersComponent {
   openDialog() {
     const dialogRef = this.#dialog.open
       <TitleFilterProviderConfigComponent,
-        { providers: Provider[] },
+        ProviderConfigData,
         Provider[]
       >(TitleFilterProviderConfigComponent, {
         panelClass: 'dialog-panel',

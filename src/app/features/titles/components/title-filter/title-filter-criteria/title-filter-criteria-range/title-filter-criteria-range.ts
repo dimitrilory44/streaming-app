@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSliderModule } from '@angular/material/slider';
 import { Criteria, CriteriaRangeItem, Duration, ReleaseDate } from '@core/models/media-model';
 import { UserPreferencesService } from '@core/services/user-preferences-service';
-import { DEFAULT_DURATION, DEFAULT_NOTES_KEY, DEFAULT_RELEASE_DATE, DURATION_PRESETS } from '@shared/constants/filter-preferences';
+import { DEFAULT_DURATION, DEFAULT_NOTE, DEFAULT_NOTES_KEY, DEFAULT_RELEASE_DATE, DURATION_PRESETS } from '@shared/constants/filter-preferences';
 import { OPTIONS_DURATION, OPTIONS_NOTES } from '@shared/constants/sort-options';
 import { DurationPreset, RangeKeys } from '@shared/types/collection.types';
 
@@ -23,7 +23,7 @@ export class TitleFilterCriteriaRangeComponent {
   readonly criterion = input.required<CriteriaRangeItem<RangeKeys<Criteria> & keyof Criteria>>();
 
   readonly selectedRange = signal<'thisYear' | 'lastYear' | null>(null);
-  readonly selectedDuration = signal<'<30m' | '45m' | '1h' | '1.5h' | '2h' | '2.5h+' | null>(null);
+  readonly selectedDuration = signal<DurationPreset | null>(null);
   
   readonly DEFAULT_RELEASE_DATE = DEFAULT_RELEASE_DATE;
   readonly DEFAULT_NOTES_OPTIONS = OPTIONS_NOTES;
@@ -36,10 +36,10 @@ export class TitleFilterCriteriaRangeComponent {
       min: this.#formBuilder.nonNullable.control(DEFAULT_RELEASE_DATE.min),
       max: this.#formBuilder.nonNullable.control(DEFAULT_RELEASE_DATE.max)
     }),
-    note: this.#formBuilder.nonNullable.control(0),
+    note: this.#formBuilder.nonNullable.control(DEFAULT_NOTE),
     duration: this.#formBuilder.group({
-      min: this.#formBuilder.nonNullable.control(0),
-      max: this.#formBuilder.nonNullable.control(2.5)
+      min: this.#formBuilder.nonNullable.control(DEFAULT_DURATION.min),
+      max: this.#formBuilder.nonNullable.control(DEFAULT_DURATION.max)
     })
   });
 
@@ -55,7 +55,7 @@ export class TitleFilterCriteriaRangeComponent {
     return this.form.controls.duration.getRawValue();
   }
 
-  readonly selectedNotes = computed(() => this.#userPreferencesService.notesHelpers.items() ?? null);
+  readonly selectedNotes = computed(() => this.#userPreferencesService.notesHelpers.items());
 
   onReleaseDateChange(key: keyof Criteria) {
     this.selectedRange.set(null);
@@ -71,7 +71,7 @@ export class TitleFilterCriteriaRangeComponent {
     this.#userPreferencesService.setCriteria(key, this.note);
   }
 
-  onSelectDurationChange(key: keyof Criteria, preset: '<30m' | '45m' | '1h' | '1.5h' | '2h' | '2.5h+') {
+  onSelectDurationChange(key: keyof Criteria, preset: DurationPreset) {
     const newPreset = this.selectedDuration() === preset ? null : preset;
     this.selectedDuration.set(newPreset);
 

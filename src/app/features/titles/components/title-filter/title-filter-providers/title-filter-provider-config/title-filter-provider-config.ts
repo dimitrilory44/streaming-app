@@ -12,7 +12,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { IconChipComponent } from '@shared/components/icon-chip/icon-chip';
 import { DecimalPipe } from '@angular/common';
 import { SwiperDirective } from '@shared/directives/swiper.directive';
-import { Provider } from '@core/models/media-model';
+import { Provider, ProviderConfigData } from '@core/models/media-model';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ImgFallbackDirective } from '@shared/directives/img-fallback.directive';
 import { OnlineStatusService } from '@core/services/online-status.service';
@@ -21,7 +21,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { StateMessage } from "@shared/components/state-message/state-message";
 
 @Component({
-  selector: 'app-provider-settings',
+  selector: 'title-filter-provider-config',
   imports: [TmdbImagePipe, MatDialogModule, MatButtonModule, MatChipsModule, MatIconModule, MatCheckboxModule, MatFormFieldModule, FormsModule, ReactiveFormsModule, IconChipComponent, DecimalPipe, SwiperDirective, MatProgressSpinnerModule, ImgFallbackDirective, MatInputModule, StateMessage],
   templateUrl: './title-filter-provider-config.html',
   styleUrl: './title-filter-provider-config.scss',
@@ -30,7 +30,7 @@ export class TitleFilterProviderConfigComponent {
   readonly #dialogRef = inject(MatDialogRef<TitleFilterProviderConfigComponent, Provider[]>);
   readonly #tmdbApiService = inject(TmdbApiService);
   readonly #onlineStatus = inject(OnlineStatusService);
-  readonly #data = inject(MAT_DIALOG_DATA);
+  readonly #data = inject<ProviderConfigData>(MAT_DIALOG_DATA);
 
   readonly isOnline = this.#onlineStatus.isOnline;
   readonly mediaType = this.#tmdbApiService.mediaType;
@@ -73,7 +73,6 @@ export class TitleFilterProviderConfigComponent {
   readonly filteredProviders = computed<Provider[]>(() => {
     const term = this.searchTerm().toLowerCase();
     const data = this.allProviders();
-    if (!data) return [];
     return data.filter(p => p.provider_name.toLowerCase().includes(term));
   });
 

@@ -112,6 +112,10 @@ export interface ProvidersState<T> {
   reload: () => void;
 }
 
+export interface ProviderConfigData {
+  providers: Provider[];
+}
+
 export interface TitleDiscover {
   page: number;
   results: Media[];
