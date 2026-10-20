@@ -252,10 +252,8 @@ describe('TitleFilterCriteriaComponent', () => {
       expect(prefs.releaseDateHelpers.items()).toEqual({ min: 2000, max: 2010 });
     });
 
-    // ⚠️ Bug connu : pour la clé `notes` (sans `case` dans reset), `reset` appelle `setAllCriteria({})`
-    // et efface TOUS les critères. `it.fails` passe tant que le bug existe et échouera une fois
-    // corrigé (il suffira alors de remplacer `it.fails` par `it`).
-    it.fails('notes : ne devrait réinitialiser que le nombre de notes', () => {
+    
+    it('notes : ne devrait réinitialiser que le nombre de notes', () => {
       prefs.setCriteria(PREF.DEFAULT_NOTE_KEY, 8);
       prefs.setCriteria(PREF.DEFAULT_NOTES_KEY, 500);
 

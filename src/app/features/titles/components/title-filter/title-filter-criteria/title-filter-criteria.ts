@@ -47,6 +47,7 @@ export class TitleFilterCriteriaComponent {
       case PREF.DEFAULT_RELEASE_KEY: return !this.#userPreferencesService.releaseDateHelpers.isDefault();
       case PREF.DEFAULT_NOTE_KEY: return !this.#userPreferencesService.noteHelpers.isDefault();
       case PREF.DEFAULT_GENDERS_KEY: return this.#userPreferencesService.genreHelpers.hasItems() || this.#userPreferencesService.genreExcludedHelpers.hasItems();
+      case PREF.DEFAULT_NOTES_KEY: return !this.#userPreferencesService.notesHelpers.isDefault();
       case PREF.DEFAULT_COUNTRY_KEY: return this.#userPreferencesService.countryHelpers.hasItems();
       case PREF.DEFAULT_DURATION_KEY: return !this.#userPreferencesService.durationHelpers.isDefault();
       case PREF.DEFAULT_MOVIES_AGE_KEY: return this.#userPreferencesService.ageMoviesHelpers.hasItems();
@@ -73,6 +74,9 @@ export class TitleFilterCriteriaComponent {
       case PREF.DEFAULT_NOTE_KEY:
         this.#userPreferencesService.setCriteria(PREF.DEFAULT_NOTE_KEY, 0);
         return;
+      case PREF.DEFAULT_NOTES_KEY:
+        this.#userPreferencesService.setCriteria(PREF.DEFAULT_NOTES_KEY, 0);
+        return;
       case PREF.DEFAULT_COUNTRY_KEY:
         this.#userPreferencesService.setCriteria(PREF.DEFAULT_COUNTRY_KEY, []);
         return;
@@ -83,9 +87,6 @@ export class TitleFilterCriteriaComponent {
       case PREF.DEFAULT_TV_AGE_KEY:
         this.#userPreferencesService.setCriteria(PREF.DEFAULT_MOVIES_AGE_KEY, []);
         this.#userPreferencesService.setCriteria(PREF.DEFAULT_TV_AGE_KEY, []);
-        return;
-      default:
-        this.#userPreferencesService.setAllCriteria({});
         return;
     }
   }
