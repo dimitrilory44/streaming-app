@@ -260,19 +260,61 @@ describe('TitleFilterCriteriaListComponent', () => {
       expect(component.remaining()).toBe(0);
     });
 
-    // ⚠️ Bug connu : le parent recrée l'objet `criterion` à chaque recalcul de `criteriaList`
-    // (par exemple quand la sélection change), et l'`effect` du constructeur remet alors `limit` à
-    // pageSize : la liste se replie après un clic sur un pays. `it.fails` passe tant que le bug existe
-    // et échouera une fois corrigé (remplacer alors `it.fails` par `it`).
-    it.fails('conserve le « Voir plus » déjà déplié quand `criterion` est recréé à l\'identique', async () => {
-      await setCriterion(criterion());
-      component.showMore();
-      await fixture.whenStable();
-      expect(labels()).toHaveLength(5);
+    describe('« Voir plus » (limit)', () => {
+      const expand = async () => {
+        await setCriterion(criterion());
+        component.showMore();
+        await fixture.whenStable();
+        expect(labels()).toHaveLength(5);
+      };
 
-      await setCriterion(criterion()); // nouvel objet, même contenu
+      it('reste déplié quand `criterion` est recréé à l\'identique', async () => {
+        await expand();
 
-      expect(labels()).toHaveLength(5);
+        await setCriterion(criterion()); // nouvel objet, même contenu
+
+        expect(labels()).toHaveLength(5);
+      });
+
+      it('reste déplié quand on coche un pays puis que le parent recrée `criterion`', async () => {
+        await expand();
+
+        await clickCheckbox(0);
+        await setCriterion(criterion());
+
+        expect(prefs.countryHelpers.items()).toEqual([FR]);
+        expect(labels()).toHaveLength(5);
+      });
+
+      it('se replie quand la sélection est réinitialisée', async () => {
+        await expand();
+        await clickCheckbox(0);
+        await setCriterion(criterion());
+
+        prefs.resetCriterion(PREF.DEFAULT_COUNTRY_KEY);
+        await setCriterion(criterion());
+
+        expect(labels()).toEqual(['France', 'États-Unis', 'Italie']);
+        expect(component.remaining()).toBe(2);
+      });
+
+      it('se replie aussi quand on décoche le dernier pays (comportement assumé)', async () => {
+        await expand();
+        await clickCheckbox(0);
+
+        await clickCheckbox(0);
+
+        expect(prefs.countryHelpers.hasItems()).toBe(false);
+        expect(labels()).toHaveLength(3);
+      });
+
+      it('ne se replie pas quand on coche un premier pays', async () => {
+        await expand();
+
+        await clickCheckbox(0);
+
+        expect(labels()).toHaveLength(5);
+      });
     });
   });
 

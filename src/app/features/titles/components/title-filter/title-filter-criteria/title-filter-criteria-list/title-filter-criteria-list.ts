@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, linkedSignal } from '@angular/core';
+import { Component, computed, inject, input, linkedSignal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
@@ -22,7 +22,13 @@ export class TitleFilterCriteriaListComponent {
   readonly criterion = input.required<CriteriaListItem<ArrayKeys<Criteria> & keyof Criteria>>();
 
   readonly #pageSize = computed(() => this.criterion().pageSize ?? Infinity);
-  readonly limit = linkedSignal(() => this.#pageSize());
+  readonly #hasSelection = computed(() => this.#selectedIds().size > 0);
+
+  readonly limit = linkedSignal<{ pageSize: number; hasSelection: boolean }, number>({
+    source: () => ({ pageSize: this.#pageSize(), hasSelection: this.#hasSelection() }),
+    computation: ({ pageSize, hasSelection }, previous) =>
+      hasSelection && previous ? previous.value : pageSize,
+  });
 
   readonly countries = computed(() => this.criterion().value as Country[] ?? []);
   readonly genders = computed(() => this.criterion().value as Genre[] ?? []);
@@ -113,7 +119,7 @@ export class TitleFilterCriteriaListComponent {
 
     for (const { key, available } of targets) {
       const match = available.find(c => c.certification === item.certification);
-      if (!match) continue; 
+      if (!match) continue;
 
       const current = makeSelectionHelpers(key, this.#userPreferencesService.criteria).items();
       const withoutItem = current.filter(c => c.certification !== item.certification);
@@ -138,12 +144,6 @@ export class TitleFilterCriteriaListComponent {
         this.toggleItem(DEFAULT_EXCLUDED_GENDERS_KEY, item);
         break;
     }
-  }
-
-  constructor() {
-    effect(() => {
-      this.limit.set(this.criterion().pageSize ?? Infinity)
-    });
   }
 
 }
