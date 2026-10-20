@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, linkedSignal, signal } from '@angular/core';
 import { TitleFilterComponent } from '@features/titles/components/title-filter/title-filter';
 import { TitleListComponent } from '@features/titles/components/title-list/title-list';
 import { TmdbApiService } from '@core/services/tmdb-api';
@@ -21,26 +21,25 @@ export class PopularTitlesComponent {
 
   readonly mediaType = input.required<MediaType>();
   readonly titles = signal<Media[]>([]);
-  readonly currentPage = signal(1);
   readonly isLoadingMore = signal(false);
   readonly loadMoreError = signal(false);
 
-  readonly selectedProviderIds = this.#tmdbApiService.providersIds;
-  readonly selectedGenresIds = this.#tmdbApiService.genresIds;
-  readonly selectedBeginYear = computed(() => this.#tmdbApiService.filterYear().beginDate);
-  readonly selectedEndYear = computed(() => this.#tmdbApiService.filterYear().endDate);
-  readonly selectedNote = computed(() => this.#tmdbApiService.filterNote());
-  readonly selectedNotes = computed(() => this.#tmdbApiService.filterNotes());
-  readonly selectedCountries = computed(() => this.#tmdbApiService.filterCountry());
-  readonly selectedBeginDuration = computed(() => this.#tmdbApiService.filterDuration().beginDuration);
-  readonly selectedEndDuration = computed(() => this.#tmdbApiService.filterDuration().endDuration);
-  readonly selectedMoviesAgeCertification = computed(() => this.#tmdbApiService.filterAgeMovie());
-  readonly selectedSeriesAgeCertification = computed(() => this.#tmdbApiService.filterAgeSerie());
+  readonly #filtersKey = computed(() =>
+    JSON.stringify([this.#userPreferencesService.criteria(), this.#tmdbApiService.providersIds()])
+  );
 
   readonly sortMenu = computed(() => this.#tmdbApiService.sortFilter(this.mediaType()));
 
-  readonly moviesPopular = this.#tmdbApiService.getPopularMovies(this.currentPage);
-  readonly seriesPopular = this.#tmdbApiService.getPopularSeries(this.currentPage);
+  readonly currentPage = linkedSignal({
+    source: () => ({ filters: this.#filtersKey(), sort: this.sortMenu() }),
+    computation: () => 1,
+  });
+
+  readonly #needsMovies = computed(() => this.mediaType() !== 'tv');
+  readonly #needsSeries = computed(() => this.mediaType() !== 'movie');
+
+  readonly moviesPopular = this.#tmdbApiService.getPopularMovies(this.currentPage, this.#needsMovies);
+  readonly seriesPopular = this.#tmdbApiService.getPopularSeries(this.currentPage, this.#needsSeries);
 
   readonly allPopular = computed(() => {
     const comparators: Record<CommonSortOptions, Comparator<Media>> = {
@@ -89,7 +88,7 @@ export class PopularTitlesComponent {
     this.loadMoreError.set(false);
     this.currentPage.update(p => p + 1);
   }
-  
+
   onRetry(): void {
     const type = this.mediaType();
     if (type === 'all' || type === 'movie') this.moviesPopular.reload();
@@ -97,25 +96,14 @@ export class PopularTitlesComponent {
   }
 
   onResetFilter(): void {
-    this.#userPreferencesService.setAllCriteria({});
+    this.#userPreferencesService.resetAllCriteria();
   }
 
   constructor() {
     effect(() => {
-      this.selectedGenresIds();
-      this.selectedProviderIds();
-      this.selectedBeginYear();
-      this.selectedEndYear();
-      this.selectedNote();
-      this.selectedNotes();
-      this.selectedCountries();
-      this.selectedBeginDuration();
-      this.selectedEndDuration();
-      this.selectedMoviesAgeCertification();
-      this.selectedSeriesAgeCertification();
+      this.#filtersKey();
       this.sortMenu();
       this.titles.set([]);
-      this.currentPage.set(1);
       this.loadMoreError.set(false);
     });
 
@@ -133,8 +121,9 @@ export class PopularTitlesComponent {
       this.loadMoreError.set(false);
 
       this.titles.update(titles => {
-        const existingIds = new Set(titles.map(m => m.id));
-        const newItems = this.results().filter(item => !existingIds.has(item.id));
+        const key = (m: Media) => `${m.media_type}-${m.id}`;
+        const existingKeys = new Set(titles.map(key));
+        const newItems = this.results().filter(item => !existingKeys.has(key(item)));
         return [...titles, ...newItems];
       });
       this.isLoadingMore.set(false);

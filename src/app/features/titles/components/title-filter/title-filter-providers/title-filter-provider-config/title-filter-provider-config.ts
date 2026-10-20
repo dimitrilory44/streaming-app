@@ -33,7 +33,6 @@ export class TitleFilterProviderConfigComponent {
   readonly #data = inject<ProviderConfigData>(MAT_DIALOG_DATA);
 
   readonly isOnline = this.#onlineStatus.isOnline;
-  readonly mediaType = this.#tmdbApiService.mediaType;
 
   readonly providersMovies = this.#tmdbApiService.getProvidersMovies();
   readonly providersSeries = this.#tmdbApiService.getProvidersSeries();
@@ -125,9 +124,8 @@ export class TitleFilterProviderConfigComponent {
   }
 
   onRetry(): void {
-    const type = this.mediaType();
-    if (type === 'all' || type === 'movie') this.providersMovies.reload();
-    if (type === 'all' || type === 'tv') this.providersSeries.reload();
+    if (this.providersMovies.error()) this.providersMovies.reload();
+    if (this.providersSeries.error()) this.providersSeries.reload();
   }
 
   constructor() {

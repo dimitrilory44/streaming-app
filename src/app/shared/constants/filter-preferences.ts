@@ -1,6 +1,11 @@
 import { Criteria, CriteriaList, Duration, ReleaseDate, UserPreferences } from "@core/models/media-model";
 import { DurationPreset } from "@shared/types/collection.types";
 
+export const LANGUAGE = 'fr-FR';
+export const REGION = 'FR';
+export const PROVIDERS_TIMEOUT_MS = 8000;
+export const CERTIFICATIONS_TIMEOUT_MS = 8000;
+
 export const DEFAULT_STORAGE_KEY = 'data';
 export const DEFAULT_PROVIDERS_KEY = 'providers';
 

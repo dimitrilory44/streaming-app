@@ -10,7 +10,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Provider, ProviderConfigData, Providers, ProvidersState } from '@core/models/media-model';
 import { OnlineStatusService } from '@core/services/online-status.service';
 import { TmdbApiService } from '@core/services/tmdb-api';
-import { MediaType } from '@shared/types/collection.types';
 import { SwiperDirective } from '@shared/directives/swiper.directive';
 import { TitleFilterProviderConfigComponent } from './title-filter-provider-config';
 
@@ -38,7 +37,6 @@ describe('TitleFilterProviderConfigComponent', () => {
 
   let movies: ReturnType<typeof makeState>;
   let series: ReturnType<typeof makeState>;
-  let mediaType: ReturnType<typeof signal<MediaType>>;
   let isOnline: ReturnType<typeof signal<boolean>>;
   let backdrop$: Subject<MouseEvent>;
   let dialogRef: { close: ReturnType<typeof vi.fn>; disableClose: boolean; backdropClick: () => Subject<MouseEvent> };
@@ -61,7 +59,6 @@ describe('TitleFilterProviderConfigComponent', () => {
     localStorage.clear();
     movies = makeState([provider(30, 'Netflix'), provider(10, 'Disney+'), provider(20, 'Canal+')]);
     series = makeState([provider(20, 'Canal+'), provider(40, 'Apple TV+')]);
-    mediaType = signal<MediaType>('movie');
     isOnline = signal(true);
     backdrop$ = new Subject<MouseEvent>();
     dialogRef = { close: vi.fn(), disableClose: false, backdropClick: () => backdrop$ };
@@ -74,7 +71,7 @@ describe('TitleFilterProviderConfigComponent', () => {
         { provide: MAT_DIALOG_DATA, useFactory: () => dialogData },
         {
           provide: TmdbApiService,
-          useValue: { mediaType, getProvidersMovies: () => movies, getProvidersSeries: () => series },
+          useValue: { getProvidersMovies: () => movies, getProvidersSeries: () => series },
         },
         { provide: OnlineStatusService, useValue: { isOnline } },
       ],
@@ -337,18 +334,31 @@ describe('TitleFilterProviderConfigComponent', () => {
   });
 
   describe('nouvelle tentative', () => {
+    const fail = (state: ReturnType<typeof makeState>) => state.error.set(new Error('réseau'));
+
     it.each([
-      ['movie', 1, 0],
-      ['tv', 0, 1],
-      ['all', 1, 1],
-    ] as const)('onRetry en mode %s recharge films=%i et séries=%i', async (type, moviesCalls, seriesCalls) => {
+      ['les films seuls', true, false, 1, 0],
+      ['les séries seules', false, true, 0, 1],
+      ['les deux', true, true, 1, 1],
+      ['aucune (rien en erreur)', false, false, 0, 0],
+    ] as const)('recharge %s', async (_label, moviesFail, seriesFail, moviesCalls, seriesCalls) => {
       await create();
-      mediaType.set(type);
+      if (moviesFail) fail(movies);
+      if (seriesFail) fail(series);
 
       component.onRetry();
 
       expect(movies.reload).toHaveBeenCalledTimes(moviesCalls);
       expect(series.reload).toHaveBeenCalledTimes(seriesCalls);
+    });
+
+    it('ne dépend pas du type de média du service (régression : toujours « movie »)', async () => {
+      await create();
+      fail(series);
+
+      component.onRetry();
+
+      expect(series.reload).toHaveBeenCalledOnce();
     });
   });
 
