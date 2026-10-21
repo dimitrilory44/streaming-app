@@ -1,59 +1,80 @@
-# AppFilm
+# 🎬 AppFilm
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.19.
+Application de découverte de films et de séries, filtrée selon vos plateformes de streaming. Développée avec **Angular 21** et alimentée par l'API [The Movie Database (TMDB)](https://www.themoviedb.org/).
 
-## Development server
+> **Statut : en développement actif.** Voir la [feuille de route](#feuille-de-route).
 
-To start a local development server, run:
+<!-- Remplacer par une capture d'écran ou un GIF de l'application -->
+![Aperçu de l'application](docs/apercu.gif)
+
+## Fonctionnalités
+
+- **Carrousel de mise en avant** des titres populaires
+- **Navigation par onglets** : films, séries, ou les deux réunis
+- **Scroll infini** sur les listes de titres
+- **Choix des plateformes de streaming** : recherche, sélection multiple, préférences conservées entre les visites
+- **Filtres** : genres, année de sortie
+- **Tri indépendant par onglet** : popularité, note, date de sortie…
+- **Gestion du hors-ligne** : l'interface signale la perte de connexion
+
+## Points techniques
+
+- **Angular moderne** : composants standalone, nouveau control flow (`@if`, `@for`), Signals (`signal`, `computed`, `effect`, `input`, `output`)
+- **Chargement des données avec `httpResource`**, couplé à un `IntersectionObserver` pour le scroll infini
+- **Séparation présentation / page** : un composant de liste réutilisable, alimenté par des composants de page par catégorie
+- **Préférences utilisateur centralisées** dans un service unique, sérialisées dans le `localStorage`, avec des helpers génériques (sélection, plage de valeurs, tri) pour éviter la duplication
+- **Typage strict des options de tri** par type de média (films, séries, commun), pour qu'un tri inexistant pour les séries ne puisse pas leur être appliqué
+- **Fusion films + séries côté client** : deux appels API distincts réunis et triés localement pour l'onglet commun
+
+## Stack technique
+
+| Domaine | Technologies |
+|---|---|
+| Framework | Angular 21, TypeScript |
+| Interface | Angular Material, Swiper, SCSS |
+| Données | API REST TMDB |
+| Tests | Vitest |
+
+## Lancer le projet
+
+### Prérequis
+
+- Node.js et npm
+- Angular CLI 21 : `npm install -g @angular/cli`
+- Une clé API TMDB, gratuite : [créer un compte TMDB](https://www.themoviedb.org/settings/api)
+
+### Configuration
+
+<!-- À adapter selon la façon dont la clé est réellement fournie à l'application -->
+Renseignez votre clé API TMDB dans `src/environments/environment.ts` (fichier non versionné), à partir du modèle `environment.example.ts`.
+
+### Démarrage
 
 ```bash
+npm install
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+L'application est disponible sur `http://localhost:4200/`.
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+### Tests
 
 ```bash
 ng test
 ```
 
-## Running end-to-end tests
+## Feuille de route
 
-For end-to-end (e2e) testing, run:
+- [x] Listes de titres populaires avec scroll infini
+- [x] Choix des plateformes de streaming et préférences persistées
+- [x] Tri par type de média
+- [ ] Filtres avancés : note, durée, pays de production, âge
+- [ ] Exclusion d'un genre (filtre à trois états)
+- [ ] Backend **Spring Boot** servant de proxy et de cache pour l'API TMDB, afin de masquer la clé et limiter les appels
+- [ ] **Recherche en langage naturel** assistée par IA
+- [ ] Extension aux jeux vidéo
 
-```bash
-ng e2e
-```
+## Auteur
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+**Dimitri Lory** — Développeur Full Stack Java
+[GitHub](https://github.com/dimitrilory44)
