@@ -5,8 +5,8 @@ import { HttpClient, httpResource } from '@angular/common/http';
 import { UserPreferencesService } from './user-preferences-service';
 import { catchError, map, timeout } from 'rxjs/operators';
 import { of, Subscription } from 'rxjs';
-import { MediaType } from '@shared/types/collection.types';
-import { CERTIFICATIONS_TIMEOUT_MS, COUNTRY_ID, DEFAULT_COUNTRY_KEY, DEFAULT_DURATION, DEFAULT_DURATION_KEY, DEFAULT_NOTE_KEY, DEFAULT_NOTES_KEY, DEFAULT_RELEASE_DATE, DEFAULT_RELEASE_KEY, LANGUAGE, PROVIDERS_TIMEOUT_MS, REGION } from '@shared/constants/filter-preferences';
+import { AllSortOptions, MediaType } from '@shared/types/collection.types';
+import { CERTIFICATIONS_TIMEOUT_MS, COUNTRY_ID, DEFAULT_COUNTRY_KEY, DEFAULT_DURATION, DEFAULT_DURATION_KEY, DEFAULT_NOTE_KEY, DEFAULT_NOTES_KEY, DEFAULT_RELEASE_DATE, DEFAULT_RELEASE_KEY, LANGUAGE, MIN_VOTES_FOR_RATING_SORT, PROVIDERS_TIMEOUT_MS, REGION } from '@shared/constants/filter-preferences';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({
@@ -79,11 +79,11 @@ export class TmdbApiService {
     return this.#userPreferencesService.sortHelpers[mediaType].items();
   }
 
-  getPopularMovies(page: Signal<number>, enabled: Signal<boolean> = signal(true)) {
-    return this.#getPopular('movie', page, enabled);
+  getPopularMovies(page: Signal<number>, enabled: Signal<boolean> = signal(true), sortBy?: Signal<AllSortOptions>) {
+    return this.#getPopular('movie', page, enabled, sortBy);
   }
-  getPopularSeries(page: Signal<number>, enabled: Signal<boolean> = signal(true)) {
-    return this.#getPopular('tv', page, enabled);
+  getPopularSeries(page: Signal<number>, enabled: Signal<boolean> = signal(true), sortBy?: Signal<AllSortOptions>) {
+    return this.#getPopular('tv', page, enabled, sortBy);
   }
 
   getProvidersMovies() {
@@ -110,17 +110,17 @@ export class TmdbApiService {
       );
   }
 
-  #getPopular(mediaType: 'movie' | 'tv', page: Signal<number>, enabled: Signal<boolean>) {
-  return httpResource<TitleDiscover>(() => {
-    if (!enabled()) return undefined; 
-    return {
-      url: `${this.#MOVIE_API_URL}/discover/${mediaType}`,
-      params: this.#buildDiscoverParams(mediaType, page()),
-    };
-  });
-}
+  #getPopular(mediaType: 'movie' | 'tv', page: Signal<number>, enabled: Signal<boolean>, sortBy?: Signal<AllSortOptions>) {
+    return httpResource<TitleDiscover>(() => {
+      if (!enabled()) return undefined;
+      return {
+        url: `${this.#MOVIE_API_URL}/discover/${mediaType}`,
+        params: this.#buildDiscoverParams(mediaType, page(), sortBy?.() ?? this.sortFilter(mediaType)),
+      };
+    });
+  }
 
-  #buildDiscoverParams(mediaType: 'movie' | 'tv', page: number): Record<string, string | number> {
+  #buildDiscoverParams(mediaType: 'movie' | 'tv', page: number, sort: AllSortOptions): Record<string, string | number> {
     const prefs = this.#userPreferencesService;
     const isMovie = mediaType === 'movie';
 
@@ -128,7 +128,7 @@ export class TmdbApiService {
       language: LANGUAGE,
       watch_region: REGION,
       page,
-      sort_by: this.sortFilter(mediaType),
+      sort_by: sort,
       with_watch_providers: this.providersIds(),
     };
 
@@ -142,6 +142,11 @@ export class TmdbApiService {
     if (prefs.genreExcludedHelpers.hasItems()) params['without_genres'] = this.#genresExcludedIds();
     if (prefs.isCriterionActive(DEFAULT_NOTE_KEY)) params['vote_average.gte'] = this.filterNote();
     if (prefs.isCriterionActive(DEFAULT_NOTES_KEY)) params['vote_count.gte'] = this.filterNotes();
+
+    const ratingSortFloor = sort === 'vote_average.desc' ? MIN_VOTES_FOR_RATING_SORT[mediaType] : 0;
+    const userVoteFloor = prefs.isCriterionActive(DEFAULT_NOTES_KEY) ? this.filterNotes() : 0;
+    const minVotes = Math.max(ratingSortFloor, userVoteFloor);
+    if (minVotes > 0) params['vote_count.gte'] = minVotes;
     if (prefs.isCriterionActive(DEFAULT_COUNTRY_KEY)) params['with_origin_country'] = this.filterCountry();
 
     if (prefs.isCriterionActive(DEFAULT_DURATION_KEY)) {

@@ -5,9 +5,12 @@ import { TmdbApiService } from '@core/services/tmdb-api';
 import { MovieMedia, SeriesMedia } from '@core/models/media-model';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { StateMessage } from "@shared/components/state-message/state-message";
-import { CommonSortOptions, Comparator, Media, MediaType } from '@shared/types/collection.types';
+import { AllSortOptions, Media, MediaType } from '@shared/types/collection.types';
 import { pick } from '@shared/helpers/collection.helpers';
 import { UserPreferencesService } from '@core/services/user-preferences-service';
+import { isCommonSort } from '@shared/constants/sort-options';
+import { DEFAULT_SORT } from '@shared/constants/filter-preferences';
+import { sortMerged } from '@shared/helpers/rating.helpers';
 
 @Component({
   selector: 'popular-page',
@@ -30,6 +33,11 @@ export class PopularTitlesComponent {
 
   readonly sortMenu = computed(() => this.#tmdbApiService.sortFilter(this.mediaType()));
 
+  readonly #sortBy = computed<AllSortOptions>(() => {
+    const sort = this.sortMenu();
+    return this.mediaType() === 'all' && !isCommonSort(sort) ? DEFAULT_SORT : sort;
+  });
+
   readonly currentPage = linkedSignal({
     source: () => ({ filters: this.#filtersKey(), sort: this.sortMenu() }),
     computation: () => 1,
@@ -38,14 +46,10 @@ export class PopularTitlesComponent {
   readonly #needsMovies = computed(() => this.mediaType() !== 'tv');
   readonly #needsSeries = computed(() => this.mediaType() !== 'movie');
 
-  readonly moviesPopular = this.#tmdbApiService.getPopularMovies(this.currentPage, this.#needsMovies);
-  readonly seriesPopular = this.#tmdbApiService.getPopularSeries(this.currentPage, this.#needsSeries);
+  readonly moviesPopular = this.#tmdbApiService.getPopularMovies(this.currentPage, this.#needsMovies, this.#sortBy);
+  readonly seriesPopular = this.#tmdbApiService.getPopularSeries(this.currentPage, this.#needsSeries, this.#sortBy);
 
   readonly allPopular = computed(() => {
-    const comparators: Record<CommonSortOptions, Comparator<Media>> = {
-      'popularity.desc': (a, b) => b.popularity - a.popularity,
-      'vote_average.desc': (a, b) => b.vote_average - a.vote_average,
-    };
     const moviesResults = (this.moviesPopular.value()?.results ?? []).map(m => ({
       ...m,
       media_type: 'movie' as const
@@ -54,7 +58,8 @@ export class PopularTitlesComponent {
       ...m,
       media_type: 'tv' as const
     }) as SeriesMedia);
-    return [...moviesResults, ...tvResults].sort(comparators[this.sortMenu() as CommonSortOptions]);
+    const sort = this.#sortBy();
+    return sortMerged([...moviesResults, ...tvResults], isCommonSort(sort) ? sort : DEFAULT_SORT);
   });
 
   readonly results = computed(() => {

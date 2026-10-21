@@ -163,6 +163,52 @@ describe('TmdbApiService – paramètres de /discover', () => {
     });
   });
 
+  describe('« Mieux notés » : seuil de votes', () => {
+    it('film : impose 300 votes minimum quand le tri est « Mieux notés »', () => {
+      prefs.sortHelpers.movie.set('vote_average.desc');
+
+      expect(discover('movie').get('vote_count.gte')).toBe('300');
+    });
+
+    it('série : impose 100 votes minimum quand le tri est « Mieux notés »', () => {
+      prefs.sortHelpers.tv.set('vote_average.desc');
+
+      expect(discover('tv').get('vote_count.gte')).toBe('100');
+    });
+
+    it('n\'impose aucun seuil avec le tri « Popularité »', () => {
+      prefs.sortHelpers.movie.set('popularity.desc');
+
+      expect(discover('movie').has('vote_count.gte')).toBe(false);
+    });
+
+    it('n\'impose aucun seuil avec un tri propre aux films', () => {
+      prefs.sortHelpers.movie.set('revenue.desc');
+
+      expect(discover('movie').has('vote_count.gte')).toBe(false);
+    });
+
+    it('le critère « nombre de notes » de l\'utilisateur l\'emporte quand il est plus élevé', () => {
+      prefs.sortHelpers.movie.set('vote_average.desc');
+      prefs.setCriteria(PREF.DEFAULT_NOTES_KEY, 10000);
+
+      expect(discover('movie').get('vote_count.gte')).toBe('10000');
+    });
+
+    it('le seuil automatique l\'emporte quand le critère de l\'utilisateur est plus bas', () => {
+      prefs.sortHelpers.movie.set('vote_average.desc');
+      prefs.setCriteria(PREF.DEFAULT_NOTES_KEY, 50);
+
+      expect(discover('movie').get('vote_count.gte')).toBe('300');
+    });
+
+    it('sans tri « Mieux notés », le critère de l\'utilisateur est envoyé tel quel', () => {
+      prefs.setCriteria(PREF.DEFAULT_NOTES_KEY, 50);
+
+      expect(discover('movie').get('vote_count.gte')).toBe('50');
+    });
+  });
+
   describe('pays', () => {
     it('joint les codes pays par « | »', () => {
       prefs.setCriteria(PREF.DEFAULT_COUNTRY_KEY, [country('FR'), country('US')]);

@@ -42,6 +42,8 @@ export const DEFAULT_SORT_MEDIA: UserPreferences = {
     }
 };
 export const DEFAULT_MEDIA = 'movie';
+export const MIN_VOTES_FOR_RATING_SORT = { movie: 300, tv: 100 } as const;
+export const MEAN_VOTE_AVERAGE = 6.5;
 
 export const COUNTRY_ID = (code: string): number => code.charCodeAt(0) * 256 + code.charCodeAt(1);
 export const CERTIFICATION_ID = (certification: string): number => certification.charCodeAt(0) * 256 + certification.charCodeAt(1);

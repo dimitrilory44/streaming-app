@@ -1,5 +1,5 @@
-import { SortOption, SortOptionDuration, SortOptionNotes, SortOtionCriteria } from "@core/models/media-model";
-import { AllPreset, CommonSortOptions, MovieSortOptions, TVSortOptions } from "@shared/types/collection.types";
+import { SortOption, SortOptionDuration, SortOptionNotes } from "@core/models/media-model";
+import { AllSortOptions, CommonSortOptions, Comparator, Media, MovieSortOptions, TVSortOptions } from "@shared/types/collection.types";
 
 export const COMMON_SORT_OPTIONS: SortOption<CommonSortOptions>[] = [
     { value: 'popularity.desc', label: 'Popularité' },
@@ -22,7 +22,7 @@ export const OPTIONS_NOTES: SortOptionNotes[] = [
     { value: 10000, label: '10k+' },
     { value: 100000, label: '100k+' },
     { value: 1000000, label: '1m+' },
-]
+];
 
 export const OPTIONS_DURATION: SortOptionDuration[] = [
     { value: 0.5, label: '<30m' },
@@ -31,4 +31,11 @@ export const OPTIONS_DURATION: SortOptionDuration[] = [
     { value: 1.5, label: '1.5h' },
     { value: 2, label: '2h' },
     { value: 3, label: '2.5h+' },
-]
+];
+
+export const COMMON_COMPARATORS: Record<CommonSortOptions, Comparator<Media>> = {
+  'popularity.desc': (a, b) => b.popularity - a.popularity,
+  'vote_average.desc': (a, b) => b.vote_average - a.vote_average,
+};
+
+export const isCommonSort = (sort: AllSortOptions): sort is CommonSortOptions => sort in COMMON_COMPARATORS;

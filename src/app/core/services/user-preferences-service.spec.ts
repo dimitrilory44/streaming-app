@@ -275,7 +275,7 @@ describe('UserPreferencesService', () => {
    * n'existe pas sur le service, et s'activent d'eux-mêmes dès qu'elle est ajoutée.
    * `activeCriteriaCount` est un `computed` (signal) : on l'appelle comme une fonction.
    */
-  describe.skipIf(!('isCriterionActive' in UserPreferencesService.prototype))('critères actifs', () => {
+  describe('critères actifs', () => {
     const api = () => service as unknown as ActiveCriteriaApi;
     beforeEach(create);
 
@@ -413,7 +413,7 @@ describe('UserPreferencesService', () => {
    * Ce bloc est ignoré tant que `resetCriterion` n'existe pas comme MÉTHODE DE CLASSE du service
    * (un champ fléché n'est pas sur le prototype : le bloc resterait ignoré), et s'active tout seul ensuite.
    */
-  describe.skipIf(!('resetCriterion' in UserPreferencesService.prototype))('réinitialisation des critères', () => {
+  describe('réinitialisation des critères', () => {
     const api = () => service as unknown as ResetApi;
     beforeEach(create);
 
