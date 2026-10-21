@@ -2,7 +2,7 @@
 
 Application de découverte de films et de séries, filtrée selon vos plateformes de streaming. Développée avec **Angular 21** et alimentée par l'API [The Movie Database (TMDB)](https://www.themoviedb.org/).
 
-> **Statut : en développement actif.** Voir la [feuille de route](#feuille-de-route).
+> **Statut : en développement actif.** Voir la [feuille de route](#feuille-de-route). Le code actuel se trouve sur la branche develop
 
 <!-- Remplacer par une capture d'écran ou un GIF de l'application -->
 ![Aperçu de l'application](docs/apercu.gif)
