@@ -25,10 +25,10 @@
             [matMenuTriggerFor]="menu">
             <mat-icon>sort_by_alpha</mat-icon>
         </button>
-        <button mat-stroked-button class="filter-btn" [class.is-active]="activeCountFilters()" aria-label="Filtres"
+        <button class="filter-btn" [class.is-active]="activeCountFilters()" aria-label="Filtres"
             (click)="isFilterCriteriaPanelExpanded.set(!isFilterCriteriaPanelExpanded())">
             <mat-icon>filter_alt</mat-icon>
-            Filtres
+            <span class="filter__label">Filtres</span>
             <span class="filters__badge" [style.display]="activeCountFilters() > 0 ? 'inline-block' : 'none'">
                 {{ activeCountFilters() | number:'1.0-0' }}
             </span>

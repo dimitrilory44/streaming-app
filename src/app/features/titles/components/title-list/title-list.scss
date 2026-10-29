@@ -1,6 +1,6 @@
 .title-grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(clamp(180px, 12vw, 240px), 1fr));
     gap: 16px;
     overflow-anchor: none;
 }
@@ -13,8 +13,8 @@
     border-radius: 4px !important;
     overflow: hidden !important;
     box-shadow: none !important;
-    background: transparent !important; 
-    line-height: 0; 
+    background: transparent !important;
+    line-height: 0;
 
     img[mat-card-image] {
         width: 100% !important;
@@ -29,6 +29,6 @@
 }
 
 .scroll-anchor {
-  height: 20px;
-  overflow-anchor: none;
+    height: 20px;
+    overflow-anchor: none;
 }

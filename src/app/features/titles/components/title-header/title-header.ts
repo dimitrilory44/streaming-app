@@ -6,15 +6,27 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 @Component({
   selector: 'title-header',
-  imports: [ MatToolbarModule, MatButtonModule, MatIconModule, MatInputModule, MatFormFieldModule, RouterLink, RouterLinkActive ],
+  imports: [ MatToolbarModule, MatButtonModule, MatButtonToggleModule, MatIconModule, MatInputModule, MatFormFieldModule, RouterLink, RouterLinkActive ],
   templateUrl: './title-header.html',
   styleUrl: './title-header.scss',
 })
 export class TitleHeaderComponent {
   readonly dialog = inject(MatDialog);
+  readonly #breakpointObserver = inject(BreakpointObserver);
+
+  readonly isSmallScreen = toSignal(
+    this.#breakpointObserver
+      .observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium])
+      .pipe(map((state) => state.matches)),
+    { initialValue: false },
+  );
 
   readonly search = model('');
 

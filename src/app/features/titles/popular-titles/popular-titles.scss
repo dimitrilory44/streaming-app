@@ -2,3 +2,10 @@
     max-width: 1900px;
     padding: 15px 64px;
 }
+
+@media (max-width: 1024px) {
+    .container {
+        max-width: 1900px;
+        padding: 0 10px 0 10px;
+    }
+}

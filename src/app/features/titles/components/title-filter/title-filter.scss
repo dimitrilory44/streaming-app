@@ -1,71 +1,119 @@
 .filter-items {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 16px;
+  background: #11151f;
+  padding: 12px 64px;
+  border-radius: 0;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  max-width: 1920px;
+
+  &__count {
+    margin-inline-start: 16px;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  &__left {
+    align-items: center;
+    margin-inline-end: 12px;
+  }
+
+  &__right {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    flex-wrap: nowrap;
-    gap: 16px;
-    background: #11151f;
-    padding: 12px 64px; 
-    border-radius: 0; 
-    width: 100%;
-    margin: 0 auto; 
-    box-sizing: border-box;
-    max-width: 1920px; 
+    flex-direction: row;
+    gap: 10px;
+    margin-left: auto;
+
+    .filter__label {
+      margin-left: 10px;
+    }
+  }
+
+  .pill-toggle {
+    flex-shrink: 0;
+  }
+
+}
+
+@media (max-width: 1024px) {
+  .filter-items {
+    max-width: 1920px;
+    padding: 25px 0 25px 15px;
+    gap: 0;
 
     &__count {
-        margin-inline-start: 16px;
-        font-size: 0.85rem;
-        font-weight: 500;
+      font-size: 12px;
+      font-weight: 500;
     }
 
     &__left {
-        align-items: center;
-        margin-inline-end: 12px;
+      align-items: center;
+      margin-inline-end: 0;
     }
 
     &__right {
-        display: flex;
-        align-items: center;
-        flex-direction: row;
-        gap: 10px;
-        margin-left: auto;
-    }
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+      gap: 1px;
+      margin-left: auto;
 
-    .pill-toggle {
-        flex-shrink: 0; 
+      .filter__label {
+        display: none;
+      }
     }
+  }
+
+  .pill-toggle {
+    ::ng-deep .mat-button-toggle {
+      .mat-button-toggle-label-content {
+        padding: 2px 15px !important;
+      }
+    }
+  }
+
+  .filter-btn {
+    padding: 0 10px!important;
+  }
 
 }
 
 .pill-toggle {
-    background: #262b38;
-    border-radius: 999px !important;
+  background: #262b38;
+  border-radius: 999px !important;
+  border: none !important;
+  padding: 0;
+  display: inline-flex;
+
+  ::ng-deep .mat-button-toggle {
+    background: transparent !important;
     border: none !important;
-    padding: 0;
-    display: inline-flex; 
+    border-radius: 999px !important;
 
-    ::ng-deep .mat-button-toggle {
-        background: transparent !important;
-        border: none !important;
-        border-radius: 999px !important;
-
-        .mat-button-toggle-label-content {
-            padding: 5px 22px !important;
-            line-height: 30px !important; 
-            color: rgba(255, 255, 255, 0.75);
-            font-weight: 500;
-            font-size: 0.85rem;
-        }
+    .mat-button-toggle-label-content {
+      padding: 5px 22px;
+      line-height: 30px !important;
+      color: rgba(255, 255, 255, 0.75);
+      font-weight: 500;
+      font-size: 0.85rem;
     }
+  }
 
-    ::ng-deep .mat-button-toggle-checked {
-        background: #3a4152 !important;
-        border-radius: 999px !important;
+  ::ng-deep .mat-button-toggle-checked {
+    background: #3a4152 !important;
+    border-radius: 999px !important;
 
-        .mat-button-toggle-label-content {
-            color: #f5a623 !important;
-        }
+    .mat-button-toggle-label-content {
+      color: #f5a623 !important;
     }
+  }
+
 }
 
 .platforms {
@@ -200,7 +248,7 @@
 .is-active {
   --mat-icon-button-icon-color: #f5c518;
   --mat-sys-on-surface-variant: #f5c518;
-  color: #f5c518!important;
+  color: #f5c518 !important;
 }
 
 .filter-items__count--loading {
