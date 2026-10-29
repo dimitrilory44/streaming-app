@@ -1,54 +1,37 @@
-.container {
-    max-width: 1900px;
-    padding: 0 64px;
-}
-
-@media (max-width: 1440px) {
-    .container {
-        max-width: 1900px;
-        padding: 0;
-    }
-}
+@use 'breakpoints' as bp;
 
 :host {
     display: block;
+}
+
+.container {
+    max-width: 1900px;
+    padding: 0 var(--page-gutter);
 }
 
 .navbar {
     background: #0d1117;
     color: white;
     gap: 24px;
-    margin-bottom: 50px;
-}
+    margin-bottom: 25px;
 
-.navbar__small__screen {
-    justify-content: center;
-    padding-left: 8px;
-    align-items: center;
-    width: 100%;
-    display: flex;
-    overflow: visible;
-    margin-top: 100px;
-
-    button {
-        white-space: nowrap;
-        color: #999c9f;
-        align-items: center;
-        height: 100%;
-        font-size: 14px;
-        display: flex;
+    // Mobile : deux rangées. Le logo occupe toute la première,
+    // la navigation et le bouton de recherche se partagent la seconde.
+    @include bp.mobile {
+        flex-wrap: wrap;
+        height: auto;
+        row-gap: 4px;
+        column-gap: 8px;
+        margin-bottom: 12px;
     }
 }
 
-.search__small__screen {
-    z-index: 1;
-    flex-grow: 2;
-    height: 52px;
-    margin: 0;
-    margin-inline-end: 7px;
-    display: flex;
-    margin-top: 100px;
+.mat-toolbar-row,
+.mat-toolbar-single-row {
+    padding: 0 !important;
 }
+
+// --- Logo -----------------------------------------------------------------
 
 .logo {
     font-size: 34px;
@@ -59,28 +42,18 @@
     .yellow {
         color: #fbc500;
     }
-}
 
-.logo__small {
-    font-size: 34px;
-    font-weight: 600;
-    cursor: pointer;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    min-height: 46px;
-    margin: 0;
-    padding-inline-end: 0;
-    display: flex;
-    position: absolute;
-    top: 0;
-
-    .yellow {
-        color: #fbc500;
+    &--compact {
+        flex-basis: 100%;
+        padding-top: 8px;
+        text-align: center;
+        line-height: 1.2;
     }
 }
 
-nav {
+// --- Navigation -------------------------------------------------------------
+
+.nav {
     display: flex;
     gap: 8px;
 
@@ -99,12 +72,27 @@ nav {
         color: #ffffff;
         font-weight: 700;
     }
+
+    // Mobile : la nav prend la place restante et défile horizontalement
+    // si les libellés ne tiennent pas, au lieu de faire déborder la page.
+    &--compact {
+        // Base à 0 : la nav prend la place laissée par le bouton de recherche
+        // au lieu de le repousser sur une troisième ligne.
+        flex: 1 1 0;
+        min-width: 0;
+        gap: 0;
+        overflow-x: auto;
+        scrollbar-width: none;
+
+        button {
+            flex: none;
+            min-width: 0;
+            padding-inline: 10px;
+        }
+    }
 }
 
-.mat-toolbar-row,
-.mat-toolbar-single-row {
-    padding: 0 !important;
-}
+// --- Recherche ----------------------------------------------------------------
 
 ::ng-deep .mat-mdc-form-field-subscript-wrapper {
     display: none;
@@ -146,32 +134,46 @@ nav {
     }
 }
 
-.action-btn__account {
-    color: #fbc500;
-}
-
-.action-btn__menu {
-    color: white;
-}
-
-.filter-btn {
-    background-color: #2a2f38 !important;
-    border-radius: 20px !important;
-    border: none !important;
-    color: #e5e7eb;
-    height: 36px;
+// Bouton de recherche de la version mobile (le champ complet est réservé au desktop).
+.search-btn {
+    flex: none;
     display: flex;
     align-items: center;
-    padding: 0 15px;
-    margin: 100px 10px 0 -15px;
-
-    &__label {
-        margin-left: 10px;
-    }
+    gap: 8px;
+    height: 36px;
+    padding: 0 14px;
+    border: none;
+    border-radius: 20px;
+    background-color: #2a2f38;
+    color: #e5e7eb;
+    font: inherit;
+    font-size: 14px;
+    cursor: pointer;
 
     mat-icon {
         font-size: 18px;
         width: 18px;
         height: 18px;
     }
+
+    // Téléphone : icône seule, le libellé reste lu par les lecteurs d'écran via aria-label.
+    @include bp.xsmall {
+        width: 36px;
+        padding: 0;
+        justify-content: center;
+
+        &__label {
+            display: none;
+        }
+    }
+}
+
+// --- Actions ----------------------------------------------------------------
+
+.action-btn__account {
+    color: #fbc500;
+}
+
+.action-btn__menu {
+    color: white;
 }

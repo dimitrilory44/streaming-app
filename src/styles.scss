@@ -3,8 +3,19 @@
 @use 'swiper/css';
 @use 'swiper/css/navigation';
 @use 'swiper/css/pagination';
+@use 'breakpoints' as bp;
 
 @import 'material-icons/iconfont/material-icons.css';
+
+// Marge horizontale de la page, partagée par le header, la barre de filtres,
+// les panneaux de filtres et la liste de titres.
+:root {
+  --page-gutter: 64px;
+
+  @include bp.mobile {
+    --page-gutter: 16px;
+  }
+}
 
 html {
   overflow-y: scroll;
