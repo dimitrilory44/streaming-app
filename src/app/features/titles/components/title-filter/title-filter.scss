@@ -1,3 +1,5 @@
+@use 'breakpoints' as bp;
+
 .filter-items {
   display: flex;
   align-items: center;
@@ -5,7 +7,7 @@
   flex-wrap: nowrap;
   gap: 16px;
   background: #11151f;
-  padding: 12px 64px;
+  padding: 12px var(--page-gutter);
   border-radius: 0;
   width: 100%;
   margin: 0 auto;
@@ -19,6 +21,7 @@
   }
 
   &__left {
+    display: flex;
     align-items: center;
     margin-inline-end: 12px;
   }
@@ -29,59 +32,45 @@
     flex-direction: row;
     gap: 10px;
     margin-left: auto;
-
-    .filter__label {
-      margin-left: 10px;
-    }
   }
 
   .pill-toggle {
     flex-shrink: 0;
   }
 
-}
+  // Mobile : le toggle et les actions partagent la première ligne,
+  // le compteur passe seul sur la seconde, juste au-dessus des affiches.
+  @include bp.mobile {
+    flex-wrap: wrap;
+    row-gap: 10px;
+    column-gap: 8px;
 
-@media (max-width: 1024px) {
-  .filter-items {
-    max-width: 1920px;
-    padding: 25px 0 25px 15px;
-    gap: 0;
-
-    &__count {
-      font-size: 12px;
-      font-weight: 500;
+    // Le groupe de gauche s'efface de la mise en page : le toggle et le compteur
+    // deviennent des enfants directs de la barre et peuvent être placés séparément.
+    &__left {
+      display: contents;
     }
 
-    &__left {
-      align-items: center;
-      margin-inline-end: 0;
+    &__count {
+      order: 1;
+      flex-basis: 100%;
+      margin-inline-start: 0;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
     }
 
     &__right {
-      display: flex;
-      align-items: center;
-      flex-direction: row;
-      gap: 1px;
-      margin-left: auto;
-
-      .filter__label {
-        display: none;
-      }
+      gap: 6px;
     }
   }
+}
 
-  .pill-toggle {
-    ::ng-deep .mat-button-toggle {
-      .mat-button-toggle-label-content {
-        padding: 2px 15px !important;
-      }
-    }
+.filter-btn__label {
+  margin-left: 10px;
+
+  @include bp.mobile {
+    display: none;
   }
-
-  .filter-btn {
-    padding: 0 10px!important;
-  }
-
 }
 
 .pill-toggle {
@@ -253,4 +242,22 @@
 
 .filter-items__count--loading {
   display: none;
+}
+
+@include bp.xsmall {
+  .pill-toggle ::ng-deep .mat-button-toggle .mat-button-toggle-label-content {
+    padding: 2px 12px;
+  }
+
+  // Téléphone : 3 icônes de plateformes au maximum, le badge donne le total.
+  // La largeur du bouton reste ainsi fixe, quel que soit le nombre de plateformes choisies.
+  .platforms__icon:nth-child(n + 4) {
+    display: none;
+  }
+}
+
+@include bp.mobile {
+  .filter-btn {
+    padding: 0 10px !important;
+  }
 }

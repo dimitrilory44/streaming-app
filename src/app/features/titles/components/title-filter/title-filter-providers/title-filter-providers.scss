@@ -2,7 +2,7 @@
   color: #e5e7eb;
   background: #11151f;
   display: flex;
-  padding: 15px 64px;
+  padding: 15px var(--page-gutter);
 
   &__header {
     display: flex;
