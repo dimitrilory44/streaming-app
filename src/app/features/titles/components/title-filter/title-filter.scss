@@ -38,13 +38,27 @@
     flex-shrink: 0;
   }
 
-  // Mobile : le toggle et les actions partagent la première ligne,
-  // le compteur passe seul sur la seconde, juste au-dessus des affiches.
+  /// Mobile (téléphone et tablette) : la barre peut passer à la ligne
+  // plutôt que de faire déborder la page.
   @include bp.mobile {
     flex-wrap: wrap;
     row-gap: 10px;
     column-gap: 8px;
 
+    &__count {
+      margin-inline-start: 12px;
+      font-size: 12px;
+    }
+
+    &__right {
+      gap: 6px;
+    }
+  }
+
+  // Téléphone : le toggle et les actions partagent la première ligne,
+  // le compteur passe seul sur la seconde, juste au-dessus des affiches.
+  // Sur tablette, il reste à côté du toggle : la place suffit.
+  @include bp.xsmall {
     // Le groupe de gauche s'efface de la mise en page : le toggle et le compteur
     // deviennent des enfants directs de la barre et peuvent être placés séparément.
     &__left {
@@ -55,12 +69,7 @@
       order: 1;
       flex-basis: 100%;
       margin-inline-start: 0;
-      font-size: 12px;
       color: rgba(255, 255, 255, 0.6);
-    }
-
-    &__right {
-      gap: 6px;
     }
   }
 }

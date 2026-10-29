@@ -2,7 +2,13 @@
     <mat-toolbar class="navbar">
         @if (isSmallScreen()) {
             <div class="logo logo--compact">
-                <span class="yellow">Just</span><span>Dim</span>
+                <button mat-icon-button class="action-btn__menu" aria-label="Menu">
+                    <mat-icon>menu</mat-icon>
+                </button>
+                <div><span class="yellow">Just</span><span>Dim</span></div>
+                <button mat-icon-button class="action-btn__account" aria-label="Compte">
+                    <mat-icon>manage_accounts</mat-icon>
+                </button>
             </div>
             <nav class="nav nav--compact" aria-label="Navigation principale">
                 @for (menu of menus; track menu.label) {
