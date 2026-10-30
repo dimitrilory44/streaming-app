@@ -13,7 +13,7 @@
   --page-gutter: 64px;
 
   @include bp.mobile {
-    --page-gutter: 16px;
+    --page-gutter: 15px;
   }
 }
 
@@ -39,7 +39,7 @@ body {
   --mat-sys-on-surface: #e5e7eb;
   font: var(--mat-sys-body-medium);
   margin: 0;
-  height: 100%;
+  min-height: 100%;
 }
 
 .mat-mdc-chip-set .mdc-evolution-chip-set__chips {

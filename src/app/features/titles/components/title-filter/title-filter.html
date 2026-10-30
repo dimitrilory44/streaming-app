@@ -18,7 +18,7 @@
                     [alt]="provider.provider_name" appImgFallback="assets/provider-fallback.svg" />
                 }
             </div>
-            <span class="platforms__badge">{{ countProviders() | number:'1.0-0' }}</span>
+            <span class="count-badge">{{ countProviders() | number:'1.0-0' }}</span>
         </button>
 
         <button mat-icon-button class="action-btn" [class.is-active]="activeSort()" aria-label="Trier"
@@ -29,9 +29,7 @@
             (click)="isFilterCriteriaPanelExpanded.set(!isFilterCriteriaPanelExpanded())">
             <mat-icon>filter_alt</mat-icon>
             <span class="filter-btn__label">Filtres</span>
-            <span class="filters__badge" [style.display]="activeCountFilters() > 0 ? 'inline-block' : 'none'">
-                {{ activeCountFilters() | number:'1.0-0' }}
-            </span>
+            <span class="count-badge" [style.display]="activeCountFilters() > 0 ? 'flex' : 'none'">{{ activeCountFilters() | number:'1.0-0' }}</span>
         </button>
     </div>
 </div>

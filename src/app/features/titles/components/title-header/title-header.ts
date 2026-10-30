@@ -1,4 +1,4 @@
-import { Component, inject, model } from '@angular/core';
+import { Component, computed, inject, model } from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -31,10 +31,12 @@ export class TitleHeaderComponent {
   readonly search = model('');
 
   readonly menus = [
-    { label: 'Accueil', path: null, exact: true },
-    { label: 'Nouveautés', path: null, exact: false },
-    { label: 'Populaires', path: '/popular', exact: false },
-    { label: 'Listes', path: null, exact: false }
+    { label: 'Accueil', path: null, exact: true, mobile: false },
+    { label: 'Nouveautés', path: null, exact: false, mobile: true },
+    { label: 'Populaires', path: '/popular', exact: false, mobile: true },
+    { label: 'Listes', path: null, exact: false, mobile: true }
   ];
+
+  readonly visibleMenus = computed(() => this.isSmallScreen() ? this.menus.filter((menu) => menu.mobile) : this.menus);
 
 }

@@ -38,6 +38,29 @@
     flex-shrink: 0;
   }
 
+  .count-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 18px;
+    height: 18px;
+
+    background-color: #f2a93b;
+    color: #14181f;
+
+    border-radius: 50%;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    z-index: 10;
+  }
+
   /// Mobile (téléphone et tablette) : la barre peut passer à la ligne
   // plutôt que de faire déborder la page.
   @include bp.mobile {
@@ -154,53 +177,6 @@
     }
   }
 
-  &__badge {
-    position: absolute;
-    top: -6px;
-    right: -6px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 18px;
-    height: 18px;
-
-    background-color: #f2a93b;
-    color: #14181f;
-
-    border-radius: 50%;
-
-    font-size: 11px;
-    font-weight: 700;
-
-    z-index: 10;
-  }
-}
-
-.filters {
-  &__badge {
-    position: absolute;
-    top: -13px;
-    right: -19px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 18px;
-    height: 18px;
-
-    background-color: #f2a93b;
-    color: #14181f;
-
-    border-radius: 50%;
-
-    font-size: 11px;
-    font-weight: 700;
-
-    z-index: 10;
-  }
 }
 
 .action-btn {
@@ -218,6 +194,7 @@
 }
 
 .filter-btn {
+  position: relative;
   background-color: #2a2f38 !important;
   border-radius: 20px !important;
   border: none !important;

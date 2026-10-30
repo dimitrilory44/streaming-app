@@ -1,17 +1,17 @@
-<header class="container">
+<header id="top" class="container">
     <mat-toolbar class="navbar">
         @if (isSmallScreen()) {
             <div class="logo logo--compact">
-                <button mat-icon-button class="action-btn__menu" aria-label="Menu">
+                <button mat-icon-button class="action-btn__menu" aria-label="Menu" disabled>
                     <mat-icon>menu</mat-icon>
                 </button>
                 <div><span class="yellow">Just</span><span>Dim</span></div>
-                <button mat-icon-button class="action-btn__account" aria-label="Compte">
+                <button mat-icon-button class="action-btn__account" aria-label="Compte" disabled>
                     <mat-icon>manage_accounts</mat-icon>
                 </button>
             </div>
             <nav class="nav nav--compact" aria-label="Navigation principale">
-                @for (menu of menus; track menu.label) {
+                @for (menu of visibleMenus(); track menu.label) {
                     @if (menu.path) {
                         <button 
                             mat-button
@@ -25,7 +25,7 @@
                     }
                 }
             </nav>
-            <button class="search-btn" aria-label="Rechercher">
+            <button class="search-btn" aria-label="Rechercher" disabled>
                 <mat-icon>search</mat-icon>
                 <span class="search-btn__label">Recherche</span>
             </button>
@@ -59,10 +59,10 @@
             </div>
     
             <div class="actions">
-                <button mat-icon-button class="action-btn__account" aria-label="Compte">
+                <button mat-icon-button class="action-btn__account" aria-label="Compte" disabled>
                     <mat-icon>manage_accounts</mat-icon>
                 </button>
-                <button mat-icon-button class="action-btn__menu" aria-label="Menu">
+                <button mat-icon-button class="action-btn__menu" aria-label="Menu" disabled>
                     <mat-icon>menu</mat-icon>
                 </button>
             </div>
