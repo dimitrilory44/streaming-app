@@ -7,10 +7,11 @@ import { SwiperDirective } from '@shared/directives/swiper.directive';
 import { TmdbImagePipe } from '@shared/pipes/tmdb-image.pipe';
 import { TitleFilterProviderConfigComponent } from './title-filter-provider-config/title-filter-provider-config';
 import { UserPreferencesService } from '@core/services/user-preferences-service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'title-filter-providers',
-  imports: [IconChipComponent, SwiperDirective, TmdbImagePipe, DecimalPipe],
+  imports: [IconChipComponent, SwiperDirective, TmdbImagePipe, DecimalPipe, MatIconModule],
   templateUrl: './title-filter-providers.html',
   styleUrl: './title-filter-providers.scss',
 })
@@ -24,8 +25,8 @@ export class TitleFilterProvidersComponent {
   readonly swiperConfig = {
     slidesPerView: 'auto' as const,
     navigation: {
-      nextEl: '.swiper-button-next',
-      prevEl: '.swiper-button-prev',
+      nextEl: '.providers-panel__nav--next',
+      prevEl: '.providers-panel__nav--prev',
     }
   };
 

@@ -2,7 +2,7 @@
 <div class="criteria-panel__box">
   <div class="criteria-panel__header">
     <span class="criteria-panel__title">{{ isMultiCriteria() ? onConvertKeyToLabel(criterion.key) : title() }}</span>
-    @if (criterion.key !== 'seriesAge') {
+    @if (criterion.key !== 'seriesAge' && showReset()) {
       <button class="criteria-panel__reset" (click)="resetRequested.emit(criterion.key)">
         <mat-icon>close</mat-icon>
         Réinitialiser

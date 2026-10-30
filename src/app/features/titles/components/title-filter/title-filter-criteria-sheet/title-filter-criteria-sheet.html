@@ -1,0 +1,17 @@
+<mat-accordion class="criteria-accordion" multi>
+  <span class="criteria-sheet__title">Filtres</span>
+  @for (criteria of criteriaList(); track criteria.key) {
+  <mat-expansion-panel class="criteria-accordion__panel" [class.is-active]="criteria.isActive">
+    <mat-expansion-panel-header class="criteria-accordion__header">
+      <mat-panel-title>{{ criteria.label }}</mat-panel-title>
+    </mat-expansion-panel-header>
+    <filter-criteria-group [criteria]="criteria.items" [showReset]="false"/>
+  </mat-expansion-panel>
+  }
+</mat-accordion>
+
+<div class="sheet-actions">
+  <button type="button" class="sheet-actions__btn sheet-actions__btn--secondary" (click)="resetAll()">
+    Tout Réinitialiser
+  </button>
+</div>

@@ -164,3 +164,29 @@ mat-spinner {
 .criteria-menu {
   min-width: 400px !important;
 }
+
+.mat-bottom-sheet-container {
+  --mat-sys-surface-container-low: #0d1117;
+}
+
+.criteria-accordion {
+  @include mat.expansion-overrides((
+    container-background-color: transparent,
+    container-text-color: #e5e7eb,
+    container-shape: 0,
+    container-elevation-shadow: none,
+    header-text-color: #e5e7eb,
+    header-indicator-color: #e5e7eb,
+    header-collapsed-state-height: 56px,
+    header-expanded-state-height: 56px,
+    header-hover-state-layer-color: rgba(255, 255, 255, 0.04),
+    header-focus-state-layer-color: rgba(255, 255, 255, 0.06),
+  ));
+}
+
+.criteria-accordion__panel.is-active {
+  @include mat.expansion-overrides((
+    header-text-color: #f5c518,
+    header-indicator-color: #f5c518,
+  ));
+}

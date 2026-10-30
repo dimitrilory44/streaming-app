@@ -15,7 +15,7 @@ import { SwiperDirective } from '@shared/directives/swiper.directive';
 import { Provider, ProviderConfigData } from '@core/models/media-model';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ImgFallbackDirective } from '@shared/directives/img-fallback.directive';
-import { OnlineStatusService } from '@core/services/online-status.service';
+import { OnlineStatusService } from '@core/services/online-status-service';
 import { MatInputModule } from '@angular/material/input';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { StateMessage } from "@shared/components/state-message/state-message";

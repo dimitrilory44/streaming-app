@@ -14,8 +14,9 @@ import { convertKeyToLabel } from '@shared/helpers/criteria.helpers';
   styleUrl: './title-filter-criteria-group.scss',
 })
 export class TitleFilterCriteriaGroupComponent {
-  readonly title = input.required<string>();
+  readonly title = input<string>();
   readonly criteria = input.required<CriteriaItem[]>();
+  readonly showReset = input(true);
   readonly resetRequested = output<CriteriaItem['key']>();
 
   readonly onConvertKeyToLabel = convertKeyToLabel;

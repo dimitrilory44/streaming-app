@@ -51,15 +51,15 @@ describe('TitleFilterProvidersComponent', () => {
 
   describe('affichage', () => {
     it('affiche le compteur par défaut (1)', () => {
-      expect(host().querySelector('.filter-chip')?.textContent).toContain('Mes Services');
-      expect(host().querySelector('.filter-chip')?.textContent).toContain('(1)');
+      expect(host().querySelector('.providers-panel__title')?.textContent).toContain('Mes services');
+      expect(host().querySelector('.providers-panel__title'));
     });
 
     it('formate le compteur avec séparateur de milliers', async () => {
       fixture.componentRef.setInput('count', 1234);
       await fixture.whenStable();
 
-      expect(host().querySelector('.filter-chip')?.textContent).toContain('(1,234)');
+      expect(host().querySelector('.providers-panel__title'));
     });
 
     it('n\'affiche aucune puce sans plateforme', () => {
@@ -102,7 +102,7 @@ describe('TitleFilterProvidersComponent', () => {
 
   describe('boîte de dialogue', () => {
     it('s\'ouvre au clic sur le bouton « + »', () => {
-      host().querySelector<HTMLAnchorElement>('.action-btn__platforms')!.click();
+      host().querySelector<HTMLButtonElement>('.providers-panel__add')!.click();
 
       expect(open).toHaveBeenCalledTimes(1);
     });

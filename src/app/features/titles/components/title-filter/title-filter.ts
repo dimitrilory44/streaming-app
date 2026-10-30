@@ -17,16 +17,21 @@ import { TitleFilterProvidersComponent } from './title-filter-providers/title-fi
 import { MediaConfig } from '@core/models/media-model';
 import { DEFAULT_MEDIA } from '@shared/constants/filter-preferences';
 import { COMMON_SORT_OPTIONS, MOVIE_SORT_OPTIONS, SERIES_SORT_OPTIONS } from '@shared/constants/sort-options';
+import { BreakpointService } from '@core/services/breakpoint-service';
+import { MatBottomSheet, MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { TitleFilterCriteriaSheet } from './title-filter-criteria-sheet/title-filter-criteria-sheet';
 
 @Component({
   selector: 'title-filter',
-  imports: [TmdbImagePipe, MatButtonToggleModule, DecimalPipe, SlicePipe, MatButtonModule, MatIconModule, MatExpansionModule, MatMenuModule, ImgFallbackDirective, TitleFilterProvidersComponent, TitleFilterCriteriaComponent],
+  imports: [TmdbImagePipe, MatButtonToggleModule, DecimalPipe, SlicePipe, MatButtonModule, MatIconModule, MatExpansionModule, MatMenuModule, ImgFallbackDirective, TitleFilterProvidersComponent, TitleFilterCriteriaComponent, MatBottomSheetModule],
   templateUrl: './title-filter.html',
   styleUrl: './title-filter.scss',
 })
 export class TitleFilterComponent {
   readonly #router = inject(Router);
   readonly #userPreferencesService = inject(UserPreferencesService);
+  readonly #breakpointService = inject(BreakpointService);
+  readonly #bottomSheet = inject(MatBottomSheet);
 
   readonly items = input<Media[]>([]);
   readonly isLoading = input<boolean>(false);
@@ -43,6 +48,8 @@ export class TitleFilterComponent {
 
   readonly selectedOptionByMedia = computed(() => this.#userPreferencesService.sortHelpers[this.currentMediaType()].items());
   readonly activeSort = computed(() => !this.#userPreferencesService.sortHelpers[this.currentMediaType()].isDefault());
+
+  readonly isSmallScren = computed(() => this.#breakpointService.hasSmallScreen());
   
   readonly mediaConfig: Record<MediaType, MediaConfig> = {
     movie: { options: MOVIE_SORT_OPTIONS, route: ['/popular/movies'] },
@@ -53,6 +60,10 @@ export class TitleFilterComponent {
   readonly selectOptionsByMedia = computed(() => this.mediaConfig[this.currentMediaType()].options);
 
   readonly activeCountFilters = this.#userPreferencesService.activeCriteriaCount;
+
+  openPanelCriteria(): void {
+    this.isSmallScren() ? this.#bottomSheet.open(TitleFilterCriteriaSheet) : this.isFilterCriteriaPanelExpanded.set(!this.isFilterCriteriaPanelExpanded());
+  }
 
   onResetSortChange(value: AllSortOptions): void {
     this.#userPreferencesService.sortHelpers[this.currentMediaType()].set(value);

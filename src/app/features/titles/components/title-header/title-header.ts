@@ -6,9 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { map } from 'rxjs';
+import { BreakpointService } from '@core/services/breakpoint-service';
 
 @Component({
   selector: 'title-header',
@@ -18,15 +16,9 @@ import { map } from 'rxjs';
 })
 export class TitleHeaderComponent {
   readonly dialog = inject(MatDialog);
-  readonly #breakpointObserver = inject(BreakpointObserver);
+  readonly #breakpointService = inject(BreakpointService);
 
-  // Même seuil que le mixin `mobile` de src/styles/_breakpoints.scss (max-width: 959.98px).
-  readonly isSmallScreen = toSignal(
-    this.#breakpointObserver
-      .observe([Breakpoints.XSmall, Breakpoints.Small])
-      .pipe(map((state) => state.matches)),
-    { initialValue: false },
-  );
+  readonly isSmallScren = computed(() => this.#breakpointService.hasSmallScreen());
 
   readonly search = model('');
 
@@ -37,6 +29,6 @@ export class TitleHeaderComponent {
     { label: 'Listes', path: null, exact: false, mobile: true }
   ];
 
-  readonly visibleMenus = computed(() => this.isSmallScreen() ? this.menus.filter((menu) => menu.mobile) : this.menus);
+  readonly visibleMenus = computed(() => this.isSmallScren() ? this.menus.filter((menu) => menu.mobile) : this.menus);
 
 }

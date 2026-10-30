@@ -1,85 +1,126 @@
-.filter-panel {
-  color: #e5e7eb;
-  background: #11151f;
-  display: flex;
-  padding: 15px var(--page-gutter);
+@use 'breakpoints' as bp;
 
-  &__header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #e5e7eb;
-  }
-}
-
-.filter-group {
-  width: 10%;
+// Desktop : en-tête, puis liste, sur une seule ligne.
+// Mobile : l'en-tête (Mes services + bouton) passe au-dessus de la liste.
+.providers-panel {
   display: flex;
-}
-
-.filter-chip {
-  display: flex;
-  background-color: #262b38;
   align-items: center;
-  justify-content: center;
-  padding: 10px 10px;
-  white-space: nowrap;
-  color: #fbc500;
-  border-radius: 100px;
-}
+  gap: 16px;
+  padding: 15px var(--page-gutter);
+  background: #11151f;
+  color: #e5e7eb;
 
-.action-btn {
-  background-color: #2a2f38;
-  border-radius: 20px;
-  width: 36px;
-  height: 36px;
-
-  mat-icon {
-    color: #e5e7eb;
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
+  @include bp.mobile {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
   }
-}
 
-.action-btn__platforms {
-  background-color: #11151f;
-  margin-right: 15px;
-  cursor: pointer;
-}
+  // --- En-tête : titre + bouton d'ajout --------------------------------------
+  &__header {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 
-.icon-plus {
-  border: 1px solid hsla(0, 0%, 100%, .1); 
-  border-radius: 5px; 
-  width: 40px; 
-  height: 40px;
-} 
+    @include bp.mobile {
+      justify-content: space-between;
+    }
+  }
 
-.filter-providers {
-  width: 90%;
-  overflow: hidden;
-}
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: 40px;
+    padding: 0 14px;
+    border-radius: 20px;
+    background-color: #262b38;
+    color: #fbc500;
+    font-weight: 500;
+    white-space: nowrap;
+  }
 
-.swiper {
-    --swiper-navigation-color: white;
-}
+  &__count {
+    color: #e5e7eb;
+    font-weight: 400;
+  }
 
-.swiper-slide {
-    width: 50px;
+  &__add {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: transparent;
+    color: #e5e7eb;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #1a1f2b;
+    }
+  }
+
+  // --- Liste : chevron | logos | chevron ---------------------------------------
+  // Les chevrons sont des éléments du flux, pas des positions absolues :
+  // ils restent alignés avec les logos quelle que soit la largeur.
+  &__list {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__slider {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+  }
+
+  &__chip {
+    display: flex;     // supprime l'espace sous l'icône (alignement sur la ligne de base du texte)
+    width: 40px;
     flex-shrink: 0;
-    transition: width 0.35s ease;
-}
 
-.swiper-button-prev {
-    top: 187px;
-    left: 275px;
-    --swiper-navigation-size: 20px;
-    --swiper-theme-color: white;
-}
+    &:not(:last-child) {
+      margin-right: 10px;
+    }
+  }
 
-.swiper-button-next {
-    top: 188px;
-    right: 46px;
-    --swiper-navigation-size: 20px;
-    --swiper-theme-color: white;
+  &__nav {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background-color: #262b38;
+    color: #e5e7eb;
+    cursor: pointer;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+
+    // Classes ajoutées par Swiper : début ou fin de liste, ou tout tient sans défiler.
+    &.swiper-button-disabled {
+      opacity: 0.35;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    &.swiper-button-lock {
+      display: none;
+    }
+  }
 }

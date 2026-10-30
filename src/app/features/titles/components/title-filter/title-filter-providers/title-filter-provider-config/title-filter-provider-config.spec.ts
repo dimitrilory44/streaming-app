@@ -8,10 +8,10 @@ import { Subject } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Provider, ProviderConfigData, Providers, ProvidersState } from '@core/models/media-model';
-import { OnlineStatusService } from '@core/services/online-status.service';
 import { TmdbApiService } from '@core/services/tmdb-api';
 import { SwiperDirective } from '@shared/directives/swiper.directive';
 import { TitleFilterProviderConfigComponent } from './title-filter-provider-config';
+import { OnlineStatusService } from '@core/services/online-status-service';
 
 /** Swiper manipule le DOM réel : on le remplace par une directive sans effet. */
 @Directive({ selector: '[appSwiper]' })

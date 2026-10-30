@@ -1,0 +1,81 @@
+:host ::ng-deep .criteria-accordion .mat-expansion-panel-body {
+  padding: 0 0 16px;
+}
+
+.criteria-sheet__title {
+  margin-bottom: 15px;
+}
+
+.criteria-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;                      
+}
+
+.criteria-accordion__header {
+  padding: 0 16px;               
+  border: 1px solid #3a4152;
+  border-radius: 12px;
+}
+
+.criteria-accordion__panel.is-active .criteria-accordion__header {
+  border-color: #f5c518;         
+}
+
+//#e5e7eb
+
+.sheet-actions {
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px 20px;
+
+  &__btn {
+    height: 48px;
+    padding: 0 20px;
+    border-radius: 24px;
+    font: inherit;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+
+    &:focus-visible {
+      outline: 2px solid #f5c518;
+      outline-offset: 2px;
+    }
+
+    // Bouton de la capture
+    &--secondary {
+      flex: 1 1 0;
+      border: 1px solid #3a4152;
+      background: transparent;
+      color: #e5e7eb;
+      font-weight: 500;
+
+      &:hover {
+        background-color: #1a1f2b;
+        border-color: #4a5266;
+      }
+
+      &:active {
+        background-color: #262b38;
+      }
+    }
+
+    // Action principale, plus large pour rester la cible évidente du pouce
+    &--primary {
+      flex: 1 1 0;
+      border: none;
+      background: #f2a93b;
+      color: #14181f;
+      font-weight: 700;
+
+      &:hover {
+        background: #f5b85a;
+      }
+
+      &:active {
+        background: #e09a2e;
+      }
+    }
+  }
+}
