@@ -29,7 +29,9 @@
             (click)="isFilterCriteriaPanelExpanded.set(!isFilterCriteriaPanelExpanded())">
             <mat-icon>filter_alt</mat-icon>
             <span class="filter-btn__label">Filtres</span>
-            <span class="count-badge" [style.display]="activeCountFilters() > 0 ? 'flex' : 'none'">{{ activeCountFilters() | number:'1.0-0' }}</span>
+            @if (activeCountFilters() > 0) {
+            <span class="count-badge">{{ activeCountFilters() | number:'1.0-0' }}</span>
+            }
         </button>
     </div>
 </div>

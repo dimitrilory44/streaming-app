@@ -216,7 +216,7 @@ describe('TitleFilterComponent', () => {
       await fixture.whenStable();
 
       expect(host().querySelectorAll('.platforms__icon')).toHaveLength(5);
-      expect(query('.platforms__badge')?.textContent?.trim()).toBe('7');
+      expect(query('.platforms .count-badge')?.textContent?.trim()).toBe('7');
     });
 
     it('construit l\'URL du logo via TMDB et renseigne l\'alt', async () => {
@@ -375,16 +375,22 @@ describe('TitleFilterComponent', () => {
     });
 
     it('masque le badge des filtres quand aucun filtre n\'est actif, l\'affiche sinon', async () => {
-      const badge = () => query('.filters__badge');
-      expect(badge()?.style.display).toBe('none');
+      // Le badge est cherché DANS le bouton Filtres : `.count-badge` seul trouverait d'abord celui des plateformes.
+      const filterButton = () => query('.filter-btn');
+      const badge = () => query('.filter-btn .count-badge');
+
+      // Sans filtre actif : pas de badge du tout, bouton non mis en évidence.
+      expect(badge()).toBeNull();
+      expect(filterButton()?.classList.contains('is-active')).toBe(false);
 
       prefs.setCriteria(PREF.DEFAULT_NOTE_KEY, 7);
       prefs.setCriteria(PREF.DEFAULT_COUNTRY_KEY, [{ id: PREF.COUNTRY_ID('FR'), code: 'FR', name: 'France' }]);
       await fixture.whenStable();
 
-      expect(badge()?.style.display).toBe('inline-block');
+      // Deux critères actifs : le badge apparaît avec le bon nombre.
+      expect(badge()).not.toBeNull();
       expect(badge()?.textContent?.trim()).toBe('2');
-      expect(query('button[aria-label="Filtres"]')?.classList.contains('is-active')).toBe(true);
+      expect(filterButton()?.classList.contains('is-active')).toBe(true);
     });
 
     it('le panneau des critères est masqué par défaut puis bascule au clic', async () => {
