@@ -207,3 +207,30 @@ mat-spinner {
     header-indicator-color: #f5c518,
   ));
 }
+
+// Dialog plein écran (mobile uniquement : la classe n'est ajoutée qu'en petit écran)
+// Marges latérales divisées par deux (24px -> 12px) et titre réduit pour tenir sur une ligne.
+.dialog-panel--fullscreen {
+  @include mat.dialog-overrides((
+    headline-padding: 0px 12px 12px 13px,
+    content-padding: 20px 12px,
+    with-actions-content-padding: 20px 12px 0,
+    actions-padding: 16px 12px,
+    subhead-size: clamp(16px, 5vw, 18px),   // 18px dès 360px, 16px sur les plus petits écrans (320px)
+    subhead-line-height: 24px,
+  ));
+}
+
+// Dialog en plein écran (mobile)
+.dialog-panel--fullscreen {
+  .mat-mdc-dialog-surface {
+    border-radius: 0;
+  }
+
+  // Le contenu prend toute la hauteur restante : on lève les limites de Material (65vh)
+  // et celle du composant (70vh), sinon le bouton flotte au-dessus d'un vide.
+  .mat-mdc-dialog-content.dialog-content {
+    flex: 1 1 auto;
+    max-height: none;
+  }
+}

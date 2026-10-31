@@ -6,7 +6,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 15px var(--page-gutter);
+  padding: 0 var(--page-gutter);
   background: #11151f;
   color: #e5e7eb;
 
@@ -122,5 +122,11 @@
     &.swiper-button-lock {
       display: none;
     }
+
+    // Mobile : on fait défiler au doigt, les chevrons sont inutiles.
+    @include bp.mobile {
+      display: none;
+    }
+
   }
 }

@@ -1,6 +1,6 @@
 import { DecimalPipe } from '@angular/common';
 import { Component, inject, input } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Provider, ProviderConfigData } from '@core/models/media-model';
 import { IconChipComponent } from "@shared/components/icon-chip/icon-chip";
 import { SwiperDirective } from '@shared/directives/swiper.directive';
@@ -8,6 +8,7 @@ import { TmdbImagePipe } from '@shared/pipes/tmdb-image.pipe';
 import { TitleFilterProviderConfigComponent } from './title-filter-provider-config/title-filter-provider-config';
 import { UserPreferencesService } from '@core/services/user-preferences-service';
 import { MatIconModule } from '@angular/material/icon';
+import { BreakpointService } from '@core/services/breakpoint-service';
 
 @Component({
   selector: 'title-filter-providers',
@@ -18,6 +19,7 @@ import { MatIconModule } from '@angular/material/icon';
 export class TitleFilterProvidersComponent {
   readonly #dialog = inject(MatDialog);
   readonly #userPreferencesService = inject(UserPreferencesService);
+  readonly #breakpointService = inject(BreakpointService);
 
   readonly providers = input<Provider[]>([]);
   readonly count = input<number>(1);
@@ -31,22 +33,25 @@ export class TitleFilterProvidersComponent {
   };
 
   openDialog() {
+    const size: MatDialogConfig = this.#breakpointService.hasSmallScreen()
+      ? { panelClass: ['dialog-panel', 'dialog-panel--fullscreen'], width: '100vw', maxWidth: '100vw', height: '100dvh' }
+      : { panelClass: 'dialog-panel', width: '600px', height: '600px' };
+
     const dialogRef = this.#dialog.open
       <TitleFilterProviderConfigComponent,
         ProviderConfigData,
         Provider[]
       >(TitleFilterProviderConfigComponent, {
-        panelClass: 'dialog-panel',
-        width: '600px',
-        height: '600px',
+        ...size,
         data: {
           providers: this.providers(),
         }
-    });
+      });
 
     dialogRef.afterClosed().subscribe(result => {
       if (!result) return;
       this.#userPreferencesService.setProviders(result);
     });
   }
+  
 }

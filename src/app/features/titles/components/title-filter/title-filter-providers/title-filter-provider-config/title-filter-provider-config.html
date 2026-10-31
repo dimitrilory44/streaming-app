@@ -1,51 +1,57 @@
 @if (allProviders().length > 0) {
-<h2 mat-dialog-title>Choisissez vos services de streaming</h2>
+@if (isSmallScreen) {
+<header class="config-header">
+  <button mat-icon-button type="button" class="config-header__back" aria-label="Valider et revenir"
+    [mat-dialog-close]="selectedProviders()" [disabled]="!hasSelectionProviders()">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+  <h4 mat-dialog-title class="config-header__title">Services de streaming</h4>
+</header>
+}
+<h4 mat-dialog-title>Choisissez vos services de streaming</h4>
 
 <mat-dialog-content class="mat-typography dialog-content">
-  <div class="chip-list" appSwiper [config]="swiperConfig">
-    <div class="swiper-wrapper">
-      
-      @for (provider of selectedProviders(); track provider.provider_id) {
-        <icon-chip 
-          class="swiper-slide" 
-          [iconUrl]="provider.logo_path | tmdbImage:'w45'" 
-          [label]="provider.provider_name"
-          [removable]="isOnline()" 
-          (removed)="removeProvider(provider.provider_id)"
-        />
-      } @empty {
-        <span>Dites-nous à quels services vous êtes abonné et consultez les nouveautés. Le tout, depuis un seul et même endroit !</span>
-      }
+    @if (selectedProviders().length > 0) {
+  <div class="config-chips">
+    <button type="button" class="config-chips__nav config-chips__nav--prev" aria-label="Services précédents">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
 
-    </div>
-    <div class="swiper-button-prev"></div>
-    <div class="swiper-button-next"></div>
-    <div class="swiper-pagination"></div>
-  </div>
-
-    @if (isOnline()) {
-    <div class="sub-search">
-      <mat-form-field appearance="outline">
-        <mat-icon matPrefix>search</mat-icon>
-        <input 
-          matInput 
-          [formControl]="searchControl" 
-          placeholder="Recherche une plateforme"
-        >
-        @if(searchTerm()) {
-        <button 
-          mat-icon-button 
-          matSuffix 
-          type="button" 
-          aria-label="Effacer la recherche" 
-          (click)="cleanInput()"
-        >
-          <mat-icon>close</mat-icon>
-        </button>
+    <div class="config-chips__slider swiper" appSwiper [config]="swiperConfig">
+      <div class="swiper-wrapper">
+        @for (provider of selectedProviders(); track provider.provider_id) {
+          <icon-chip
+            class="swiper-slide config-chips__chip"
+            [iconUrl]="provider.logo_path | tmdbImage:'w45'"
+            [label]="provider.provider_name"
+            [removable]="isOnline()"
+            (removed)="removeProvider(provider.provider_id)"
+          />
         }
-      </mat-form-field>
+      </div>
     </div>
-    }
+
+    <button type="button" class="config-chips__nav config-chips__nav--next" aria-label="Services suivants">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+  } @else {
+  <p class="config-chips__empty">Dites-nous à quels services vous êtes abonné et consultez les nouveautés. Le tout, depuis un seul et même endroit !</p>
+  }
+
+  @if (isOnline()) {
+  <div class="sub-search">
+    <mat-form-field appearance="outline">
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput [formControl]="searchControl" placeholder="Recherche une plateforme">
+      @if(searchTerm()) {
+      <button mat-icon-button matSuffix type="button" aria-label="Effacer la recherche" (click)="cleanInput()">
+        <mat-icon>close</mat-icon>
+      </button>
+      }
+    </mat-form-field>
+  </div>
+  }
 
   <div class="sub-list">
     <div class="sub-name">
@@ -54,63 +60,46 @@
     </div>
 
     @if(isOnline()) {
-    <mat-checkbox 
-      class="btn-checkbox" 
-      [checked]="areAllProvidersSelected()" 
-      [indeterminate]="partiallyComplete()"
-      (change)="toggleAllProviders()" 
-      aria-label="Sélectionner tous les providers"
-    />
+    <mat-checkbox class="btn-checkbox" [checked]="areAllProvidersSelected()" [indeterminate]="partiallyComplete()"
+      (change)="toggleAllProviders()" aria-label="Sélectionner tous les providers" />
     }
 
   </div>
-  
+
   <div class="provider-container">
 
     @for(provider of filteredProviders(); track provider.provider_id) {
     <div class="provider-items">
       <div class="provider-info">
-        <img 
-          mat-card-image 
-          class="provider-logo" 
-          [src]="provider.logo_path | tmdbImage:'w45'"
-          [alt]="provider.provider_name"
-          appImgFallback="assets/provider-fallback.svg" 
-        />
+        <img mat-card-image class="provider-logo" [src]="provider.logo_path | tmdbImage:'w45'"
+          [alt]="provider.provider_name" appImgFallback="assets/provider-fallback.svg" />
         <span class="provider-name">{{ provider.provider_name }}</span>
       </div>
 
       @if(isOnline()) {
-      <mat-checkbox 
-        class="btn-checkbox" 
-        [checked]="isSelected(provider.provider_id)"
-        (change)="toggleProvider(provider)" 
-        [attr.aria-label]="'Sélectionner ' + provider.provider_name"
-      />
+      <mat-checkbox class="btn-checkbox" [checked]="isSelected(provider.provider_id)"
+        (change)="toggleProvider(provider)" [attr.aria-label]="'Sélectionner ' + provider.provider_name" />
       }
     </div>
 
     } @empty {
-    <state-message 
-      illustration="assets/no_provider_results.svg" 
-      hint="Aucune plateforme trouvée" 
-      [showRetry]="false"
-    />
+    <state-message illustration="assets/no_provider_results.svg" hint="Aucune plateforme trouvée" [showRetry]="false" />
     }
 
   </div>
 
 </mat-dialog-content>
+@if (!isSmallScreen) {
 <mat-dialog-actions class="dialog-actions">
-  <button class="dialog-action primary rounded" [mat-dialog-close]="selectedProviders()" [disabled]="!hasSelectionProviders()" [class.dialog-action--blocked]="!hasSelectionProviders()">{{actionsClose()}}</button>
+  <button class="dialog-action primary rounded" [mat-dialog-close]="selectedProviders()"
+    [disabled]="!hasSelectionProviders()"
+    [class.dialog-action--blocked]="!hasSelectionProviders()">{{actionsClose()}}</button>
 </mat-dialog-actions>
+}
 
 } @else if(hasError()) {
-<state-message 
-  illustration="assets/offline-illustration-white-ghost-dialog.svg"
-  title="Vous êtes en mode hors connexion" 
-  (retry)="onRetry()" 
-/>
+<state-message illustration="assets/offline-illustration-white-ghost-dialog.svg"
+  title="Vous êtes en mode hors connexion" (retry)="onRetry()" />
 
 } @else if(isLoadingInitial()) {
 <div class="loading-indicator">

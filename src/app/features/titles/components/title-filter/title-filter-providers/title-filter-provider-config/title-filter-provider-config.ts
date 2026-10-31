@@ -19,6 +19,7 @@ import { OnlineStatusService } from '@core/services/online-status-service';
 import { MatInputModule } from '@angular/material/input';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { StateMessage } from "@shared/components/state-message/state-message";
+import { BreakpointService } from '@core/services/breakpoint-service';
 
 @Component({
   selector: 'title-filter-provider-config',
@@ -30,9 +31,11 @@ export class TitleFilterProviderConfigComponent {
   readonly #dialogRef = inject(MatDialogRef<TitleFilterProviderConfigComponent, Provider[]>);
   readonly #tmdbApiService = inject(TmdbApiService);
   readonly #onlineStatus = inject(OnlineStatusService);
+  readonly #breakpointService = inject(BreakpointService);
   readonly #data = inject<ProviderConfigData>(MAT_DIALOG_DATA);
 
   readonly isOnline = this.#onlineStatus.isOnline;
+  readonly isSmallScreen = this.#breakpointService.hasSmallScreen();
 
   readonly providersMovies = this.#tmdbApiService.getProvidersMovies();
   readonly providersSeries = this.#tmdbApiService.getProvidersSeries();
@@ -85,11 +88,11 @@ export class TitleFilterProviderConfigComponent {
 
   readonly swiperConfig = {
     slidesPerView: 'auto' as const,
-    spaceBetween: 16,
+    spaceBetween: 12,
     navigation: {
-      nextEl: '.swiper-button-next',
-      prevEl: '.swiper-button-prev',
-    }
+      nextEl: '.config-chips__nav--next',
+      prevEl: '.config-chips__nav--prev',
+    },
   };
 
   isSelected(id: number): boolean {
