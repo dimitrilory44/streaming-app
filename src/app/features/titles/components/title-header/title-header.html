@@ -1,71 +1,45 @@
-<header id="top" class="container">
-    <mat-toolbar class="navbar">
+<header id="top" class="header">
+    <mat-toolbar class="header__toolbar">
         @if (isSmallScren()) {
-            <div class="logo logo--compact">
-                <button mat-icon-button class="action-btn__menu" aria-label="Menu" disabled>
-                    <mat-icon>menu</mat-icon>
+        <div class="header__top">
+            <div class="logo"><span class="logo__accent">Just</span><span>Dim</span></div>
+            <div class="header__actions">
+                <button class="search-btn" aria-label="Rechercher">
+                    <mat-icon>search</mat-icon>
+                    <span class="search-btn__label">Recherche</span>
                 </button>
-                <div><span class="yellow">Just</span><span>Dim</span></div>
-                <button mat-icon-button class="action-btn__account" aria-label="Compte" disabled>
+                <button mat-icon-button class="account-btn" aria-label="Compte">
                     <mat-icon>manage_accounts</mat-icon>
                 </button>
             </div>
-            <nav class="nav nav--compact" aria-label="Navigation principale">
-                @for (menu of visibleMenus(); track menu.label) {
-                    @if (menu.path) {
-                        <button 
-                            mat-button
-                            [routerLink]="menu.path"
-                            routerLinkActive="active-menu"
-                            [routerLinkActiveOptions]="{ exact: menu.exact }">
-                        {{ menu.label }}
-                        </button>
-                    } @else {
-                        <button mat-button>{{ menu.label }}</button>
-                    }
-                }
-            </nav>
-            <button class="search-btn" aria-label="Rechercher" disabled>
-                <mat-icon>search</mat-icon>
-                <span class="search-btn__label">Recherche</span>
-            </button>
+        </div>
         } @else {
-            <div class="logo">
-                <span class="yellow">Just</span><span>Dim</span>
-            </div>
-            <nav class="nav" aria-label="Navigation principale">
-                @for (menu of menus; track menu.label) {
-                    @if (menu.path) {
-                        <button 
-                            mat-button
-                            [routerLink]="menu.path"
-                            routerLinkActive="active-menu"
-                            [routerLinkActiveOptions]="{ exact: menu.exact }">
-                        {{ menu.label }}
-                        </button>
-                    } @else {
-                        <button mat-button>{{ menu.label }}</button>
-                    }
-                }
-            </nav>
-            <div class="search">
-                <mat-form-field appearance="outline">
-                    <mat-icon matPrefix>search</mat-icon>
-                    <input
-                        matInput
-                        placeholder="Rechercher un film ou une série"
-                    >
-                </mat-form-field>
-            </div>
-    
-            <div class="actions">
-                <button mat-icon-button class="action-btn__account" aria-label="Compte" disabled>
-                    <mat-icon>manage_accounts</mat-icon>
-                </button>
-                <button mat-icon-button class="action-btn__menu" aria-label="Menu" disabled>
-                    <mat-icon>menu</mat-icon>
-                </button>
-            </div>
+        <div class="logo"><span class="logo__accent">Just</span><span>Dim</span></div>
+        }
+
+        <nav mat-tab-nav-bar class="header__nav" [tabPanel]="tabPanel()" mat-stretch-tabs="false"
+            aria-label="Navigation principale">
+            @for (menu of visibleMenus(); track menu.label) {
+            <a mat-tab-link [routerLink]="menu.path" routerLinkActive #rla="routerLinkActive"
+                [routerLinkActiveOptions]="{ exact: menu.exact }" [active]="rla.isActive" [disabled]="!menu.path">
+                {{ menu.label }}
+            </a>
+            }
+        </nav>
+
+        @if (!isSmallScren()) {
+        <div class="header__search">
+            <mat-form-field appearance="outline">
+                <mat-icon matPrefix>search</mat-icon>
+                <input matInput placeholder="Rechercher un film ou une série"
+                    aria-label="Rechercher un film ou une série">
+            </mat-form-field>
+        </div>
+        <div class="header__actions">
+            <button mat-icon-button class="account-btn" aria-label="Compte" disabled>
+                <mat-icon>manage_accounts</mat-icon>
+            </button>
+        </div>
         }
     </mat-toolbar>
 </header>

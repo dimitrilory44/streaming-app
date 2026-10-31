@@ -3,10 +3,11 @@ import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Rout
 import { LoadingBar } from '@shared/components/loading-bar/loading-bar';
 import { TitleHeaderComponent } from '@features/titles/components/title-header/title-header';
 import { filter } from 'rxjs';
+import { MatTabNavPanel } from '@angular/material/tabs';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, TitleHeaderComponent, LoadingBar],
+  imports: [RouterOutlet, TitleHeaderComponent, LoadingBar, MatTabNavPanel],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })

@@ -1,3 +1,4 @@
+@use '@angular/material' as mat;
 @use 'breakpoints' as bp;
 
 :host {
@@ -11,25 +12,105 @@
     }
 }
 
-.container {
+// --- Bloc header ---------------------------------------------------------------
+
+.header {
     max-width: 1900px;
     padding: 0 var(--page-gutter);
-}
 
-.navbar {
-    background: #0d1117;
-    color: white;
-    gap: 24px;
-    margin-bottom: 25px;
+    &__toolbar {
+        background: #0d1117;
+        color: white;
+        gap: 24px;
+        margin-bottom: 25px;
 
-    // Mobile : deux rangées. Le logo occupe toute la première,
-    // la navigation et le bouton de recherche se partagent la seconde.
-    @include bp.mobile {
-        flex-wrap: wrap;
-        height: auto;
-        row-gap: 4px;
-        column-gap: 8px;
-        margin-bottom: 12px;
+        // Mobile : deux rangées pleine largeur (logo + actions, puis onglets).
+        @include bp.mobile {
+            flex-wrap: wrap;
+            height: auto;
+            row-gap: 8px;
+            margin-bottom: 12px;
+        }
+    }
+
+    // Mobile : première rangée, logo à gauche, actions à droite.
+    &__top {
+        flex-basis: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 8px;
+    }
+
+    // Recherche (mobile) et compte, regroupés à droite.
+    &__actions {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    // --- Navigation (onglets) ---
+
+    &__nav {
+        // Taille naturelle sur desktop : sinon la recherche (flex: 1) écrase
+        // les onglets, qui affichent alors leurs flèches de pagination.
+        flex: none;
+
+        @include mat.tabs-overrides((
+            active-indicator-color: #fbc500,
+            active-hover-indicator-color: #fbc500,
+            active-focus-indicator-color: #fbc500,
+            active-label-text-color: #ffffff,
+            active-hover-label-text-color: #ffffff,
+            active-focus-label-text-color: #ffffff,
+            inactive-label-text-color: rgba(255, 255, 255, 0.6),
+            inactive-hover-label-text-color: rgba(255, 255, 255, 0.9),
+            inactive-focus-label-text-color: rgba(255, 255, 255, 0.9),
+            label-text-weight: 400,
+            divider-height: 0,
+            container-height: 44px,
+        ));
+
+        // Le token est une variable CSS : redéfinie sur l'onglet actif, elle ne vaut que pour lui.
+        .mdc-tab--active {
+            @include mat.tabs-overrides((label-text-weight: 700));
+        }
+
+        .mat-mdc-tab-link {
+            min-width: 0;
+            padding-inline: 12px;
+        }
+
+        @include bp.mobile {
+            flex-basis: 100%;
+            @include mat.tabs-overrides((divider-color: #2a2d3a, divider-height: 1px));
+        }
+    }
+
+    // --- Recherche (desktop) ---
+
+    &__search {
+        flex: 1 1 auto;
+        min-width: 0;
+
+        mat-form-field {
+            width: 100%;
+        }
+
+        ::ng-deep .mat-mdc-text-field-wrapper {
+            height: 40px;
+        }
+
+        ::ng-deep .mat-mdc-form-field-infix {
+            min-height: unset;
+            padding-top: 8px;
+            padding-bottom: 8px;
+        }
+
+        ::ng-deep .mat-mdc-form-field-icon-prefix,
+        ::ng-deep .mat-mdc-form-field-icon-suffix {
+            padding: 0 4px;
+        }
     }
 }
 
@@ -43,65 +124,16 @@
 .logo {
     font-size: 34px;
     font-weight: 600;
+    line-height: 1.2;
     cursor: pointer;
     white-space: nowrap;
 
-    .yellow {
+    &__accent {
         color: #fbc500;
     }
-
-    &--compact {
-        flex-basis: 100%;
-        padding-top: 8px;
-        text-align: center;
-        line-height: 1.2;
-        display: flex;
-        justify-content: space-between;
-    }
 }
 
-// --- Navigation -------------------------------------------------------------
-
-.nav {
-    display: flex;
-    gap: 8px;
-
-    button {
-        color: rgba(255, 255, 255, 0.6); // gris clair pour les items inactifs
-        font-weight: 400;
-        transition: color 0.2s ease;
-
-        &:hover {
-            color: rgba(255, 255, 255, 0.9);
-        }
-    }
-
-    .active-menu {
-        --mdc-text-button-label-text-color: #ffffff;
-        color: #ffffff;
-        font-weight: 700;
-    }
-
-    // Mobile : la nav prend la place restante et défile horizontalement
-    // si les libellés ne tiennent pas, au lieu de faire déborder la page.
-    &--compact {
-        // Base à 0 : la nav prend la place laissée par le bouton de recherche
-        // au lieu de le repousser sur une troisième ligne.
-        flex: 1 1 0;
-        min-width: 0;
-        gap: 0;
-        overflow-x: auto;
-        scrollbar-width: none;
-
-        button {
-            flex: none;
-            min-width: 0;
-            padding-inline: 10px;
-        }
-    }
-}
-
-// --- Recherche ----------------------------------------------------------------
+// --- Champs de formulaire (styles globaux, voir remarque) ----------------------
 
 ::ng-deep .mat-mdc-form-field-subscript-wrapper {
     display: none;
@@ -118,32 +150,8 @@
     border-radius: 8px;
 }
 
-.search {
-    flex: 1 1 auto;
-    min-width: 0;
-    max-width: none;
+// --- Bouton de recherche (mobile) ----------------------------------------------
 
-    mat-form-field {
-        width: 100%;
-    }
-
-    ::ng-deep .mat-mdc-text-field-wrapper {
-        height: 40px;
-    }
-
-    ::ng-deep .mat-mdc-form-field-infix {
-        min-height: unset;
-        padding-top: 8px;
-        padding-bottom: 8px;
-    }
-
-    ::ng-deep .mat-mdc-form-field-icon-prefix,
-    ::ng-deep .mat-mdc-form-field-icon-suffix {
-        padding: 0 4px;
-    }
-}
-
-// Bouton de recherche de la version mobile (le champ complet est réservé au desktop).
 .search-btn {
     flex: none;
     display: flex;
@@ -167,6 +175,7 @@
 
     // Téléphone : icône seule, le libellé reste lu par les lecteurs d'écran via aria-label.
     @include bp.xsmall {
+        background-color: transparent;   // téléphone (< 600px)
         width: 36px;
         padding: 0;
         justify-content: center;
@@ -177,12 +186,8 @@
     }
 }
 
-// --- Actions ----------------------------------------------------------------
+// --- Bouton compte ------------------------------------------------------------
 
-.action-btn__account {
+.account-btn {
     color: #fbc500;
-}
-
-.action-btn__menu {
-    color: white;
 }

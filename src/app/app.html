@@ -8,7 +8,9 @@
   <loading-bar />
 }
 
-<title-header/>
-<main>
-  <router-outlet></router-outlet>
-</main>
+<title-header [tabPanel]="tabPanel"/>
+<mat-tab-nav-panel #tabPanel>
+  <main>
+    <router-outlet></router-outlet>
+  </main>
+</mat-tab-nav-panel>

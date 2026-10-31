@@ -1,4 +1,4 @@
-import { Component, computed, inject, model } from '@angular/core';
+import { Component, computed, inject, input, model } from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -7,10 +7,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { BreakpointService } from '@core/services/breakpoint-service';
+import { MatTabNavPanel, MatTabsModule } from '@angular/material/tabs';
 
 @Component({
   selector: 'title-header',
-  imports: [ MatToolbarModule, MatButtonModule, MatIconModule, MatInputModule, MatFormFieldModule, RouterLink, RouterLinkActive ],
+  imports: [ MatToolbarModule, MatButtonModule, MatIconModule, MatInputModule, MatFormFieldModule, RouterLink, RouterLinkActive, MatTabsModule ],
   templateUrl: './title-header.html',
   styleUrl: './title-header.scss',
 })
@@ -19,6 +20,7 @@ export class TitleHeaderComponent {
   readonly #breakpointService = inject(BreakpointService);
 
   readonly isSmallScren = computed(() => this.#breakpointService.hasSmallScreen());
+  readonly tabPanel = input.required<MatTabNavPanel>();
 
   readonly search = model('');
 
