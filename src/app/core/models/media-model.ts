@@ -116,6 +116,11 @@ export interface ProviderConfigData {
   providers: Provider[];
 }
 
+export interface CriteriaSheetData {
+  mediaType: MediaType;
+  activeFilter: Signal<number>;
+}
+
 export interface TitleDiscover {
   page: number;
   results: Media[];

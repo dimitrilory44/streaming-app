@@ -82,6 +82,7 @@
   // le compteur passe seul sur la seconde, juste au-dessus des affiches.
   // Sur tablette, il reste à côté du toggle : la place suffit.
   @include bp.xsmall {
+
     // Le groupe de gauche s'efface de la mise en page : le toggle et le compteur
     // deviennent des enfants directs de la barre et peuvent être placés séparément.
     &__left {
@@ -246,4 +247,10 @@
   .filter-btn {
     padding: 0 10px !important;
   }
+}
+
+// panelClass est posé sur le panneau de l'overlay, pas sur le conteneur : on cible le conteneur à l'intérieur.
+.criteria-sheet-panel .mat-bottom-sheet-container {
+  max-height: none; // Material limite la feuille à 80vh par défaut
+  height: 100%;
 }

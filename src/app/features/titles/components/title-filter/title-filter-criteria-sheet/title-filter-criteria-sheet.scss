@@ -1,15 +1,71 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
 :host ::ng-deep .criteria-accordion .mat-expansion-panel-body {
   padding: 0 0 16px;
 }
 
+// --- Poignée de glissement ----------------------------------------------------
+.criteria-sheet__handle {
+  width: 36px;
+  height: 4px;
+  margin: 0 auto 12px;
+  border-radius: 2px;
+  background: #3a4152;
+  cursor: grab;
+  touch-action: none;   // le geste sur la poignée n'est pas interprété comme un défilement de la page
+
+  // Zone de prise plus haute que la barre visible, pour le pouce.
+  position: relative;
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -14px -40px;
+  }
+}
+
+.criteria-sheet__header {
+  display: flex;
+  align-items: baseline;   
+  gap: 8px;
+  padding: 0 0 12px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #2a2d3a;
+}
+
 .criteria-sheet__title {
-  margin-bottom: 15px;
+  margin: 0;              
+  font-size: 18px;
+  font-weight: 700;
+  color: #e5e7eb;
+}
+
+.criteria-sheet__count {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.criteria-sheet {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 16px;
 }
 
 .criteria-accordion {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;                      
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.criteria-accordion > * {
+  flex-shrink: 0;
+}
+
+.sheet-actions {
+  flex: none;
 }
 
 .criteria-accordion__header {
@@ -22,12 +78,12 @@
   border-color: #f5c518;         
 }
 
-//#e5e7eb
-
 .sheet-actions {
   display: flex;
   gap: 12px;
   padding: 12px 16px 20px;
+  border-top: 1px solid #2a2d3a;
+  margin-top: 20px;
 
   &__btn {
     height: 48px;

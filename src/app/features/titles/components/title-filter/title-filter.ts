@@ -14,7 +14,7 @@ import { ImgFallbackDirective } from '@shared/directives/img-fallback.directive'
 import { TitleFilterCriteriaComponent } from '@features/titles/components/title-filter/title-filter-criteria/title-filter-criteria';
 import { AllSortOptions, Media, MediaType } from '@shared/types/collection.types';
 import { TitleFilterProvidersComponent } from './title-filter-providers/title-filter-providers';
-import { MediaConfig } from '@core/models/media-model';
+import { CriteriaSheetData, MediaConfig } from '@core/models/media-model';
 import { DEFAULT_MEDIA } from '@shared/constants/filter-preferences';
 import { COMMON_SORT_OPTIONS, MOVIE_SORT_OPTIONS, SERIES_SORT_OPTIONS } from '@shared/constants/sort-options';
 import { BreakpointService } from '@core/services/breakpoint-service';
@@ -50,7 +50,7 @@ export class TitleFilterComponent {
   readonly activeSort = computed(() => !this.#userPreferencesService.sortHelpers[this.currentMediaType()].isDefault());
 
   readonly isSmallScren = computed(() => this.#breakpointService.hasSmallScreen());
-  
+
   readonly mediaConfig: Record<MediaType, MediaConfig> = {
     movie: { options: MOVIE_SORT_OPTIONS, route: ['/popular/movies'] },
     tv: { options: SERIES_SORT_OPTIONS, route: ['/popular/series'] },
@@ -62,7 +62,18 @@ export class TitleFilterComponent {
   readonly activeCountFilters = this.#userPreferencesService.activeCriteriaCount;
 
   openPanelCriteria(): void {
-    this.isSmallScren() ? this.#bottomSheet.open(TitleFilterCriteriaSheet) : this.isFilterCriteriaPanelExpanded.set(!this.isFilterCriteriaPanelExpanded());
+    if (this.isSmallScren()) {
+      this.#bottomSheet.open<TitleFilterCriteriaSheet, CriteriaSheetData>(TitleFilterCriteriaSheet, {
+        panelClass: 'criteria-sheet-panel',
+        height: '100dvh',
+        data: { 
+          mediaType: this.currentMediaType(),
+          activeFilter: this.activeCountFilters
+        },
+      });
+    } else {
+      this.isFilterCriteriaPanelExpanded.set(!this.isFilterCriteriaPanelExpanded());
+    }
   }
 
   onResetSortChange(value: AllSortOptions): void {

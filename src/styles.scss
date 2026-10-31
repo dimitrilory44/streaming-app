@@ -165,6 +165,23 @@ mat-spinner {
   min-width: 400px !important;
 }
 
+// panelClass est posé sur le panneau de l'overlay, pas sur le conteneur : on cible le conteneur à l'intérieur.
+.criteria-sheet-panel .mat-bottom-sheet-container {
+  max-height: none;   // Material limite la feuille à 80vh par défaut
+  height: 100%;
+}
+
+// Feuille de filtres glissable : retour animé quand on relâche trop tôt.
+.cdk-overlay-pane:has(.criteria-sheet) {
+  transition: transform 0.2s ease;
+}
+
+// Pendant le geste, le CDK pose `cdk-drag-dragging` sur l'élément cdkDrag (pas sur le panneau) :
+// on coupe la transition pour que la feuille suive le doigt sans retard.
+.cdk-overlay-pane:has(.criteria-sheet.cdk-drag-dragging) {
+  transition: none;
+}
+
 .mat-bottom-sheet-container {
   --mat-sys-surface-container-low: #0d1117;
 }
