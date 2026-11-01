@@ -25,12 +25,10 @@ export class TitleHeaderComponent {
   readonly search = model('');
 
   readonly menus = [
-    { label: 'Accueil', path: null, exact: true, mobile: false },
-    { label: 'Nouveautés', path: null, exact: false, mobile: true },
-    { label: 'Populaires', path: '/popular', exact: false, mobile: true },
-    { label: 'Listes', path: null, exact: false, mobile: true }
+    { label: 'Accueil', path: null, exact: true },
+    { label: 'Nouveautés', path: null, exact: false },
+    { label: 'Populaires', path: '/popular', exact: false },
+    { label: 'Listes', path: null, exact: false }
   ];
-
-  readonly visibleMenus = computed(() => this.isSmallScren() ? this.menus.filter((menu) => menu.mobile) : this.menus);
 
 }

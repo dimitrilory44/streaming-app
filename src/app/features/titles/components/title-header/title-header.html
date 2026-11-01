@@ -4,9 +4,9 @@
         <div class="header__top">
             <div class="logo"><span class="logo__accent">Just</span><span>Dim</span></div>
             <div class="header__actions">
-                <button class="search-btn" aria-label="Rechercher">
-                    <mat-icon>search</mat-icon>
-                    <span class="search-btn__label">Recherche</span>
+                <button type="button" class="search-trigger" aria-label="Rechercher (recherche intelligente disponible)">
+                    <img src="assets/search-ai.svg" alt="" width="20" height="20" />
+                    <span class="search-trigger__label">Recherche Intelligente</span>
                 </button>
                 <button mat-icon-button class="account-btn" aria-label="Compte">
                     <mat-icon>manage_accounts</mat-icon>
@@ -19,7 +19,7 @@
 
         <nav mat-tab-nav-bar class="header__nav" [tabPanel]="tabPanel()" mat-stretch-tabs="false"
             aria-label="Navigation principale">
-            @for (menu of visibleMenus(); track menu.label) {
+            @for (menu of menus; track menu.label) {
             <a mat-tab-link [routerLink]="menu.path" routerLinkActive #rla="routerLinkActive"
                 [routerLinkActiveOptions]="{ exact: menu.exact }" [active]="rla.isActive" [disabled]="!menu.path">
                 {{ menu.label }}
@@ -31,8 +31,9 @@
         <div class="header__search">
             <mat-form-field appearance="outline">
                 <mat-icon matPrefix>search</mat-icon>
-                <input matInput placeholder="Rechercher un film ou une série"
+                <input matInput placeholder="Un titre ... ou décrivez une envie"
                     aria-label="Rechercher un film ou une série">
+                <mat-icon matSuffix>auto_awesome</mat-icon>
             </mat-form-field>
         </div>
         <div class="header__actions">

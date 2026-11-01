@@ -152,38 +152,43 @@
 
 // --- Bouton de recherche (mobile) ----------------------------------------------
 
-.search-btn {
-    flex: none;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    height: 36px;
-    padding: 0 14px;
-    border: none;
-    border-radius: 20px;
-    background-color: #2a2f38;
-    color: #e5e7eb;
-    font: inherit;
-    font-size: 14px;
-    cursor: pointer;
+.search-trigger {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: none;
+  border-radius: 22px;
+  background-color: transparent;
+  color: #e5e7eb;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
 
-    mat-icon {
-        font-size: 18px;
-        width: 18px;
-        height: 18px;
-    }
+  &:focus-visible {
+    outline: 2px solid #fbc500;
+    outline-offset: 2px;
+  }
+}
 
-    // Téléphone : icône seule, le libellé reste lu par les lecteurs d'écran via aria-label.
-    @include bp.xsmall {
-        background-color: transparent;   // téléphone (< 600px)
-        width: 36px;
-        padding: 0;
-        justify-content: center;
+.search-trigger__label {
+  display: none; // mobile : icône seule, le aria-label donne le nom
+}
 
-        &__label {
-            display: none;
-        }
-    }
+@media (min-width: 768px) {
+  .search-trigger {
+    width: auto;
+    padding: 0 16px;
+    background: #2a2f38;
+  }
+
+  .search-trigger__label {
+    display: inline;
+  }
 }
 
 // --- Bouton compte ------------------------------------------------------------
