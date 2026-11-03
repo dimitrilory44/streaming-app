@@ -9,6 +9,14 @@ import { map } from 'rxjs';
 export class BreakpointService {
   readonly #breakpointObserver = inject(BreakpointObserver);
 
+  // Même seuil que le mixin `xsmall` de src/styles/_breakpoints.scss (max-width: 599.98px).
+  readonly hasXSmallScreen = toSignal(
+    this.#breakpointObserver
+      .observe(Breakpoints.XSmall)
+      .pipe(map((state) => state.matches)),
+    { initialValue: false },
+  );
+
   // Même seuil que le mixin `mobile` de src/styles/_breakpoints.scss (max-width: 959.98px).
   readonly hasSmallScreen = toSignal(
     this.#breakpointObserver

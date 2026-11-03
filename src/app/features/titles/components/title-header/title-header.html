@@ -1,13 +1,31 @@
-<header id="top" class="header">
+<!-- Champ de recherche, déclaré une fois : affiché dans la rangée du haut sur tablette, après les onglets sur desktop. -->
+<ng-template #searchField>
+    <div class="header__search">
+        <mat-form-field appearance="outline">
+            <mat-icon matPrefix>search</mat-icon>
+            <input matInput placeholder="Un titre ... ou décrivez une envie"
+                aria-label="Rechercher un film ou une série">
+            <mat-icon matSuffix>auto_awesome</mat-icon>
+        </mat-form-field>
+    </div>
+</ng-template>
+
+<header class="header">
     <mat-toolbar class="header__toolbar">
-        @if (isSmallScren()) {
+        @if (isSmallScreen()) {
         <div class="header__top">
             <div class="logo"><span class="logo__accent">Just</span><span>Dim</span></div>
+
+            @if (!isXSmallScreen()) {
+            <ng-container [ngTemplateOutlet]="searchField" />
+            }
+
             <div class="header__actions">
+                @if (isXSmallScreen()) {
                 <button type="button" class="search-trigger" aria-label="Rechercher (recherche intelligente disponible)">
                     <img src="assets/search-ai.svg" alt="" width="20" height="20" />
-                    <span class="search-trigger__label">Recherche Intelligente</span>
                 </button>
+                }
                 <button mat-icon-button class="account-btn" aria-label="Compte">
                     <mat-icon>manage_accounts</mat-icon>
                 </button>
@@ -27,15 +45,8 @@
             }
         </nav>
 
-        @if (!isSmallScren()) {
-        <div class="header__search">
-            <mat-form-field appearance="outline">
-                <mat-icon matPrefix>search</mat-icon>
-                <input matInput placeholder="Un titre ... ou décrivez une envie"
-                    aria-label="Rechercher un film ou une série">
-                <mat-icon matSuffix>auto_awesome</mat-icon>
-            </mat-form-field>
-        </div>
+        @if (!isSmallScreen()) {
+        <ng-container [ngTemplateOutlet]="searchField" />
         <div class="header__actions">
             <button mat-icon-button class="account-btn" aria-label="Compte">
                 <mat-icon>manage_accounts</mat-icon>

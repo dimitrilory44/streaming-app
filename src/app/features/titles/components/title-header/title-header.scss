@@ -33,12 +33,14 @@
         }
     }
 
-    // Mobile : première rangée, logo à gauche, actions à droite.
+    // Mobile et tablette : première rangée, logo à gauche, actions à droite.
+    // Sur tablette, le champ de recherche prend la place entre les deux.
     &__top {
         flex-basis: 100%;
         display: flex;
         align-items: center;
         justify-content: space-between;
+        gap: 16px;
         padding-top: 8px;
     }
 
@@ -150,7 +152,7 @@
     border-radius: 8px;
 }
 
-// --- Bouton de recherche (mobile) ----------------------------------------------
+// --- Bouton de recherche (téléphone) ----------------------------------------------
 
 .search-trigger {
   flex: none;
@@ -172,22 +174,6 @@
   &:focus-visible {
     outline: 2px solid #fbc500;
     outline-offset: 2px;
-  }
-}
-
-.search-trigger__label {
-  display: none; // mobile : icône seule, le aria-label donne le nom
-}
-
-@media (min-width: 768px) {
-  .search-trigger {
-    width: auto;
-    padding: 0 16px;
-    background: #2a2f38;
-  }
-
-  .search-trigger__label {
-    display: inline;
   }
 }
 

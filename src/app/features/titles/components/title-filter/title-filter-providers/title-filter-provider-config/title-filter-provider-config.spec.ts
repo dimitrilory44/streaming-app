@@ -94,7 +94,7 @@ describe('TitleFilterProviderConfigComponent', () => {
     it('affiche le titre de la boîte de dialogue une fois les données chargées', async () => {
       await create();
 
-      expect(host().querySelector('h2')?.textContent).toContain('Choisissez vos services de streaming');
+      expect(host().querySelector('h4')?.textContent).toContain('Choisissez vos services de streaming');
     });
 
     it('affiche un indicateur de chargement tant que rien n\'est arrivé', async () => {

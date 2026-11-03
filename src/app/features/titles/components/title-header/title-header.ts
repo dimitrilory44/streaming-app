@@ -8,10 +8,11 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { BreakpointService } from '@core/services/breakpoint-service';
 import { MatTabNavPanel, MatTabsModule } from '@angular/material/tabs';
+import { NgTemplateOutlet } from '@angular/common';
 
 @Component({
   selector: 'title-header',
-  imports: [ MatToolbarModule, MatButtonModule, MatIconModule, MatInputModule, MatFormFieldModule, RouterLink, RouterLinkActive, MatTabsModule ],
+  imports: [MatToolbarModule, MatButtonModule, MatIconModule, MatInputModule, MatFormFieldModule, RouterLink, RouterLinkActive, MatTabsModule, NgTemplateOutlet],
   templateUrl: './title-header.html',
   styleUrl: './title-header.scss',
 })
@@ -19,7 +20,12 @@ export class TitleHeaderComponent {
   readonly dialog = inject(MatDialog);
   readonly #breakpointService = inject(BreakpointService);
 
-  readonly isSmallScren = computed(() => this.#breakpointService.hasSmallScreen());
+  //readonly isSmallScren = computed(() => this.#breakpointService.hasSmallScreen());
+  // < 960px : header sur deux rangées (logo + actions, puis onglets).
+  readonly isSmallScreen = this.#breakpointService.hasSmallScreen;
+  // < 600px : la recherche se réduit à un bouton.
+  readonly isXSmallScreen = this.#breakpointService.hasXSmallScreen;
+
   readonly tabPanel = input.required<MatTabNavPanel>();
 
   readonly search = model('');
