@@ -8,7 +8,7 @@
       "@shared/*": ["./src/app/shared/*"],
       "@features/*": ["./src/app/features/*"],
       "@models/*": ["./src/app/core/models/*"],
-      "@environments/*": ["./src/environments/*"]
+      "@environments/*": ["./src/testing/environments/*"]
     }
   },
   "include": [
