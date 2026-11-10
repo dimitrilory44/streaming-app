@@ -46,7 +46,7 @@ Application de découverte de films et de séries, filtrée selon vos plateforme
 ### Configuration
 
 <!-- À adapter selon la façon dont la clé est réellement fournie à l'application -->
-Renseignez votre clé API TMDB dans `src/environments/environment.ts` (fichier non versionné), à partir du modèle `environment.example.ts`.
+Renseignez votre clé API TMDB dans `src/environments/environment.ts` (fichier non versionné), à partir du modèle `src/testing/environments/environment.ts`.
 
 ### Démarrage
 
