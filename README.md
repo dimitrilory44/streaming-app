@@ -68,8 +68,8 @@ ng test
 - [x] Listes de titres populaires avec scroll infini
 - [x] Choix des plateformes de streaming et préférences persistées
 - [x] Tri par type de média
-- [ ] Filtres avancés : note, durée, pays de production, âge
-- [ ] Exclusion d'un genre (filtre à trois états)
+- [x] Filtres avancés : note, durée, pays de production, âge
+- [x] Exclusion d'un genre (filtre à trois états)
 - [ ] Backend **Spring Boot** servant de proxy et de cache pour l'API TMDB, afin de masquer la clé et limiter les appels
 - [ ] **Recherche en langage naturel** assistée par IA
 - [ ] Extension aux jeux vidéo
