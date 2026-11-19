@@ -29,8 +29,6 @@ public class TmdbConfigurationTest {
 
         server.expect(requestTo(startsWith("https://api.themoviedb.org/3/movie/popular")))
                 .andExpect(method(HttpMethod.GET))
-                .andExpect(queryParam("language", "fr-FR"))
-                .andExpect(queryParam("region", "FR"))
                 .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer test-token"))
                 .andRespond(withSuccess("{\"results\": []}", MediaType.APPLICATION_JSON));
 

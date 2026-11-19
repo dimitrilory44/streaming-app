@@ -14,10 +14,7 @@ public class TmdbConfiguration {
     @Bean
     public RestClient tmdbRestClient(RestClient.Builder builder, TmdbProperties tmdbProperties) {
         UriComponentsBuilder base = UriComponentsBuilder
-                .fromUriString(tmdbProperties.baseUrl())
-                .queryParam("language", tmdbProperties.params().language())
-                .queryParam("region", tmdbProperties.params().region());
-
+                .fromUriString(tmdbProperties.baseUrl());
         DefaultUriBuilderFactory factory = new DefaultUriBuilderFactory(base);
 
         return builder
